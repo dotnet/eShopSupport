@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7306A281-C46A-4EE3-948D-513D56B1BD34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "src\Backend\Backend.csproj", "{96F30B32-9DE5-450F-B54F-CFDFACC91AFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StaffWebUI", "src\StaffWebUI\StaffWebUI.csproj", "{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96F30B32-9DE5-450F-B54F-CFDFACC91AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96F30B32-9DE5-450F-B54F-CFDFACC91AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96F30B32-9DE5-450F-B54F-CFDFACC91AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96F30B32-9DE5-450F-B54F-CFDFACC91AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{96F30B32-9DE5-450F-B54F-CFDFACC91AFF} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
+		{D77F3443-68A2-4F6A-ABB8-0E7CA32643FA} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
+	EndGlobalSection
+EndGlobal
