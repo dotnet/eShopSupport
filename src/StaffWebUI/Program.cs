@@ -1,4 +1,5 @@
-﻿using eShopSupport.StaffWebUI.Components;
+﻿using eShopSupport.ServiceDefaults.Clients.Backend;
+using eShopSupport.StaffWebUI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,9 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient<BackendClient>(client =>
+    client.BaseAddress = new Uri("http://backend/"));
 
 var app = builder.Build();
 

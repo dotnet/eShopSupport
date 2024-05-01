@@ -1,7 +1,25 @@
 ﻿@page "/"
+@using eShopSupport.ServiceDefaults.Clients.Backend
+@inject BackendClient Backend
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<ul>
+    @foreach (var ticket in tickets ?? Array.Empty<Ticket>())
+    {
+        <li>@ticket.TicketId @ticket.CustomerFullName</li>
+    }
+</ul>
+
+@code {
+    Ticket[]? tickets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tickets = await Backend.GetTicketsAsync();
+    }
+}
