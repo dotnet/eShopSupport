@@ -1,6 +1,9 @@
-using eShopSupport.StaffWebUI.Components;
+﻿using eShopSupport.StaffWebUI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add service defaults & Aspire components.
+builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

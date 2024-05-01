@@ -13,6 +13,7 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb);
 
 builder.AddProject<StaffWebUI>("staffwebui")
+    .WithExternalHttpEndpoints()
     .WithReference(backend);
 
 builder.Build().Run();

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add service defaults & Aspire components.
+builder.AddServiceDefaults();
+
 builder.AddNpgsqlDbContext<AppDbContext>("backenddb");
 
 var app = builder.Build();
