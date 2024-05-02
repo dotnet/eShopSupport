@@ -3,7 +3,7 @@
     top: 50px; /* Equal to page header height */
 }
 
-::deep fluent-data-grid-row:hover {
+::deep tbody fluent-data-grid-row:hover {
     background-color: #eee;
     cursor: pointer;
 }
