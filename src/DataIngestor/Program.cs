@@ -38,10 +38,23 @@ async Task IngestGeneratedData(string path)
     var tickets = new List<Ticket>();
     var ticketsSourceDir = Path.Combine(path, "tickets", "threads");
     var inputOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    var messageId = 0;
     foreach (var filename in Directory.GetFiles(ticketsSourceDir, "*.json"))
     {
-        var ticket = await JsonSerializer.DeserializeAsync<Ticket>(File.OpenRead(filename), inputOptions);
-        tickets.Add(ticket!);
+        // TODO: Consider simplifying by ensuring the generated data is already in exactly the right form
+        var generated = (await JsonSerializer.DeserializeAsync<GeneratedTicket>(File.OpenRead(filename), inputOptions))!;
+        tickets.Add(new Ticket
+        {
+            TicketId = generated.TicketId,
+            ProductId = generated.ProductId,
+            CustomerFullName = generated.CustomerFullName,
+            Messages = generated.Messages.Select(generatedMessage => new Message
+            {
+                MessageId = ++messageId,
+                AuthorName = generatedMessage.AuthorRole == 0 ? generated.CustomerFullName : "Support",
+                Text = generatedMessage.Text
+            }).ToList()
+        });
     }
 
     var solutionDir = FindAncestorDirectoryContaining("*.sln");
@@ -66,3 +79,6 @@ static string FindAncestorDirectoryContaining(string pattern)
 
     throw new FileNotFoundException($"Could not find a directory containing {pattern}");
 }
+
+internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, List<GeneratedMessage> Messages);
+internal record GeneratedMessage(int MessageId, int AuthorRole, string Text);

@@ -4,9 +4,9 @@ namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
 public class BackendClient(HttpClient http)
 {
-    public Task<Ticket[]> GetTicketsAsync()
-        => http.GetFromJsonAsync<Ticket[]>("/tickets")!;
+    public Task<ListTicketsResult[]> ListTicketsAsync()
+        => http.GetFromJsonAsync<ListTicketsResult[]>("/tickets")!;
 }
 
-public record Ticket(
-    int TicketId, string CustomerFullName);
+public record ListTicketsResult(
+    int TicketId, string CustomerFullName, int NumMessages);

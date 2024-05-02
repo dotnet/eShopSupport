@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Polly;
+using Polly.Retry;
 
 namespace eShopSupport.Backend.Data;
 
@@ -11,12 +13,24 @@ public class AppDbContext : DbContext
 
     public DbSet<Ticket> Tickets { get; set; }
 
+    public DbSet<Message> Messages { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Ticket>().HasMany(t => t.Messages).WithOne().OnDelete(DeleteBehavior.Cascade);
+    }
+
     public static async Task EnsureDbCreatedAsync(IServiceProvider services)
     {
         using var scope = services.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var createdDb = await dbContext.Database.EnsureCreatedAsync();
 
+        // Wait until the DB is ready
+        var pipeline = new ResiliencePipelineBuilder().AddRetry(new RetryStrategyOptions { Delay = TimeSpan.FromSeconds(3) }).Build();
+        var createdDb = await pipeline.ExecuteAsync(async (CancellationToken ct) =>
+            await dbContext.Database.EnsureCreatedAsync(ct));
+        
         if (createdDb)
         {
             var importDataFromDir = Environment.GetEnvironmentVariable("ImportInitialDataDir");

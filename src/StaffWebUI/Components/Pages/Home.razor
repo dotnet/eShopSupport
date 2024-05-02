@@ -9,17 +9,17 @@
 Welcome to your new app.
 
 <ul>
-    @foreach (var ticket in tickets ?? Array.Empty<Ticket>())
+    @foreach (var ticket in tickets ?? [])
     {
-        <li>@ticket.TicketId @ticket.CustomerFullName</li>
+        <li>@ticket.TicketId @ticket.CustomerFullName (@ticket.NumMessages messages)</li>
     }
 </ul>
 
 @code {
-    Ticket[]? tickets;
+    ListTicketsResult[]? tickets;
 
     protected override async Task OnInitializedAsync()
     {
-        tickets = await Backend.GetTicketsAsync();
+        tickets = await Backend.ListTicketsAsync();
     }
 }
