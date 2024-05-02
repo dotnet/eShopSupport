@@ -1,5 +1,6 @@
 ﻿using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,8 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddFluentUIComponents();
 
 builder.Services.AddHttpClient<BackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"));

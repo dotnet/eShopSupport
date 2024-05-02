@@ -13,6 +13,8 @@
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="$(AspireVersion)" />
     <!-- Version together with ASP.NET -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.7.1" />
+    <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.7.0" />
     <!-- Open Telemetry -->
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
