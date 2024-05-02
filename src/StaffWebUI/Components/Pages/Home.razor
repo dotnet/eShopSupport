@@ -10,7 +10,7 @@
             <PropertyColumn Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" />
             <PropertyColumn Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" />
             <PropertyColumn Title="Summary" Property="@(t => t.ShortSummary)" />
-            <PropertyColumn Title="Satisfaction" Property="@(t => t.CustomerSatisfaction)" Align="Align.Center" />
+            <TemplateColumn Title="Satisfaction" Align="Align.Center">@FormatSatisfaction(context.CustomerSatisfaction) @context.CustomerSatisfaction</TemplateColumn>
             <PropertyColumn Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" />
         </ChildContent>
         <LoadingContent></LoadingContent>
@@ -32,4 +32,19 @@
         var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 50, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
         return new() { Items = result.Items, TotalItemCount = result.TotalCount };
     }
+
+    private string FormatSatisfaction(int? satisfaction) => satisfaction switch
+    {
+        1 => "😡",
+        2 => "😠",
+        3 => "😟",
+        4 => "😕",
+        5 => "😐",
+        6 => "😊",
+        7 => "🙂",
+        8 => "😃",
+        9 => "😄",
+        10 => "😍",
+        _ => ""
+    };
 }
