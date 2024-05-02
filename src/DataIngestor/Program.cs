@@ -48,6 +48,9 @@ async Task IngestGeneratedData(string path)
             TicketId = generated.TicketId,
             ProductId = generated.ProductId,
             CustomerFullName = generated.CustomerFullName,
+            ShortSummary = generated.ShortSummary,
+            LongSummary = generated.LongSummary,
+            CustomerSatisfaction = generated.CustomerSatisfaction,
             Messages = generated.Messages.Select(generatedMessage => new Message
             {
                 MessageId = ++messageId,
@@ -80,5 +83,5 @@ static string FindAncestorDirectoryContaining(string pattern)
     throw new FileNotFoundException($"Could not find a directory containing {pattern}");
 }
 
-internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, List<GeneratedMessage> Messages);
+internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
 internal record GeneratedMessage(int MessageId, int AuthorRole, string Text);

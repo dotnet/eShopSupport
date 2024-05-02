@@ -5,10 +5,12 @@
 <Title>Tickets</Title>
 
 <div>
-    <FluentDataGrid Loading="true" ItemKey="@(t => t.TicketId)" ItemSize="32" ItemsProvider="@dataLoader" Virtualize="true" GridTemplateColumns="100px auto 110px" GenerateHeader="GenerateHeaderOption.Sticky">
+    <FluentDataGrid Loading="true" ItemKey="@(t => t.TicketId)" ItemSize="32" ItemsProvider="@dataLoader" Virtualize="true" GridTemplateColumns="100px 1fr 2fr 110px 110px" GenerateHeader="GenerateHeaderOption.Sticky">
         <ChildContent>
             <PropertyColumn Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" />
             <PropertyColumn Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" />
+            <PropertyColumn Title="Summary" Property="@(t => t.ShortSummary)" />
+            <PropertyColumn Title="Satisfaction" Property="@(t => t.CustomerSatisfaction)" Align="Align.Center" />
             <PropertyColumn Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" />
         </ChildContent>
         <LoadingContent></LoadingContent>
