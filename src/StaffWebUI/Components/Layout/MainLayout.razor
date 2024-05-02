@@ -1,6 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+<div>
+    <FluentLayout>
+        <FluentHeader>
+            <SectionOutlet SectionName="PageTitle" />
+        </FluentHeader>
+        <FluentStack Orientation="Orientation.Vertical">
+            <main>
+                @Body
+            </main>
+        </FluentStack>
+    </FluentLayout>
+</div>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.

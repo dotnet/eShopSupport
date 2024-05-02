@@ -16,3 +16,12 @@
         right: 0.75rem;
         top: 0.5rem;
     }
+
+::deep header {
+    position: sticky;
+    top: 0;
+}
+
+main {
+    padding: 1rem 1.25rem;
+}
