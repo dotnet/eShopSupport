@@ -1,11 +1,12 @@
 ﻿@page "/"
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject BackendClient Backend
+@inject NavigationManager Nav
 
 <Title>Tickets</Title>
 
 <div>
-    <FluentDataGrid Loading="true" ItemKey="@(t => t.TicketId)" ItemSize="32" ItemsProvider="@dataLoader" Virtualize="true" GridTemplateColumns="100px 1fr 2fr 110px 110px" GenerateHeader="GenerateHeaderOption.Sticky">
+    <FluentDataGrid TGridItem="ListTicketsResultItem" Loading="true" OnRowFocus="@OnRowFocus" ItemKey="@(t => t.TicketId)" ItemSize="32" ItemsProvider="@dataLoader" Virtualize="true" GridTemplateColumns="100px 1fr 2fr 110px 110px" GenerateHeader="GenerateHeaderOption.Sticky">
         <ChildContent>
             <PropertyColumn Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" />
             <PropertyColumn Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" />
@@ -31,6 +32,11 @@
         var sortColumn = request.GetSortByProperties().FirstOrDefault();
         var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 50, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
         return new() { Items = result.Items, TotalItemCount = result.TotalCount };
+    }
+
+    private void OnRowFocus(FluentDataGridRow<ListTicketsResultItem> row)
+    {
+        Nav.NavigateTo($"/tickets/{row.Item!.TicketId}");
     }
 
     private string FormatSatisfaction(int? satisfaction) => satisfaction switch
