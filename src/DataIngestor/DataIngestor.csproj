@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.DataIngestor</RootNamespace>
+    <StartArguments>..\..\..\..\..\..\..\SteveSandersonMS\AspirePython\data-generator\AspirePython.DataGenerator\output</StartArguments>
   </PropertyGroup>
 
   <ItemGroup>

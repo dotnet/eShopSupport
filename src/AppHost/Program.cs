@@ -11,7 +11,7 @@ var backendDb = builder
 
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
-    .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "testdata", "dev"));
+    .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 
 builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()

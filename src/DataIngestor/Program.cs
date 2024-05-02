@@ -21,6 +21,9 @@
 // production DBs.
 
 // TODO: Once the data generator is moved into this solution, we can use a relative path to its output
+using System.Text.Json;
+using eShopSupport.Backend.Data;
+
 var generatedDataPath = args.Length > 0 ? args[0] : null;
 if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPath))
 {
@@ -32,5 +35,34 @@ await IngestGeneratedData(generatedDataPath);
 
 async Task IngestGeneratedData(string path)
 {
+    var tickets = new List<Ticket>();
+    var ticketsSourceDir = Path.Combine(path, "tickets", "threads");
+    var inputOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    foreach (var filename in Directory.GetFiles(ticketsSourceDir, "*.json"))
+    {
+        var ticket = await JsonSerializer.DeserializeAsync<Ticket>(File.OpenRead(filename), inputOptions);
+        tickets.Add(ticket!);
+    }
 
+    var solutionDir = FindAncestorDirectoryContaining("*.sln");
+    var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
+
+    var outputOptions = new JsonSerializerOptions { WriteIndented = true };
+    await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets, outputOptions));
+    Console.WriteLine($"Wrote {tickets.Count} tickets");
+}
+
+static string FindAncestorDirectoryContaining(string pattern)
+{
+    var currentDir = Directory.GetCurrentDirectory();
+    while (currentDir != null)
+    {
+        if (Directory.GetFiles(currentDir, pattern).Any())
+        {
+            return currentDir!;
+        }
+        currentDir = Directory.GetParent(currentDir)?.FullName;
+    }
+
+    throw new FileNotFoundException($"Could not find a directory containing {pattern}");
 }
