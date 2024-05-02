@@ -1,31 +1,55 @@
 ﻿@page "/"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(false))
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject BackendClient Backend
 
 <Title>Tickets</Title>
 
 <div>
-    <FluentDataGrid Items="@tickets" ItemKey="@(t => t.TicketId)" Virtualize="true" GridTemplateColumns="100px auto 100px" GenerateHeader="GenerateHeaderOption.Sticky">
+    <FluentDataGrid Loading="true" ItemKey="@(t => t.TicketId)" ItemSize="32" ItemsProvider="@dataLoader" Virtualize="true" GridTemplateColumns="100px auto 110px" GenerateHeader="GenerateHeaderOption.Sticky">
         <ChildContent>
             <PropertyColumn Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" />
             <PropertyColumn Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" />
             <PropertyColumn Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" />
         </ChildContent>
-        <LoadingContent>
-            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
-                Loading...<br />
-                <FluentProgress Width="240px" />
-            </FluentStack>
-        </LoadingContent>
+        <LoadingContent></LoadingContent>
     </FluentDataGrid>
 </div>
 
 @code {
-    IQueryable<ListTicketsResult>? tickets;
+    IQueryable<ListTicketsResultItem>? tickets;
+    private GridItemsProvider<ListTicketsResultItem> dataLoader;
+    private GridItemsProviderRequest<ListTicketsResultItem>? lastDataRequest;
+    private GridItemsProviderResult<ListTicketsResultItem>? lastDataResult;
 
-    protected override async Task OnInitializedAsync()
+    public Home()
     {
-        tickets = (await Backend.ListTicketsAsync()).AsQueryable();
+        dataLoader = LoadDataAsync;
+    }
+
+    private async ValueTask<GridItemsProviderResult<ListTicketsResultItem>> LoadDataAsync(GridItemsProviderRequest<ListTicketsResultItem> request)
+    {
+        // If we can resolve the request using data we already have, do that
+        // TODO: Surely we shouldn't have to do this
+        if (lastDataRequest.HasValue && lastDataResult.HasValue)
+        {
+            var startOffset = request.StartIndex - lastDataRequest.Value.StartIndex;
+            if (startOffset >= 0 && request.Count <= lastDataResult.Value.Items.Count - startOffset
+                && request.SortByColumn == lastDataRequest.Value.SortByColumn
+                && request.SortByAscending == lastDataRequest.Value.SortByAscending)
+            {
+                return new()
+                {
+                    Items = lastDataResult.Value.Items.Skip(startOffset).ToList(),
+                    TotalItemCount = lastDataResult.Value.TotalItemCount
+                };
+            }
+        }
+
+        var sortColumn = request.GetSortByProperties().FirstOrDefault();
+        var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 50, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
+        lastDataRequest = request;
+        lastDataResult = new() { Items = result.Items, TotalItemCount = result.TotalCount };
+        return lastDataResult.Value;
     }
 }
