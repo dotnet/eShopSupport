@@ -1,0 +1,4 @@
+﻿::deep .sticky-header {
+    border-top: 1rem solid white; /* Hide any content that scrolls above it while it's fixed */
+    top: 50px; /* Equal to page header height */
+}
