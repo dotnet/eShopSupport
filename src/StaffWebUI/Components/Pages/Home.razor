@@ -19,8 +19,6 @@
 @code {
     IQueryable<ListTicketsResultItem>? tickets;
     private GridItemsProvider<ListTicketsResultItem> dataLoader;
-    private GridItemsProviderRequest<ListTicketsResultItem>? lastDataRequest;
-    private GridItemsProviderResult<ListTicketsResultItem>? lastDataResult;
 
     public Home()
     {
@@ -29,27 +27,8 @@
 
     private async ValueTask<GridItemsProviderResult<ListTicketsResultItem>> LoadDataAsync(GridItemsProviderRequest<ListTicketsResultItem> request)
     {
-        // If we can resolve the request using data we already have, do that
-        // TODO: Surely we shouldn't have to do this
-        if (lastDataRequest.HasValue && lastDataResult.HasValue)
-        {
-            var startOffset = request.StartIndex - lastDataRequest.Value.StartIndex;
-            if (startOffset >= 0 && request.Count <= lastDataResult.Value.Items.Count - startOffset
-                && request.SortByColumn == lastDataRequest.Value.SortByColumn
-                && request.SortByAscending == lastDataRequest.Value.SortByAscending)
-            {
-                return new()
-                {
-                    Items = lastDataResult.Value.Items.Skip(startOffset).ToList(),
-                    TotalItemCount = lastDataResult.Value.TotalItemCount
-                };
-            }
-        }
-
         var sortColumn = request.GetSortByProperties().FirstOrDefault();
         var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 50, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
-        lastDataRequest = request;
-        lastDataResult = new() { Items = result.Items, TotalItemCount = result.TotalCount };
-        return lastDataResult.Value;
+        return new() { Items = result.Items, TotalItemCount = result.TotalCount };
     }
 }
