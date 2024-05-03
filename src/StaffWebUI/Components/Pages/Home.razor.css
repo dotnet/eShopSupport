@@ -63,3 +63,15 @@
     background: var(--neutral-fill-layer-rest);
     z-index: 1;
 }
+
+::deep tr:hover {
+    background: var(--neutral-fill-stealth-hover);
+}
+
+::deep .link-col {
+    display: block;
+    text-decoration: none;
+    color: var(--neutral-foreground-rest);
+    margin: -0.4rem;
+    padding: 0.4rem;
+}

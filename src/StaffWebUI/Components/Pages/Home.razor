@@ -8,45 +8,33 @@
 
 <div class="main-grid">
     <div class="opaque-spacer"></div>
-    <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="32" ItemsProvider="@dataLoader" Class="tickets-grid">
+    <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="32" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
-            <PropertyColumn Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
-            <PropertyColumn Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
-            <PropertyColumn Title="Summary" Property="@(t => t.ShortSummary)" Class="ticket-summary" />
-            <TemplateColumn Title="Satisfaction" Align="Align.Center" Class="ticket-satisfaction">@FormatSatisfaction(context.CustomerSatisfaction) @context.CustomerSatisfaction</TemplateColumn>
-            <PropertyColumn Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
+            <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
+            <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
+            <LinkPropertyColumn Href="@TicketHref" Title="Summary" Property="@(t => t.ShortSummary)" Class="ticket-summary" />
+            <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" Class="ticket-satisfaction">
+                @(context.CustomerSatisfaction.HasValue ? SatisfactionSymbols[context.CustomerSatisfaction.Value] : "")
+                @context.CustomerSatisfaction
+            </LinkTemplateColumn>
+            <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
         </ChildContent>
     </QuickGrid>
 </div>
 
 @code {
     IQueryable<ListTicketsResultItem>? tickets;
-    private GridItemsProvider<ListTicketsResultItem> dataLoader;
+    private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
+    private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"tickets/{t.TicketId}";
+    private readonly static string[] SatisfactionSymbols = ["", "😡", "😠", "😟", "😕", "😐", "😊", "🙂", "😃", "😄", "😍"];
 
     public Home()
     {
-        dataLoader = LoadDataAsync;
+        TicketsProvider = async request =>
+        {
+            var sortColumn = request.GetSortByProperties().FirstOrDefault();
+            var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
+            return new() { Items = result.Items, TotalItemCount = result.TotalCount };
+        };
     }
-
-    private async ValueTask<GridItemsProviderResult<ListTicketsResultItem>> LoadDataAsync(GridItemsProviderRequest<ListTicketsResultItem> request)
-    {
-        var sortColumn = request.GetSortByProperties().FirstOrDefault();
-        var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
-        return new() { Items = result.Items, TotalItemCount = result.TotalCount };
-    }
-
-    private string FormatSatisfaction(int? satisfaction) => satisfaction switch
-    {
-        1 => "😡",
-        2 => "😠",
-        3 => "😟",
-        4 => "😕",
-        5 => "😐",
-        6 => "😊",
-        7 => "🙂",
-        8 => "😃",
-        9 => "😄",
-        10 => "😍",
-        _ => ""
-    };
 }
