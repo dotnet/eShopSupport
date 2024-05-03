@@ -27,7 +27,7 @@
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"tickets/{t.TicketId}";
     private readonly static string[] SatisfactionSymbols = ["", "😡", "😠", "😟", "😕", "😐", "😊", "🙂", "😃", "😄", "😍"];
 
-    public Home()
+    public Tickets()
     {
         TicketsProvider = async request =>
         {
