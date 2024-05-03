@@ -1,0 +1,8 @@
+﻿@page "/ticket/{ticketId:int}"
+
+<h3>Ticket @TicketId</h3>
+
+@code {
+    [Parameter]
+    public int TicketId { get; set; }
+}

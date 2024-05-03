@@ -23,7 +23,7 @@
 
 @code {
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
-    private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"tickets/{t.TicketId}";
+    private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
     private readonly static string[] SatisfactionSymbols = ["", "😡", "😠", "😟", "😕", "😐", "😊", "🙂", "😃", "😄", "😍"];
 
     public Tickets()
