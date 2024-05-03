@@ -28,8 +28,8 @@
 ::deep th.ticket-id { width: 100px; }
 ::deep th.ticket-satisfaction { width: 140px; }
 ::deep th.ticket-messages { width: 140px; }
-::deep th.ticket-customer { width: 1fr; }
-::deep th.ticket-summary { width: 2fr; }
+::deep th.ticket-customer { width: 20%; }
+::deep th.ticket-summary { width: 60%; }
 
 ::deep th.ticket-id .col-title {
     justify-content: end;
@@ -43,6 +43,7 @@
 ::deep .tickets-grid tbody > tr > td {
     padding-left: 0.4rem;
     padding-right: 0.4rem;
+    white-space: nowrap;
 }
 
 ::deep .tickets-grid thead > tr > th button {
@@ -74,4 +75,6 @@
     color: var(--neutral-foreground-rest);
     margin: -0.4rem;
     padding: 0.4rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
