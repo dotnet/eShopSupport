@@ -7,8 +7,7 @@
 <Title>Tickets</Title>
 
 <div class="main-grid">
-    <div class="opaque-spacer"></div>
-    <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="32" ItemsProvider="@TicketsProvider" Class="tickets-grid">
+    <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
             <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
