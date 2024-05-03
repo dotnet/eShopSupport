@@ -1,8 +1,4 @@
-﻿.main-grid {
-    --header-height: 50px;
-}
-
-::deep .tickets-grid {
+﻿::deep .tickets-grid {
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;

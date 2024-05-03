@@ -6,7 +6,7 @@
 
 <Title>Tickets</Title>
 
-<div class="main-grid">
+<div class="main-grid ensure-page-scrollbar">
     <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />

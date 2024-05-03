@@ -21,3 +21,16 @@
     position: sticky;
     top: 0;
 }
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 100vh;
+
+    --header-height: 50px;
+}
+
+::deep header {
+    height: var(--header-height);
+}

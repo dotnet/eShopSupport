@@ -1,17 +1,13 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @inherits LayoutComponentBase
 
-<div>
+<div class="app">
     <FluentLayout>
-        <FluentHeader>
+        <FluentHeader Height="@(default)">
             <span style="font-weight: 200; margin-right: 0.75rem; padding-right: 0.75rem; border-right: 0.5px solid rgba(255,255,255,0.5);">eShopSupport</span>
             <SectionOutlet SectionName="PageTitle" />
         </FluentHeader>
-        <FluentStack Orientation="Orientation.Vertical">
-            <main>
-                @Body
-            </main>
-        </FluentStack>
+        @Body
     </FluentLayout>
 </div>
 

@@ -1,4 +1,4 @@
-html {
+html:has(.ensure-page-scrollbar) {
     overflow-y: scroll;
 }
 
