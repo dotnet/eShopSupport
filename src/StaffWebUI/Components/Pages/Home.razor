@@ -23,7 +23,6 @@
 </div>
 
 @code {
-    IQueryable<ListTicketsResultItem>? tickets;
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"tickets/{t.TicketId}";
     private readonly static string[] SatisfactionSymbols = ["", "😡", "😠", "😟", "😕", "😐", "😊", "🙂", "😃", "😄", "😍"];
