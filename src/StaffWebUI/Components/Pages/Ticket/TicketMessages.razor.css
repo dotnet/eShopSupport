@@ -17,7 +17,7 @@
 }
 
 .summary-text {
-    background: var(--neutral-foreground-rest);
+    background-color: color-mix(in srgb, var(--neutral-foreground-rest) calc(100%* var(--base-layer-luminance)), #cecece);
     color: var(--neutral-stroke-layer-rest);
     padding: 1rem 1.5rem 1rem 1rem;
     box-shadow: var(--elevation-shadow-card-rest);
