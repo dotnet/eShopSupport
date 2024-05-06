@@ -2,7 +2,7 @@
 @inject IJSRuntime JS
 
 <loading-theme storage="theme"></loading-theme>
-<FluentDesignTheme @bind-Mode="@Mode" StorageName="theme" />
+<FluentDesignTheme @bind-Mode="@Mode" StorageName="theme" @bind-Mode:after="@UpdateRootElementClassAsync" />
 
 <button @onclick="ChangeTheme" title="Change theme">
     @if (EffectiveMode == DesignThemeModes.Light)
@@ -40,8 +40,14 @@
             SystemThemeResolved = systemThemeIsDark ? DesignThemeModes.Dark : DesignThemeModes.Light;
             if (Mode == DesignThemeModes.System)
             {
+                await UpdateRootElementClassAsync();
                 StateHasChanged();
             }
         }
+    }
+
+    private async Task UpdateRootElementClassAsync()
+    {
+        await JS.InvokeVoidAsync("document.documentElement.classList.toggle", "dark-mode", EffectiveMode == DesignThemeModes.Dark);
     }
 }

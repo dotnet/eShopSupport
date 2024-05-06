@@ -1,3 +1,8 @@
+html.dark-mode {
+    /* Affects scrollbar style */
+    color-scheme: dark;
+}
+
 html:has(.ensure-page-scrollbar) {
     overflow-y: scroll;
 }
