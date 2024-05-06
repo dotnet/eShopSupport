@@ -1,0 +1,66 @@
+﻿@page "/ticket/{ticketId:int}"
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<Title>Ticket @TicketId</Title>
+
+<div>
+    <FluentSplitter BarSize="6" BarHandle="false" Panel1MinSize="300px" Panel2Size="350px" Panel2MinSize="200px" Class="splitter">
+        <Panel1>
+            <div class="details">
+                <TicketDetails />
+            </div>
+            <div class="messages">
+                <TicketMessages />
+            </div>
+        </Panel1>
+        <Panel2>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum 
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu 
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum 
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu 
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+            <p>
+                Panel 2 - Neque laoreet suspendisse interdum consectetur libero id faucibus nisl tincidunt. Suspendisse faucibus interdum posuere lorem ipsum
+                dolor sit amet. Imperdiet sed euismod nisi porta lorem mollis aliquam. Malesuada proin libero nunc consequat interdum. Amet nisl purus
+                in mollis nunc sed id semper risus. Nunc sed augue lacus viverra vitae congue eu. Fermentum dui faucibus in ornare quam viverra. Ut eu
+                sem integer vitae. Interdum velit laoreet id donec ultrices tincidunt arcu non. Pellentesque dignissim enim sit amet. Scelerisque purus
+                semper eget duis at.
+            </p>
+        </Panel2>
+    </FluentSplitter>
+</div>
+
+@code {
+    [Parameter]
+    public int TicketId { get; set; }
+}

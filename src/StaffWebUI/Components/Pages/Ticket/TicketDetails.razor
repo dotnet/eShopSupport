@@ -1,0 +1,20 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+<div class="details-grid">
+    <div>
+        <FluentSelect TOption="string" Items="@TicketTypes" Label="Case type" style="width: 100%; min-width: 12rem;" />
+    </div>
+    <div>
+        <FluentTextField Label="Customer" style="width: 100%;" Value="Name Goes Here" ReadOnly />
+    </div>
+    <div>
+        <FluentNumberField Label="Order #" @bind-Value="@orderNumber" style="width: 100%;" />
+    </div>
+    <div>
+        <FluentAutocomplete TOption="string" Label="Product" style="width: 100%;" />
+    </div>
+</div>
+
+@code {
+    int orderNumber = 123;
+    string[] TicketTypes = ["Question", "Complaint", "Returns"];
+}

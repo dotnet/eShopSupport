@@ -1,0 +1,17 @@
+﻿::deep .splitter {
+    height: calc(100vh - var(--header-height));
+}
+
+    ::deep .splitter [slot='1'] {
+        display: flex;
+        flex-direction: column;
+    }
+
+.details {
+    padding: 1rem 1.5rem;
+}
+
+.messages {
+    flex-grow: 1;
+    padding: 0.5rem 1.5rem;
+}

@@ -1,0 +1,11 @@
+﻿.details-grid {
+    /* 1 or 2 columns, with min column width 12rem */
+    display: grid;
+    --details-grid-gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(max(12rem, calc(50% - calc(var(--details-grid-gap) / 2))), 1fr));
+    gap: 0.8rem var(--details-grid-gap);
+}
+
+.details-grid > div {
+
+}
