@@ -3,12 +3,38 @@
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
-    margin: 1rem 0;
+    padding-bottom: 2rem;
 }
 
-.message {
-    max-width: 90%;
+.summary {
+    position: sticky;
+    top: 0;
+    align-self: stretch;
+    z-index: 1;
+    margin: -1rem;
+    margin-bottom: 1rem;
+    border-top: 0.5rem solid var(--neutral-layer-3);
 }
+
+.summary-text {
+    background: var(--neutral-foreground-rest);
+    color: var(--neutral-stroke-layer-rest);
+    padding: 1rem 1.5rem 1rem 1rem;
+    box-shadow: var(--elevation-shadow-card-rest);
+    border-bottom: calc(var(--stroke-width)* 2px) solid var(--accent-fill-rest);
+    border-radius: calc(var(--layer-corner-radius) * 0.5px);
+    display: flex;
+    gap: 0.5rem;
+}
+
+    .summary-text div:first-child {
+        font-size: 125%;
+        width: min-content;
+    }
+
+    .message {
+        max-width: 90%;
+    }
 
 .message-text {
     background: var(--fill-color);
