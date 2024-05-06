@@ -20,6 +20,9 @@
 ::deep header {
     position: sticky;
     top: 0;
+    background-color: var(--neutral-layer-4) !important;
+    border-bottom: calc(var(--stroke-width)* 2px) solid var(--accent-fill-rest);
+    color: var(--neutral-foreground-rest) !important;
 }
 
 .app {
@@ -27,6 +30,7 @@
     flex-direction: column;
     align-items: stretch;
     min-height: 100vh;
+    background: var(--neutral-layer-1);
 
     --header-height: 50px;
 }

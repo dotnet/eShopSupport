@@ -7,6 +7,11 @@
         flex-direction: column;
     }
 
+    ::deep .splitter [slot='2'] {
+        background: #3a3a3a;
+        color: #cccccc;
+    }
+
 .details {
     padding: 1rem 1.5rem;
 }
