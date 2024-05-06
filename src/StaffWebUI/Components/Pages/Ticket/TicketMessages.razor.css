@@ -32,7 +32,7 @@
 .message-metadata {
     margin: 0 0.5rem 0.15rem 0.5rem;
     font-size: 90%;
-    opacity: 0.5;
+    opacity: 0.65;
 }
 
     .message.support .message-metadata {
@@ -41,4 +41,8 @@
 
 .message-metadata .timestamp, .message-metadata .sender {
     font-weight: 500;
+}
+
+.message-metadata .filler {
+    opacity: 0.9;
 }
