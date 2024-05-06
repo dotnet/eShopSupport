@@ -25,6 +25,10 @@
     padding: 0 1.5rem;
     background: var(--neutral-layer-3);
     overflow-y: scroll;
+
+    /* Make the scrollbar default to being at the end, instead of the start */
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 .write-message {
