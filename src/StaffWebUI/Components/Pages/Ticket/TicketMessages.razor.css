@@ -17,8 +17,8 @@
 }
 
 .summary-text {
-    background-color: color-mix(in srgb, var(--neutral-foreground-rest) calc(100%* var(--base-layer-luminance)), #cecece);
-    color: var(--neutral-stroke-layer-rest);
+    background-color: color-mix(in srgb, #393939 calc(100%* var(--base-layer-luminance)), #fcffd9);
+    color: color-mix(in srgb, white calc(100%* var(--base-layer-luminance)), black);
     padding: 1rem 1.5rem 1rem 1rem;
     box-shadow: var(--elevation-shadow-card-rest);
     border-bottom: calc(var(--stroke-width)* 2px) solid var(--accent-fill-rest);

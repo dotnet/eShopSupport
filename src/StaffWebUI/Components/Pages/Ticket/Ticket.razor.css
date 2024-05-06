@@ -29,6 +29,9 @@
     /* Make the scrollbar default to being at the end, instead of the start */
     display: flex;
     flex-direction: column-reverse;
+
+    /* Fix subpixel text rendering glitch */
+    clip-path: inset(1px 0 0 0);
 }
 
 .write-message {
