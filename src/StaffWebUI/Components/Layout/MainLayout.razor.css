@@ -25,6 +25,10 @@
     color: var(--neutral-foreground-rest) !important;
 }
 
+.theme-picker {
+    margin-left: auto;
+}
+
 .main-title {
     font-weight: 400;
     margin-right: 0.75rem;
