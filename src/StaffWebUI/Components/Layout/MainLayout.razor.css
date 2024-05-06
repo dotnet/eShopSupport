@@ -25,13 +25,21 @@
     color: var(--neutral-foreground-rest) !important;
 }
 
+.main-title {
+    font-weight: 400;
+    margin-right: 0.75rem;
+    padding-right: 0.75rem;
+    border-right: 1px solid var(--neutral-foreground-rest);
+    text-decoration: none;
+    color: var(--neutral-foreground-rest);
+}
+
 .app {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     min-height: 100vh;
     background: var(--neutral-layer-1);
-
     --header-height: 50px;
 }
 
