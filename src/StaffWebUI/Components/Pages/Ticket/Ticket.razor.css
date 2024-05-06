@@ -13,13 +13,27 @@
     }
 
 .details {
-    padding: 1rem 1.5rem;
+    padding: 1.5rem 1.5rem;
+    background: var(--neutral-layer-1);
 }
 
 .messages {
     flex-grow: 1;
     padding: 0.5rem 1.5rem;
+    background: var(--neutral-layer-3);
+    overflow-y: scroll;
 }
+
+.write-message {
+    height: 125px;
+    background: var(--neutral-layer-1);
+    flex-shrink: 0;
+    padding: 0.5rem 1.5rem;
+}
+
+    .write-message ::deep fluent-text-area::part(control) {
+        flex-grow: 1;
+    }
 
 .assistant {
     padding: 1rem 1.5rem;
