@@ -8,8 +8,12 @@
     }
 
     ::deep .splitter [slot='2'] {
-        background: #2b2b2b;
-        color: #e0e0e0;
+        background-color: color-mix(in srgb, var(--neutral-layer-2) 95%, grey);
+        color: var(--neutral-foreground-rest);
+    }
+
+    html.dark-mode .ticket ::deep .splitter [slot='2'] {
+        background-color: color-mix(in srgb, var(--neutral-layer-2) 70%, grey);
     }
 
 .details {
@@ -49,7 +53,6 @@
     }
 
 .assistant {
-    color-scheme: dark;
     display: flex;
     flex-direction: column;
     height: 100%;
