@@ -66,6 +66,28 @@
     z-index: 1;
 }
 
-    .write-message ::deep fluent-text-area::part(control) {
+::deep fluent-text-area {
+    --control-corner-radius: 20;
+
+    /* We can't display the blue highlight at the bottom because it can't draw large on a large border radius */
+    /* Notice that in real Copilot UIs it also doesn't use the blue highlight on this textarea */
+    --focus-stroke-width: 0;
+}
+
+    ::deep fluent-text-area::part(control) {
         flex-grow: 1;
+        background: #333131;
+        color: #cfcfcf;
+        border: 1px solid #5a5a5a;
+        padding: 1rem;
     }
+
+    ::deep fluent-text-area::part(control):focus {
+        background: #1c1c1c;
+        border-color: #777777;
+        color: white;
+    }
+
+        ::deep fluent-text-area::part(control)::placeholder {
+            color: #cfcfcf;
+        }
