@@ -1,76 +1,43 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
-<div class="messages">
-    <div class="summary">
-        <div class="summary-text">
-            <div>💡</div>
-            <div>
-                <strong>Summary:</strong>
-                This is a summary of the conversation. This is a summary of the conversation. This is a summary of the conversation. This is a summary of the conversation.
+@using eShopSupport.ServiceDefaults.Clients.Backend
+
+@if (Ticket is null)
+{
+    <div class="loading-progress">
+        <FluentProgress />
+    </div>
+}
+else
+{
+    <div class="messages">
+        @if (!string.IsNullOrEmpty(Ticket?.LongSummary))
+        {
+            <div class="summary">
+                <div class="summary-text">
+                    <div>💡</div>
+                    <div>
+                        <strong>Summary:</strong>
+                        @Ticket.LongSummary
+                    </div>
+                </div>
             </div>
-        </div>
+        }
+
+        @foreach (var message in Ticket!.Messages)
+        {
+            <div class="message @(message.AuthorName == "Support" ? "support" : "customer")">
+                <div class="message-metadata">
+                    <span class="timestamp">2 days ago</span>
+                    <span class="filler">by</span>
+                    <span class="sender">@message.AuthorName</span>
+                </div>
+                <div class="message-text">@message.MessageText</div>
+            </div>
+        }
     </div>
-    <div class="message customer">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">D. Pilkins</span>
-        </div>
-        <div class="message-text">Hello</div>
-    </div>
-    <div class="message support">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">Northern Mountains support</span>
-        </div>
-        <div class="message-text">Hello Hello</div>
-    </div>
-    <div class="message customer">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">D. Pilkins</span>
-        </div>
-        <div class="message-text">Hello Hello Hello Hello Hello</div>
-    </div>
-    <div class="message support">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">Northern Mountains support</span>
-        </div>
-        <div class="message-text">Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello</div>
-    </div>
-    <div class="message customer">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">D. Pilkins</span>
-        </div>
-        <div class="message-text">Hello</div>
-    </div>
-    <div class="message support">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">Northern Mountains support</span>
-        </div>
-        <div class="message-text">Hello Hello</div>
-    </div>
-    <div class="message customer">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">D. Pilkins</span>
-        </div>
-        <div class="message-text">Hello Hello Hello Hello Hello</div>
-    </div>
-    <div class="message support">
-        <div class="message-metadata">
-            <span class="timestamp">2 days ago</span>
-            <span class="filler">by</span>
-            <span class="sender">Northern Mountains support</span>
-        </div>
-        <div class="message-text">Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello</div>
-    </div>
-</div>
+}
+
+@code {
+    [Parameter]
+    public TicketDetailsResult? Ticket { get; set; }
+}

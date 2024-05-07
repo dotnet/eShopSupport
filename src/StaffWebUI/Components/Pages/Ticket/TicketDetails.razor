@@ -1,10 +1,11 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using eShopSupport.ServiceDefaults.Clients.Backend
 <div class="details-grid">
     <div>
         <FluentSelect TOption="string" Items="@TicketTypes" Label="Case type" style="width: 100%; min-width: 12rem;" />
     </div>
     <div>
-        <FluentTextField Label="Customer" style="width: 100%;" Value="Name Goes Here" ReadOnly />
+        <FluentTextField Label="Customer" style="width: 100%;" Value="@Ticket?.CustomerFullName" ReadOnly />
     </div>
     <div>
         <FluentSelect TOption="string" Items="@TicketStatuses" Label="Status" style="width: 100%; min-width: 12rem;" />
@@ -22,4 +23,7 @@
 @code {
     string[] TicketTypes = ["❔ Question", "💭 Comment / idea", "🙁 Complaint", "📦 Returns"];
     string[] TicketStatuses = ["⏳ Open", "✅ Closed"];
+
+    [Parameter]
+    public TicketDetailsResult? Ticket { get; set; }
 }

@@ -15,6 +15,21 @@ await AppDbContext.EnsureDbCreatedAsync(app.Services);
 
 app.MapGet("/", () => "Hello World!");
 
+app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketId) =>
+{
+    var ticket = await dbContext.Tickets
+        .Include(t => t.Messages)
+        .FirstOrDefaultAsync(t => t.TicketId == ticketId);
+    return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
+        ticket.TicketId,
+        ticket.CustomerFullName,
+        ticket.ShortSummary,
+        ticket.LongSummary,
+        ticket.CustomerSatisfaction,
+        ticket.Messages.Select(m => new TicketDetailsResultMessage(m.MessageId, m.AuthorName, m.Text)).ToList()
+    ));
+});
+
 app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxResults, string? sortBy, bool sortAscending) =>
 {
     if (maxResults > 100)

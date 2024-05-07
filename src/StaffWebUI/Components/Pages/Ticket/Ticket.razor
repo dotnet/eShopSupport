@@ -1,5 +1,7 @@
 ﻿@page "/ticket/{ticketId:int}"
 @using Microsoft.FluentUI.AspNetCore.Components
+@using eShopSupport.ServiceDefaults.Clients.Backend
+@inject BackendClient Backend
 
 <Title>Ticket @TicketId</Title>
 
@@ -7,10 +9,10 @@
     <FluentSplitter BarSize="6" BarHandle="false" Panel1MinSize="300px" Panel2Size="350px" Panel2MinSize="200px" Class="splitter">
         <Panel1>
             <div class="details">
-                <TicketDetails />
+                <TicketDetails Ticket="@ticket" />
             </div>
             <div class="messages">
-                <TicketMessages />
+                <TicketMessages Ticket="@ticket" />
             </div>
             <div class="write-message">
                 <FluentTextArea Placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
@@ -25,6 +27,14 @@
 </div>
 
 @code {
+    private TicketDetailsResult? ticket;
+
     [Parameter]
     public int TicketId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ticket = null;
+        ticket = await Backend.GetTicketDetailsAsync(TicketId);
+    }
 }

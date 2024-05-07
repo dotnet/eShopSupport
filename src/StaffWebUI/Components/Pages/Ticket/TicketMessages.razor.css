@@ -1,4 +1,14 @@
-﻿.messages {
+﻿.loading-progress {
+    width: 50%;
+    display: grid;
+    grid-gap: 12px;
+    grid-auto-flow: column;
+    height: 100%;
+    align-items: center;
+    margin: auto;
+}
+
+.messages {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -12,7 +22,7 @@
     align-self: stretch;
     z-index: 1;
     margin: -1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0rem;
     border-top: 0.5rem solid var(--neutral-layer-3);
 }
 
@@ -37,6 +47,10 @@ html.dark-mode .summary-text {
         width: min-content;
     }
 
+    .message:first-of-type {
+        margin-top: 1rem;
+    }
+
     .message {
         max-width: 90%;
     }
@@ -48,6 +62,7 @@ html.dark-mode .summary-text {
     border-radius: calc(var(--layer-corner-radius)* 2.5px);
     box-shadow: var(--elevation-shadow-card-rest);
     padding: calc(var(--design-unit)* 5px);
+    white-space: pre-line;
 }
 
 .message.support {
