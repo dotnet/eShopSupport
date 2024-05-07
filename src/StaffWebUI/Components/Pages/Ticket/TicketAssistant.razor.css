@@ -27,6 +27,14 @@
     gap: 0.25rem 1rem;
 }
 
+    .message ::deep .initials {
+        background-color: grey;
+    }
+    
+    .message.assistant ::deep .initials {
+        background-color: #d800b1;
+    }
+
 .sender-icon {
     grid-area: sender-icon;
     align-self: center;

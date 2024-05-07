@@ -11,8 +11,10 @@
             <div class="message-text">Can this product be used outdoors?</div>
         </div>
 
-        <div class="message">
-            <div class="sender-icon">🤖</div>
+        <div class="message assistant">
+            <div class="sender-icon">
+                <FluentPersona Image="@assistantImage" ImageSize="30px" C />
+            </div>
             <div class="sender-name">Assistant</div>
             <div class="message-text">I'm sorry, but as an AI assistant, I cannot condone anything.</div>
         </div>
@@ -26,4 +28,5 @@
 
 @code {
     string anonymousPersonImage = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjI1cHgiIGZpbGw9IndoaXRlIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbmV1dHJhbC1sYXllci0xKTsgd2lkdGg6IDI1cHg7IiBhcmlhLWhpZGRlbj0idHJ1ZSI+PHBhdGggZD0iTTI0IDRhMTAgMTAgMCAxIDAgMCAyMCAxMCAxMCAwIDAgMCAwLTIwWm0tNy41IDEwYTcuNSA3LjUgMCAxIDEgMTUgMCA3LjUgNy41IDAgMCAxLTE1IDBabS00LjI1IDE0QTQuMjUgNC4yNSAwIDAgMCA4IDMyLjI1VjMzYzAgMy43NiAxLjk0IDYuNTcgNC45MiA4LjM4QzE1Ljg1IDQzLjE2IDE5Ljc5IDQ0IDI0IDQ0czguMTUtLjg0IDExLjA4LTIuNjJDMzguMDYgMzkuNTcgNDAgMzYuNzYgNDAgMzN2LS43NUM0MCAyOS45IDM4LjEgMjggMzUuNzUgMjhoLTIzLjVabS0xLjc1IDQuMjVjMC0uOTcuNzgtMS43NSAxLjc1LTEuNzVoMjMuNWMuOTcgMCAxLjc1Ljc4IDEuNzUgMS43NVYzM2MwIDIuNzQtMS4zNiA0LjgtMy43MiA2LjI0LTIuNDEgMS40Ny01Ljg1IDIuMjYtOS43OCAyLjI2LTMuOTMgMC03LjM3LS43OS05Ljc4LTIuMjYtMi4zNi0xLjQzLTMuNzItMy41LTMuNzItNi4yNHYtLjc1WiIvPjwvc3ZnPg==";
+    string assistantImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='white' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18' /%3E%3C/svg%3E%0A";
 }
