@@ -7,7 +7,7 @@
         <FluentTextField Label="Customer" style="width: 100%;" Value="Name Goes Here" ReadOnly />
     </div>
     <div>
-        <FluentNumberField Label="Order #" @bind-Value="@orderNumber" style="width: 100%;" />
+        <FluentSelect TOption="string" Items="@TicketStatuses" Label="Status" style="width: 100%; min-width: 12rem;" />
     </div>
     <div>
         <FluentAutocomplete TOption="string" Label="Product" style="width: 100%;" />
@@ -15,6 +15,6 @@
 </div>
 
 @code {
-    int orderNumber = 123;
-    string[] TicketTypes = ["Question", "Complaint", "Returns"];
+    string[] TicketTypes = ["❔ Question", "🙁 Complaint", "📦 Returns"];
+    string[] TicketStatuses = ["⏳ Open", "✅ Closed"];
 }
