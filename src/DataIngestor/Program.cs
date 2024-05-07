@@ -21,9 +21,6 @@
 // production DBs.
 
 // TODO: Once the data generator is moved into this solution, we can use a relative path to its output
-using System.Text.Json;
-using eShopSupport.Backend.Data;
-
 var generatedDataPath = args.Length > 0 ? args[0] : null;
 if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPath))
 {
@@ -31,57 +28,5 @@ if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPa
     return;
 }
 
-await IngestGeneratedData(generatedDataPath);
-
-async Task IngestGeneratedData(string path)
-{
-    var tickets = new List<Ticket>();
-    var ticketsSourceDir = Path.Combine(path, "tickets", "threads");
-    var inputOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-    var messageId = 0;
-    foreach (var filename in Directory.GetFiles(ticketsSourceDir, "*.json"))
-    {
-        // TODO: Consider simplifying by ensuring the generated data is already in exactly the right form
-        var generated = (await JsonSerializer.DeserializeAsync<GeneratedTicket>(File.OpenRead(filename), inputOptions))!;
-        tickets.Add(new Ticket
-        {
-            TicketId = generated.TicketId,
-            ProductId = generated.ProductId,
-            CustomerFullName = generated.CustomerFullName,
-            ShortSummary = generated.ShortSummary,
-            LongSummary = generated.LongSummary,
-            CustomerSatisfaction = generated.CustomerSatisfaction,
-            Messages = generated.Messages.Select(generatedMessage => new Message
-            {
-                MessageId = ++messageId,
-                AuthorName = generatedMessage.AuthorRole == 0 ? generated.CustomerFullName : "Support",
-                Text = generatedMessage.Text
-            }).ToList()
-        });
-    }
-
-    var solutionDir = FindAncestorDirectoryContaining("*.sln");
-    var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
-
-    var outputOptions = new JsonSerializerOptions { WriteIndented = true };
-    await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets, outputOptions));
-    Console.WriteLine($"Wrote {tickets.Count} tickets");
-}
-
-static string FindAncestorDirectoryContaining(string pattern)
-{
-    var currentDir = Directory.GetCurrentDirectory();
-    while (currentDir != null)
-    {
-        if (Directory.GetFiles(currentDir, pattern).Any())
-        {
-            return currentDir!;
-        }
-        currentDir = Directory.GetParent(currentDir)?.FullName;
-    }
-
-    throw new FileNotFoundException($"Could not find a directory containing {pattern}");
-}
-
-internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
-internal record GeneratedMessage(int MessageId, int AuthorRole, string Text);
+await new TicketIngestor().RunAsync(generatedDataPath);
+await new ManualIngestor().RunAsync(generatedDataPath);

@@ -6,11 +6,19 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.DataIngestor</RootNamespace>
-    <StartArguments>..\..\..\..\..\..\..\SteveSandersonMS\AspirePython\data-generator\AspirePython.DataGenerator\output</StartArguments>
+    <StartArguments>..\..\..\..\SteveSandersonMS\AspirePython\data-generator\AspirePython.DataGenerator\output</StartArguments>
+    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0020;SKEXP0050</NoWarn>
+    <IsAspireHost>true</IsAspireHost>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Backend\Backend.csproj" />
+    <ProjectReference Include="..\Backend\Backend.csproj" IsAspireProjectResource="false" />
+
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+
+    <PackageReference Include="Microsoft.SemanticKernel.Core" />
+    <PackageReference Include="SmartComponents.LocalEmbeddings.SemanticKernel" />
   </ItemGroup>
 
 </Project>

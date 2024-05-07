@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "seeddata", "seeddata", "{2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{B3CDC49A-D71A-4C0D-945F-8DD69FC1B066}"
 	ProjectSection(SolutionItems) = preProject
+		seeddata\dev\manual-chunks.json = seeddata\dev\manual-chunks.json
 		seeddata\dev\tickets.json = seeddata\dev\tickets.json
 	EndProjectSection
 EndProject
