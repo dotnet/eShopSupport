@@ -1,0 +1,71 @@
+﻿.messages-scroller {
+    /* Make the scrollbar default to being at the end, instead of the start */
+    display: flex;
+    flex-direction: column-reverse;
+
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+    align-items: flex-start;
+    padding-bottom: 2rem;
+    margin-bottom: auto;
+}
+
+.message {
+    max-width: 90%;
+}
+
+.message-text {
+    background: var(--fill-color);
+    color: var(--neutral-foreground-rest);
+    border: calc(var(--stroke-width)* 1px) solid var(--neutral-stroke-layer-rest);
+    border-radius: calc(var(--layer-corner-radius)* 2.5px);
+    box-shadow: var(--elevation-shadow-card-rest);
+    padding: calc(var(--design-unit)* 5px);
+}
+
+.message.support {
+    align-self: flex-end;
+}
+
+    .message.support .message-text {
+        border-color: var(--accent-fill-rest);
+        background-color: var(--accent-fill-rest);
+        color: var(--foreground-on-accent-rest);
+    }
+
+.message-metadata {
+    margin: 0 0.5rem 0.15rem 0.5rem;
+    font-size: 90%;
+    opacity: 0.65;
+}
+
+.message.support .message-metadata {
+    text-align: right;
+}
+
+.message-metadata .timestamp, .message-metadata .sender {
+    font-weight: 500;
+}
+
+.message-metadata .filler {
+    opacity: 0.9;
+}
+
+.write-message {
+    height: 125px;
+    flex-shrink: 0;
+    padding: 1rem 1.5rem;
+    box-shadow: 0px -2px 5px #0000000d;
+    z-index: 1;
+}
+
+    .write-message ::deep fluent-text-area::part(control) {
+        flex-grow: 1;
+    }
