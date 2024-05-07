@@ -6,6 +6,9 @@
     gap: 0.8rem var(--details-grid-gap);
 }
 
-.details-grid > div {
-
+.actions {
+    /* TODO: Make this appear only when there are changes to save */
+    display: none;
+    grid-column: 1 / -1;
+    text-align: center;
 }
