@@ -17,14 +17,19 @@
 }
 
 .summary-text {
-    background-color: color-mix(in srgb, #393939 calc(100%* var(--base-layer-luminance)), #fcffd9);
-    color: color-mix(in srgb, white calc(100%* var(--base-layer-luminance)), black);
+    background-color: #393939;
+    color: white;
     padding: 1rem 1.5rem 1rem 1rem;
     box-shadow: var(--elevation-shadow-card-rest);
     border-bottom: calc(var(--stroke-width)* 2px) solid var(--accent-fill-rest);
     border-radius: calc(var(--layer-corner-radius) * 0.5px);
     display: flex;
     gap: 0.5rem;
+}
+
+html.dark-mode .summary-text {
+    background-color: #fcffd9;
+    color: black;
 }
 
     .summary-text div:first-child {

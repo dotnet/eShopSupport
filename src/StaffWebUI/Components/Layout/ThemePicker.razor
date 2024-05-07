@@ -1,53 +1,22 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @inject IJSRuntime JS
 
-<loading-theme storage="theme"></loading-theme>
-<FluentDesignTheme @bind-Mode="@Mode" StorageName="theme" @bind-Mode:after="@UpdateRootElementClassAsync" />
+<loading-theme storage-name="theme"></loading-theme>
+<loading-theme-info></loading-theme-info>
+<FluentDesignTheme @bind-Mode="@Mode" StorageName="theme" @bind-Mode:after="@UpdateThemeAsync" />
 
-<button @onclick="ChangeTheme" title="Change theme">
-    @if (EffectiveMode == DesignThemeModes.Light)
-    {
-        <span>🌞</span>
-    }
-    else if (EffectiveMode == DesignThemeModes.Dark)
-    {
-        <span>🌙</span>
-    }
-</button>
+<button @onclick="@ChangeThemeAsync" title="Change theme"></button>
 
 @code {
-    DesignThemeModes? SystemThemeResolved;
     DesignThemeModes Mode = DesignThemeModes.System;
 
-    DesignThemeModes? EffectiveMode => Mode switch
+    async Task ChangeThemeAsync()
     {
-        DesignThemeModes.System => SystemThemeResolved,
-        _ => Mode
-    };
-
-    void ChangeTheme()
-    {
-        Mode = EffectiveMode == DesignThemeModes.Dark ? DesignThemeModes.Light : DesignThemeModes.Dark;
+        Mode = await JS.InvokeAsync<string>("LoadingThemeInfo.getEffectiveTheme") == "dark"
+            ? DesignThemeModes.Light
+            : DesignThemeModes.Dark;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        // In case no theme is selected, figure out what is the system default so we can display that mode as current
-        if (firstRender)
-        {
-            await using var module  = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Layout/ThemePicker.razor.js");
-            var systemThemeIsDark = await module.InvokeAsync<bool>("systemThemeIsDark");
-            SystemThemeResolved = systemThemeIsDark ? DesignThemeModes.Dark : DesignThemeModes.Light;
-            if (Mode == DesignThemeModes.System)
-            {
-                await UpdateRootElementClassAsync();
-                StateHasChanged();
-            }
-        }
-    }
-
-    private async Task UpdateRootElementClassAsync()
-    {
-        await JS.InvokeVoidAsync("document.documentElement.classList.toggle", "dark-mode", EffectiveMode == DesignThemeModes.Dark);
-    }
+    async Task UpdateThemeAsync()
+        => await JS.InvokeVoidAsync("LoadingThemeInfo.updateEffectiveThemeClass");
 }
