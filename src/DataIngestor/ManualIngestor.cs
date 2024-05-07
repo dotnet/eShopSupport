@@ -16,6 +16,8 @@ public class ManualIngestor
 
         var manualsSourceDir = Path.Combine(generatedDataPath, "manuals", "pdf");
         var chunks = new List<ManualChunk>();
+        var paragraphIndex = 0;
+
         foreach (var file in Directory.GetFiles(manualsSourceDir, "*.pdf"))
         {
             Console.WriteLine($"Generating chunks for {file}...");
@@ -23,8 +25,6 @@ public class ManualIngestor
             var extractedText = await tika.ExtractTextAsync(file);
             var paragraphs = TextChunker.SplitPlainTextParagraphs([extractedText], 200);
             var paragraphsWithEmbeddings = paragraphs.Zip(await embeddingGenerator.GenerateEmbeddingsAsync(paragraphs));
-
-            var paragraphIndex = 0;
 
             foreach (var p in paragraphsWithEmbeddings)
             {

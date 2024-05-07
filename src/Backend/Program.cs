@@ -1,7 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using eShopSupport.Backend.Data;
+﻿using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel.Connectors.Qdrant;
+using Microsoft.SemanticKernel.Embeddings;
+using Microsoft.SemanticKernel.Memory;
+using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<AppDbContext>("backenddb");
+builder.Services.AddScoped<IMemoryStore>(s =>
+{
+    var httpClient = s.GetRequiredService<HttpClient>();
+    httpClient.BaseAddress = new Uri("http://vector-db");
+    return new QdrantMemoryStore(httpClient, 384);
+});
+builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
+builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
+await ProductManualSemanticSearch.EnsureSeedDataImportedAsync(app.Services);
 
 app.MapGet("/", () => "Hello World!");
 
