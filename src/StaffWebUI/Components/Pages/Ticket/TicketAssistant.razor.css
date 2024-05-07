@@ -10,7 +10,7 @@
 .messages {
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.5rem 1rem 1.25rem;
     gap: 1rem;
     align-items: flex-start;
     padding-bottom: 2rem;
@@ -18,44 +18,34 @@
 }
 
 .message {
-    max-width: 90%;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas:
+        "sender-icon sender-name"
+        ". message";
+    gap: 0.25rem 1rem;
+}
+
+.sender-icon {
+    grid-area: sender-icon;
+    align-self: center;
+    justify-self: center;
+}
+
+.sender-icon ::deep img {
+    width: 21px !important;
+}
+
+.sender-name {
+    grid-area: sender-name;
+    font-size: 1rem;
+    font-weight: 600;
+    align-self: center;
 }
 
 .message-text {
-    background: var(--fill-color);
-    color: var(--neutral-foreground-rest);
-    border: calc(var(--stroke-width)* 1px) solid var(--neutral-stroke-layer-rest);
-    border-radius: calc(var(--layer-corner-radius)* 2.5px);
-    box-shadow: var(--elevation-shadow-card-rest);
-    padding: calc(var(--design-unit)* 5px);
-}
-
-.message.support {
-    align-self: flex-end;
-}
-
-    .message.support .message-text {
-        border-color: var(--accent-fill-rest);
-        background-color: var(--accent-fill-rest);
-        color: var(--foreground-on-accent-rest);
-    }
-
-.message-metadata {
-    margin: 0 0.5rem 0.15rem 0.5rem;
-    font-size: 90%;
-    opacity: 0.65;
-}
-
-.message.support .message-metadata {
-    text-align: right;
-}
-
-.message-metadata .timestamp, .message-metadata .sender {
-    font-weight: 500;
-}
-
-.message-metadata .filler {
-    opacity: 0.9;
+    grid-area: message;
 }
 
 .write-message {

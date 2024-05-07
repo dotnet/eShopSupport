@@ -8,8 +8,8 @@
     }
 
     ::deep .splitter [slot='2'] {
-        background: #3a3a3a;
-        color: #cccccc;
+        background: #2b2b2b;
+        color: #e0e0e0;
     }
 
 .details {
@@ -49,6 +49,7 @@
     }
 
 .assistant {
+    color-scheme: dark;
     display: flex;
     flex-direction: column;
     height: 100%;

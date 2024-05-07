@@ -1,72 +1,29 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 <div class="messages-scroller">
+
     <div class="messages">
-        <div class="message customer">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">D. Pilkins</span>
+
+        <div class="message">
+            <div class="sender-icon">
+                <FluentPersona Image="@anonymousPersonImage" ImageSize="30px" />
             </div>
-            <div class="message-text">Hello</div>
+            <div class="sender-name">You</div>
+            <div class="message-text">Can this product be used outdoors?</div>
         </div>
-        <div class="message support">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">Northern Mountains support</span>
-            </div>
-            <div class="message-text">Hello Hello</div>
+
+        <div class="message">
+            <div class="sender-icon">🤖</div>
+            <div class="sender-name">Assistant</div>
+            <div class="message-text">I'm sorry, but as an AI assistant, I cannot condone anything.</div>
         </div>
-        <div class="message customer">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">D. Pilkins</span>
-            </div>
-            <div class="message-text">Hello Hello Hello Hello Hello</div>
-        </div>
-        <div class="message support">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">Northern Mountains support</span>
-            </div>
-            <div class="message-text">Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello</div>
-        </div>
-        <div class="message customer">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">D. Pilkins</span>
-            </div>
-            <div class="message-text">Hello</div>
-        </div>
-        <div class="message support">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">Northern Mountains support</span>
-            </div>
-            <div class="message-text">Hello Hello</div>
-        </div>
-        <div class="message customer">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">D. Pilkins</span>
-            </div>
-            <div class="message-text">Hello Hello Hello Hello Hello</div>
-        </div>
-        <div class="message support">
-            <div class="message-metadata">
-                <span class="timestamp">2 days ago</span>
-                <span class="filler">by</span>
-                <span class="sender">Northern Mountains support</span>
-            </div>
-            <div class="message-text">Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello</div>
-        </div>
+
     </div>
+
 </div>
 <div class="write-message">
     <FluentTextArea Placeholder="Ask the AI assistant&hellip;" style="width: 100%; height: 100%;" />
 </div>
+
+@code {
+    string anonymousPersonImage = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjI1cHgiIGZpbGw9IndoaXRlIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbmV1dHJhbC1sYXllci0xKTsgd2lkdGg6IDI1cHg7IiBhcmlhLWhpZGRlbj0idHJ1ZSI+PHBhdGggZD0iTTI0IDRhMTAgMTAgMCAxIDAgMCAyMCAxMCAxMCAwIDAgMCAwLTIwWm0tNy41IDEwYTcuNSA3LjUgMCAxIDEgMTUgMCA3LjUgNy41IDAgMCAxLTE1IDBabS00LjI1IDE0QTQuMjUgNC4yNSAwIDAgMCA4IDMyLjI1VjMzYzAgMy43NiAxLjk0IDYuNTcgNC45MiA4LjM4QzE1Ljg1IDQzLjE2IDE5Ljc5IDQ0IDI0IDQ0czguMTUtLjg0IDExLjA4LTIuNjJDMzguMDYgMzkuNTcgNDAgMzYuNzYgNDAgMzN2LS43NUM0MCAyOS45IDM4LjEgMjggMzUuNzUgMjhoLTIzLjVabS0xLjc1IDQuMjVjMC0uOTcuNzgtMS43NSAxLjc1LTEuNzVoMjMuNWMuOTcgMCAxLjc1Ljc4IDEuNzUgMS43NVYzM2MwIDIuNzQtMS4zNiA0LjgtMy43MiA2LjI0LTIuNDEgMS40Ny01Ljg1IDIuMjYtOS43OCAyLjI2LTMuOTMgMC03LjM3LS43OS05Ljc4LTIuMjYtMi4zNi0xLjQzLTMuNzItMy41LTMuNzItNi4yNHYtLjc1WiIvPjwvc3ZnPg==";
+}
