@@ -34,9 +34,9 @@
     visibility: hidden;
     transition: opacity, transform;
     transition-duration: 0.3s;
-    transition-timing-function: ease-in-out;
+    transition-timing-function: ease-out;
     transition-delay: 0.5s;
-    transform: translateY(0.5rem);
+    transform: translateY(0.25rem);
 }
 
 .write-message.in-progress ::deep .stop-responding {
