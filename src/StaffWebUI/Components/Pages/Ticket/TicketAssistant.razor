@@ -59,31 +59,30 @@
 
             currentReplyCancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = currentReplyCancellationTokenSource.Token;
+            var placeholderText = "...";
+            var responseMessage = new AssistantChatRequestMessage { IsAssistant = true, Text = placeholderText };
 
             try
             {
                 // Submit the message to the backend, and wait for the response to begin
                 var request = new AssistantChatRequest(messages);
                 var responseTask = Backend.AssistantChatAsync(request, cancellationToken);
-                await Task.WhenAll(responseTask, Task.Delay(250));
-                var responseStream = await responseTask;
+                await Task.WhenAny(responseTask, Task.Delay(500));
 
-                // Now the response has begun, add a response message to the UI
-                var responseMessage = new AssistantChatRequestMessage { IsAssistant = true, Text = "..." };
+                // Even if the response hasn't started yet, add a placeholder into the UI
                 messages.Add(responseMessage);
                 StateHasChanged();
 
                 // As the response streams in, update the UI
+                var responseStream = await responseTask;
                 using var responseStreamReader = new StreamReader(responseStream);
                 var buffer = new char[64];
                 var numCharsRead = 0;
-                var first = true;
                 while ((numCharsRead = await responseStreamReader.ReadAsync(buffer, cancellationToken)) > 0)
                 {
-                    if (first)
+                    if (responseMessage.Text == placeholderText)
                     {
                         responseMessage.Text = string.Empty;
-                        first = false;
                     }
 
                     responseMessage.Text += new string(buffer, 0, numCharsRead);
@@ -94,7 +93,11 @@
             }
             catch (TaskCanceledException)
             {
-                // Not an error
+                // Not an error. We'll keep the partial text if there is any, but don't keep the placeholder alone.
+                if (responseMessage.Text == placeholderText)
+                {
+                    messages.Remove(responseMessage);
+                }
             }
         }
     }
