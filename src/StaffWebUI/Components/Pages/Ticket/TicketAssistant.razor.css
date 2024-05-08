@@ -83,6 +83,7 @@
 
 .message-text {
     grid-area: message;
+    white-space: pre-line;
 }
 
 .write-message {
