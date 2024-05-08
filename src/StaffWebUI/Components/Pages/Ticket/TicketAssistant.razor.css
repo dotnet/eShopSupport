@@ -10,7 +10,7 @@
 .messages {
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem 0 1.25rem;
+    padding: 1rem 1.5rem 0 0.75rem;
     gap: 1rem;
     align-items: flex-start;
     margin-bottom: auto;
@@ -23,7 +23,7 @@
     grid-template-areas:
         "sender-icon sender-name"
         ". message";
-    gap: 0.25rem 1rem;
+    gap: 0.25rem .75rem;
     animation: message-appear 0.25s ease-out;
     overflow-y: hidden;
 }
