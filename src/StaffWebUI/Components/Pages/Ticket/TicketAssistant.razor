@@ -26,6 +26,7 @@
 </form>
 
 @code {
+    CancellationTokenSource? currentReplyCancellationTokenSource;
     List<ChatMessage> messages = new();
     ElementReference writeMessageElement;
     string? message;
@@ -45,38 +46,56 @@
     {
         if (!string.IsNullOrWhiteSpace(message))
         {
+            StopResponding();
+
             // Add the user's message immediately
             var request = new AssistantChatRequest(message);
             messages.Add(new ChatMessage(messages.Count, false, message));
             message = null;
 
-            // Submit the message to the backend, and wait for the response to begin
-            var responseTask = Backend.AssistantChatAsync(request);
-            await Task.WhenAll(responseTask, Task.Delay(250));
-            var responseStream = await responseTask;
+            currentReplyCancellationTokenSource = new CancellationTokenSource();
+            var cancellationToken = currentReplyCancellationTokenSource.Token;
 
-            // Now the response has begun, add a response message to the UI
-            var responseMessage = new ChatMessage(messages.Count, true, "...");
-            messages.Add(responseMessage);
-            StateHasChanged();
-
-            // As the response streams in, update the UI
-            using var responseStreamReader = new StreamReader(responseStream);
-            var buffer = new char[64];
-            var numCharsRead = 0;
-            var first = true;
-            while ((numCharsRead = await responseStreamReader.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            try
             {
-                if (first)
-                {
-                    responseMessage.ClearText();
-                    first = false;
-                }
+                // Submit the message to the backend, and wait for the response to begin
+                var responseTask = Backend.AssistantChatAsync(request, cancellationToken);
+                await Task.WhenAll(responseTask, Task.Delay(250));
+                var responseStream = await responseTask;
 
-                responseMessage.AppendText(new string(buffer, 0, numCharsRead));
+                // Now the response has begun, add a response message to the UI
+                var responseMessage = new ChatMessage(messages.Count, true, "...");
+                messages.Add(responseMessage);
                 StateHasChanged();
+
+                // As the response streams in, update the UI
+                using var responseStreamReader = new StreamReader(responseStream);
+                var buffer = new char[64];
+                var numCharsRead = 0;
+                var first = true;
+                while ((numCharsRead = await responseStreamReader.ReadAsync(buffer, cancellationToken)) > 0)
+                {
+                    if (first)
+                    {
+                        responseMessage.ClearText();
+                        first = false;
+                    }
+
+                    responseMessage.AppendText(new string(buffer, 0, numCharsRead));
+                    StateHasChanged();
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Not an error
             }
         }
+    }
+
+    private void StopResponding()
+    {
+        currentReplyCancellationTokenSource?.Cancel();
+        currentReplyCancellationTokenSource = null;
     }
 
     private class ChatMessage(int messageId, bool isAssistant, string initialText)
