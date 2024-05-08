@@ -20,11 +20,24 @@
 .message {
     display: grid;
     grid-template-columns: 2rem 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: min-content min-content;
     grid-template-areas:
         "sender-icon sender-name"
         ". message";
     gap: 0.25rem 1rem;
+    animation: message-appear 0.25s ease-out;
+    overflow-y: hidden;
+}
+
+@keyframes message-appear {
+    0% {
+        max-height: 0;
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+        max-height: 100px;
+    }
 }
 
     .message ::deep .initials {

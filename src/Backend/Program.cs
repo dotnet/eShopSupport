@@ -1,4 +1,5 @@
-﻿using eShopSupport.Backend.Data;
+﻿using eShopSupport.Backend.Api;
+using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
@@ -81,5 +82,7 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
         .Select(t => new ListTicketsResultItem(t.TicketId, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync()));
 });
+
+app.MapAssistantEndpoints();
 
 app.Run();

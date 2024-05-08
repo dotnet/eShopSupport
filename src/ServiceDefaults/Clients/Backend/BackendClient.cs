@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
@@ -10,6 +9,13 @@ public class BackendClient(HttpClient http)
 
     public Task<TicketDetailsResult> GetTicketDetailsAsync(int ticketId)
         => http.GetFromJsonAsync<TicketDetailsResult>($"/tickets/{ticketId}")!;
+
+    public async Task<AssistantChatResponse> AssistantChatAsync(AssistantChatRequest request)
+    {
+        var response = await http.PostAsJsonAsync("/api/assistant/chat", request);
+        return (await response.Content.ReadFromJsonAsync<AssistantChatResponse>())!;
+    }
+
 }
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
@@ -22,3 +28,7 @@ public record TicketDetailsResult(
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
+
+public record AssistantChatRequest(string Message);
+
+public record AssistantChatResponse(string Reply);
