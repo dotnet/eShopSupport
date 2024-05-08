@@ -33,4 +33,10 @@ public record TicketDetailsResult(
 
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
 
-public record AssistantChatRequest(string Message);
+public record AssistantChatRequest(IReadOnlyList<AssistantChatRequestMessage> Messages);
+
+public class AssistantChatRequestMessage
+{
+    public bool IsAssistant { get; set; }
+    public required string Text { get; set; }
+}

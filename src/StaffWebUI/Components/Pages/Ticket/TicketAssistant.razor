@@ -6,9 +6,11 @@
 <div class="messages-scroller">
 
     <div class="messages">
-        @foreach (var message in messages)
+        @for (var i = 0; i < messages.Count; i++)
         {
-            <div class="message @(message.IsAssistant ? "assistant" : "")" @key="@message.MessageId">
+            var messageId = @$"message{i}";
+            var message = messages[i];
+            <div class="message @(message.IsAssistant ? "assistant" : "")" @key="@messageId">
                 <div class="sender-icon">
                     <FluentPersona Image="@(message.IsAssistant ? assistantImage : anonymousPersonImage)" ImageSize="30px" />
                 </div>
@@ -28,7 +30,7 @@
 
 @code {
     CancellationTokenSource? currentReplyCancellationTokenSource;
-    List<ChatMessage> messages = new();
+    List<AssistantChatRequestMessage> messages = new();
     ElementReference writeMessageElement;
     string? message;
     string anonymousPersonImage = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjI1cHgiIGZpbGw9IndoaXRlIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbmV1dHJhbC1sYXllci0xKTsgd2lkdGg6IDI1cHg7IiBhcmlhLWhpZGRlbj0idHJ1ZSI+PHBhdGggZD0iTTI0IDRhMTAgMTAgMCAxIDAgMCAyMCAxMCAxMCAwIDAgMCAwLTIwWm0tNy41IDEwYTcuNSA3LjUgMCAxIDEgMTUgMCA3LjUgNy41IDAgMCAxLTE1IDBabS00LjI1IDE0QTQuMjUgNC4yNSAwIDAgMCA4IDMyLjI1VjMzYzAgMy43NiAxLjk0IDYuNTcgNC45MiA4LjM4QzE1Ljg1IDQzLjE2IDE5Ljc5IDQ0IDI0IDQ0czguMTUtLjg0IDExLjA4LTIuNjJDMzguMDYgMzkuNTcgNDAgMzYuNzYgNDAgMzN2LS43NUM0MCAyOS45IDM4LjEgMjggMzUuNzUgMjhoLTIzLjVabS0xLjc1IDQuMjVjMC0uOTcuNzgtMS43NSAxLjc1LTEuNzVoMjMuNWMuOTcgMCAxLjc1Ljc4IDEuNzUgMS43NVYzM2MwIDIuNzQtMS4zNiA0LjgtMy43MiA2LjI0LTIuNDEgMS40Ny01Ljg1IDIuMjYtOS43OCAyLjI2LTMuOTMgMC03LjM3LS43OS05Ljc4LTIuMjYtMi4zNi0xLjQzLTMuNzItMy41LTMuNzItNi4yNHYtLjc1WiIvPjwvc3ZnPg==";
@@ -52,8 +54,7 @@
             StopResponding();
 
             // Add the user's message immediately
-            var request = new AssistantChatRequest(message);
-            messages.Add(new ChatMessage(messages.Count, false, message));
+            messages.Add(new AssistantChatRequestMessage { Text = message });
             message = null;
 
             currentReplyCancellationTokenSource = new CancellationTokenSource();
@@ -62,12 +63,13 @@
             try
             {
                 // Submit the message to the backend, and wait for the response to begin
+                var request = new AssistantChatRequest(messages);
                 var responseTask = Backend.AssistantChatAsync(request, cancellationToken);
                 await Task.WhenAll(responseTask, Task.Delay(250));
                 var responseStream = await responseTask;
 
                 // Now the response has begun, add a response message to the UI
-                var responseMessage = new ChatMessage(messages.Count, true, "...");
+                var responseMessage = new AssistantChatRequestMessage { IsAssistant = true, Text = "..." };
                 messages.Add(responseMessage);
                 StateHasChanged();
 
@@ -80,11 +82,11 @@
                 {
                     if (first)
                     {
-                        responseMessage.ClearText();
+                        responseMessage.Text = string.Empty;
                         first = false;
                     }
 
-                    responseMessage.AppendText(new string(buffer, 0, numCharsRead));
+                    responseMessage.Text += new string(buffer, 0, numCharsRead);
                     StateHasChanged();
                 }
 
@@ -101,15 +103,5 @@
     {
         currentReplyCancellationTokenSource?.Cancel();
         currentReplyCancellationTokenSource = null;
-    }
-
-    private class ChatMessage(int messageId, bool isAssistant, string initialText)
-    {
-        public int MessageId => messageId;
-        public bool IsAssistant => isAssistant;
-        public string Text { get; private set; } = initialText;
-
-        public void AppendText(string text) => Text += text;
-        public void ClearText() => Text = "";
     }
 }

@@ -10,7 +10,11 @@ public static class Assistant
     {
         app.MapPost("/api/assistant/chat", async (HttpContext httpContext, IChatCompletionService chatService, AssistantChatRequest chatRequest) =>
         {
-            var streamingResponse = chatService.GetStreamingChatMessageContentsAsync(new ChatHistory([new ChatMessageContent(AuthorRole.User, chatRequest.Message)]));
+            var chatHistory = new ChatHistory(chatRequest.Messages.Select(m => new ChatMessageContent(
+                m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User,
+                m.Text)));
+
+            var streamingResponse = chatService.GetStreamingChatMessageContentsAsync(chatHistory);
             await foreach (var chunk in streamingResponse)
             {
                 await httpContext.Response.WriteAsync(chunk.ToString());
