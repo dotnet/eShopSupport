@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
+    <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="8.0.0-preview.7.24251.11" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
@@ -16,6 +17,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.7.1" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.10.0" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.10.0-alpha" />
     <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.10.0" />
     <!-- Open Telemetry -->

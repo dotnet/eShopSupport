@@ -14,9 +14,13 @@ var vectorDb = builder
     .WithVolume("eshopsupport-vector-db-storage", "/qdrant/storage")
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
+var openAi = builder.AddConnectionString("openAiConnection");
+
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(vectorDb.GetEndpoint("http"))
+    .WithReference(openAi)
+    .WithEnvironment("OpenAiModel", builder.Configuration["OpenAiModel"])
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 
 builder.AddProject<StaffWebUI>("staffwebui")

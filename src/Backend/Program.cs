@@ -1,7 +1,10 @@
-﻿using eShopSupport.Backend.Api;
+﻿using Azure.AI.OpenAI;
+using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -21,6 +24,14 @@ builder.Services.AddScoped<IMemoryStore>(s =>
 });
 builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
+
+builder.AddAzureOpenAIClientWithSelfHosting("openAiConnection");
+
+builder.Services.AddScoped<IChatCompletionService>(services =>
+{
+    var openAiClient = services.GetRequiredService<OpenAIClient>();
+    return new OpenAIChatCompletionService(Environment.GetEnvironmentVariable("OpenAiModel")!, openAiClient);
+});
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
