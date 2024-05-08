@@ -63,6 +63,7 @@ html.dark-mode .summary-text {
     box-shadow: var(--elevation-shadow-card-rest);
     padding: calc(var(--design-unit)* 5px);
     white-space: pre-line;
+    word-break: break-word;
 }
 
 .message.support {
