@@ -8,7 +8,7 @@
     <div class="messages">
         @foreach (var message in messages)
         {
-            <div class="message @(message.IsAssistant ? "assistant" : "")">
+            <div class="message @(message.IsAssistant ? "assistant" : "")" @key="@message.MessageId">
                 <div class="sender-icon">
                     <FluentPersona Image="@(message.IsAssistant ? assistantImage : anonymousPersonImage)" ImageSize="30px" />
                 </div>
@@ -45,16 +45,47 @@
     {
         if (!string.IsNullOrWhiteSpace(message))
         {
+            // Add the user's message immediately
             var request = new AssistantChatRequest(message);
-            messages.Add(new ChatMessage(false, message));
+            messages.Add(new ChatMessage(messages.Count, false, message));
             message = null;
 
+            // Submit the message to the backend, and wait for the response to begin
             var responseTask = Backend.AssistantChatAsync(request);
             await Task.WhenAll(responseTask, Task.Delay(250));
-            var response = await responseTask;
-            messages.Add(new ChatMessage(true, response.Reply));
+            var responseStream = await responseTask;
+
+            // Now the response has begun, add a response message to the UI
+            var responseMessage = new ChatMessage(messages.Count, true, "...");
+            messages.Add(responseMessage);
+            StateHasChanged();
+
+            // As the response streams in, update the UI
+            using var responseStreamReader = new StreamReader(responseStream);
+            var buffer = new char[64];
+            var numCharsRead = 0;
+            var first = true;
+            while ((numCharsRead = await responseStreamReader.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            {
+                if (first)
+                {
+                    responseMessage.ClearText();
+                    first = false;
+                }
+
+                responseMessage.AppendText(new string(buffer, 0, numCharsRead));
+                StateHasChanged();
+            }
         }
     }
 
-    private record ChatMessage(bool IsAssistant, string Text);
+    private class ChatMessage(int messageId, bool isAssistant, string initialText)
+    {
+        public int MessageId => messageId;
+        public bool IsAssistant => isAssistant;
+        public string Text { get; private set; } = initialText;
+
+        public void AppendText(string text) => Text += text;
+        public void ClearText() => Text = "";
+    }
 }

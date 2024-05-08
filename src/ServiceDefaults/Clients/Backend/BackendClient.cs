@@ -10,10 +10,14 @@ public class BackendClient(HttpClient http)
     public Task<TicketDetailsResult> GetTicketDetailsAsync(int ticketId)
         => http.GetFromJsonAsync<TicketDetailsResult>($"/tickets/{ticketId}")!;
 
-    public async Task<AssistantChatResponse> AssistantChatAsync(AssistantChatRequest request)
+    public async Task<Stream> AssistantChatAsync(AssistantChatRequest request)
     {
-        var response = await http.PostAsJsonAsync("/api/assistant/chat", request);
-        return (await response.Content.ReadFromJsonAsync<AssistantChatResponse>())!;
+        var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/assistant/chat")
+        {
+            Content = JsonContent.Create(request)
+        };
+        var response = await http.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead);
+        return await response.Content.ReadAsStreamAsync();
     }
 
 }
@@ -30,5 +34,3 @@ public record TicketDetailsResult(
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
 
 public record AssistantChatRequest(string Message);
-
-public record AssistantChatResponse(string Reply);
