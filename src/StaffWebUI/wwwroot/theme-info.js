@@ -27,3 +27,38 @@ class LoadingThemeInfo extends HTMLElement {
 
 window.customElements.define('loading-theme-info', LoadingThemeInfo);
 window.LoadingThemeInfo = LoadingThemeInfo;
+
+
+window.customElements.define('preserve-scroll-pos', class extends HTMLElement {
+    connectedCallback() {
+        const previousInfo = sessionStorage.getItem('scroll-pos');
+        if (previousInfo) {
+            const { pos, height } = JSON.parse(previousInfo);
+            const child = document.createElement('div');
+            child.style.height = `${height}px`;
+            child.style.width = '10px';
+            child.style.position = 'absolute';
+            child.style.top = '0px';
+            this.appendChild(child);
+            
+            setTimeout(function () {
+                const scrollDetector = document.querySelector('.tickets-grid tbody div:last-child');
+                scrollDetector.style.height = `${height}px`;
+            }, 0);
+            
+
+            document.querySelector('html').style.scrollBehavior = 'auto';
+            window.scrollTo(0, pos);
+        }
+
+        this.listener = () => {
+            const info = { pos: window.scrollY, height: document.body.offsetHeight };
+            sessionStorage.setItem('scroll-pos', JSON.stringify(info));
+        };
+        window.addEventListener('scroll', this.listener);
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('scroll', this.listener);
+    }
+});
