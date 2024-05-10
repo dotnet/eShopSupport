@@ -30,7 +30,7 @@ builder.AddAzureOpenAIClientWithSelfHosting("openAiConnection");
 builder.Services.AddScoped<IChatCompletionService>(services =>
 {
     var openAiClient = services.GetRequiredService<OpenAIClient>();
-    return new OpenAIChatCompletionService(Environment.GetEnvironmentVariable("OpenAiModel")!, openAiClient);
+    return new OpenAIChatCompletionService(Environment.GetEnvironmentVariable("LlmModelName")!, openAiClient);
 });
 
 var app = builder.Build();
