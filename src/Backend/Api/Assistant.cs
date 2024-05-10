@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
@@ -27,51 +28,61 @@ public static class Assistant
                 <customer_name>{{ticket.CustomerFullName}}</customer_name>
                 <summary>{{ticket.LongSummary}}</summary>
 
-                The customer's most recent message is as follows:
-                <latest_customer_message>{{ticket.Messages.Where(m => m.AuthorName != "Support").LastOrDefault()?.Text}}</latest_customer_message>
+                The most recent message from the customer is this:
+                <customer_message>{{ticket.Messages.LastOrDefault(m => m.AuthorName != "Support")?.Text}}</customer_message>
+                However, that is only provided for context. You are not answering that question directly. The real question is provided below.
 
-                The customer service agent may ask you to suggest a response or other action. Note the following policies:
+                For additional context, here is information from the product manual:
 
-                - Returns are allowed within 30 days of purchase if the item is unused, or within 1 year if the item is defective.
-                  The customer can initiate a return by visiting https://northernmountains.example.com/returns
-                - Further manufacturer-provided warranty and support information may be found in the product manual
+                <manual_extract ref="1">The handle is pink and made of plastic.</manual_extract>
+                <manual_extract ref="2">Using this item outdoors is not recommended, but feel free to use it in a bathroom.</manual_extract>
+                <manual_extract ref="3">For support, contact support@grillzone.com</manual_extract>
 
-                When formulating your response, follow these important guidelines:
-                - Keep your replies concise and brief, ideally just a single short sentence. If you can reply in under 5 words, do so.
-                - Always aim for brevity. A good reply is something like "Customer requests a refund" or "This product does not support USB chargers".
-                - Refer to the customer as "the customer" and use the pronoun "them/they", and do NOT restate the customer's real name, except if you are addressing the customer themselves.
-                - Rely on context, like verbal speech. For example if asked "What's this about?", you can reply "The return policy" and don't prefix it with "This is about...".
-                - Any references to "Assistant" in context do NOT refer to you - they refer to the customer support team in general.
-                - Never discuss any topic other than customer service for this company. You can answer any question related to our products and policies, whether or not it relates to the current support ticket.
+                The customer service agent may ask you for help either directly with the customer request, or other general information about this product or our other products. Respond to the AGENT'S question, not specifically to the customer ticket.
+                If you need more information, you can search the product manual using "searchParams" as described below.
 
-                When asked for information, ALWAYS use the "searchProductManual" action (see below) to find the information in the manual. Never provide information
-                without checking the manual first.
+                Use the context to reply in the following JSON format:
 
-                Always respond in ONE of the following JSON formats:
-                { "searchProductManual": "A search term", "productId": number }
-                { "reply": "Your reply here", "reference": "identifier of relevant location from searchSingleManual output" }
+                { "gotEnoughInfoAleady": trueOrFalse, ... }
 
-                Your answers must ONLY use information from the provided context. Do NOT use any external information or knowledge.
-                Always find product information in the product manual.
+                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string }
+                Always try to use information from context instead of searching the manual.
+
+                If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchPhrase": "a phrase to look for in the manual" }.
+                That will search the product manual for this specific product, so you don't have to restate the product ID or name.
+                
+                Remember that you are only answering the support agent's question to you. You are not answering the customer's question directly.
+                Here is the real support agent's question for you to answer:
                 """);
 
             chatHistory.AddRange(chatRequest.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
 
             try
             {
-                var kernel = new Kernel();
-                kernel.Plugins.AddFromObject(new SemanticSearchPlugin());
                 var executionSettings = new OpenAIPromptExecutionSettings
                 {
                     ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
-                    //ResponseFormat = "json",
+                    ResponseFormat = "json_object",
+                    Temperature = 0,
                 };
-                var streamingResponse = chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, kernel, cancellationToken);
 
-                await foreach (var chunk in streamingResponse)
+                var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+                var reply = JsonSerializer.Deserialize<AssistantReply>(response.ToString(), new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+                await httpContext.Response.WriteAsync(response.ToString());
+                /*
+                if (!string.IsNullOrEmpty(reply.Reply))
                 {
-                    await httpContext.Response.WriteAsync(chunk.ToString());
+                    await httpContext.Response.WriteAsync(reply.Reply);
                 }
+                else if (reply.SearchParams is { SearchTerm: string })
+                {
+                    await httpContext.Response.WriteAsync("Would search for " + reply.SearchParams.SearchTerm);
+                }
+                else
+                {
+                    await httpContext.Response.WriteAsync("Unexpected response format: " + response.ToString());
+                }
+                */
             }
             catch (Exception ex)
             {
@@ -83,18 +94,9 @@ public static class Assistant
         });
     }
 
-    class SemanticSearchPlugin
+    class AssistantReply
     {
-        [KernelFunction, Description("Searches for information in the user manual for a specified product. ONLY use this if you know the product EXACT ID, otherwise search all manuals instead.")]
-        public async Task<string> SearchSingleUserManualAsync([Description("The exact product ID")] int productId, [Description("The product name")] string productName, [Description("text to look for in user manual")] string query)
-        {
-            return "The product is red";
-        }
-
-        [KernelFunction, Description("Searches for information across all user manuals. If this if you aren't sure of the product ID.")]
-        public async Task<string> SearchAllUserManualsAsync([Description("The product name, if any")] string productName, [Description("text to look for in user manual")] string query)
-        {
-            return "We only sell cheese";
-        }
+        public string? Answer { get; set; }
+        public string? SearchTerm { get; set; }
     }
 }
