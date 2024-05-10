@@ -33,7 +33,7 @@ public record TicketDetailsResult(
 
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
 
-public record AssistantChatRequest(IReadOnlyList<AssistantChatRequestMessage> Messages);
+public record AssistantChatRequest(int TicketId, IReadOnlyList<AssistantChatRequestMessage> Messages);
 
 public class AssistantChatRequestMessage
 {
