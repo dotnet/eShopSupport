@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>eShopSupport.Backend</RootNamespace>
-    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0020</NoWarn>
+    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0010;SKEXP0020</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
