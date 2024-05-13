@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Text.Json;
+﻿using System.Text.Json;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
@@ -32,12 +31,6 @@ public static class Assistant
                 <customer_message>{{ticket.Messages.LastOrDefault(m => m.AuthorName != "Support")?.Text}}</customer_message>
                 However, that is only provided for context. You are not answering that question directly. The real question is provided below.
 
-                For additional context, here is information from the product manual:
-
-                <manual_extract ref="1">The handle is pink and made of plastic.</manual_extract>
-                <manual_extract ref="2">Using this item outdoors is not recommended, but feel free to use it in a bathroom.</manual_extract>
-                <manual_extract ref="3">For support, contact support@grillzone.com</manual_extract>
-
                 The customer service agent may ask you for help either directly with the customer request, or other general information about this product or our other products. Respond to the AGENT'S question, not specifically to the customer ticket.
                 If you need more information, you can search the product manual using "searchParams" as described below.
 
@@ -57,32 +50,46 @@ public static class Assistant
 
             chatHistory.AddRange(chatRequest.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
 
+
+            var executionSettings = new OpenAIPromptExecutionSettings
+            {
+                ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
+                ResponseFormat = "json_object",
+                Temperature = 0,
+            };
+
             try
             {
-                var executionSettings = new OpenAIPromptExecutionSettings
+                while (true)
                 {
-                    ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
-                    ResponseFormat = "json_object",
-                    Temperature = 0,
-                };
+                    var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+                    var responseString = response.ToString();
+                    var reply = JsonSerializer.Deserialize<AssistantReply>(response.ToString(), new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
 
-                var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
-                var reply = JsonSerializer.Deserialize<AssistantReply>(response.ToString(), new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
-                await httpContext.Response.WriteAsync(response.ToString());
-                /*
-                if (!string.IsNullOrEmpty(reply.Reply))
-                {
-                    await httpContext.Response.WriteAsync(reply.Reply);
+                    if (string.IsNullOrWhiteSpace(reply.Answer) && !string.IsNullOrWhiteSpace(reply.SearchPhrase))
+                    {
+                        // Function call to search the manual
+                        await httpContext.Response.WriteAsync($"[Searching: {reply.SearchPhrase}] ");
+
+                        var searchResult = """
+                    For additional context, here is information from the product manual:
+                    
+                    <manual_extract ref="1">The handle is pink and made of plastic.</manual_extract>
+                    <manual_extract ref="2">Using this item outdoors is not recommended, but feel free to use it in a bathroom.</manual_extract>
+                    <manual_extract ref="3">For support, contact support@grillzone.com</manual_extract>
+                    """;
+
+                        await httpContext.Response.WriteAsync($"[Search result: {searchResult}] ");
+
+                        chatHistory.Add(new ChatMessageContent(AuthorRole.System, searchResult));
+                    }
+                    else
+                    {
+                        // Final reply
+                        await httpContext.Response.WriteAsync(reply.Answer ?? "Sorry, I don't have an answer.");
+                        break;
+                    }
                 }
-                else if (reply.SearchParams is { SearchTerm: string })
-                {
-                    await httpContext.Response.WriteAsync("Would search for " + reply.SearchParams.SearchTerm);
-                }
-                else
-                {
-                    await httpContext.Response.WriteAsync("Unexpected response format: " + response.ToString());
-                }
-                */
             }
             catch (Exception ex)
             {
@@ -97,6 +104,6 @@ public static class Assistant
     class AssistantReply
     {
         public string? Answer { get; set; }
-        public string? SearchTerm { get; set; }
+        public string? SearchPhrase { get; set; }
     }
 }

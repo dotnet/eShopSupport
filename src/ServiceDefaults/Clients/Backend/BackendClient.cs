@@ -14,12 +14,11 @@ public class BackendClient(HttpClient http)
     {
         var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/assistant/chat")
         {
-            Content = JsonContent.Create(request)
+            Content = JsonContent.Create(request),
         };
         var response = await http.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         return await response.Content.ReadAsStreamAsync(cancellationToken);
     }
-
 }
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
