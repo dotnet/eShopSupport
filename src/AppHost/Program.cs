@@ -15,13 +15,13 @@ var vectorDb = builder
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
 var llmModelName = builder.Configuration["LlmModelName"]!;
-builder.AddOllama("eshopsupport-ollama", port: 62393, models: [llmModelName])
+var ollama = builder.AddOllama("eshopsupport-ollama", port: 62393, models: [llmModelName])
        .WithDataVolume();
 
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(vectorDb.GetEndpoint("http"))
-    .WithReference(builder.AddConnectionString("openAiConnection"))
+    .WithReference(ollama.GetEndpoint("http"))
     .WithEnvironment("LlmModelName", llmModelName)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 

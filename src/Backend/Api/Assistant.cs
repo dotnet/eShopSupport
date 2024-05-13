@@ -60,35 +60,9 @@ public static class Assistant
 
             try
             {
-                while (true)
+                await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
                 {
-                    var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
-                    var responseString = response.ToString();
-                    var reply = JsonSerializer.Deserialize<AssistantReply>(response.ToString(), new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
-
-                    if (string.IsNullOrWhiteSpace(reply.Answer) && !string.IsNullOrWhiteSpace(reply.SearchPhrase))
-                    {
-                        // Function call to search the manual
-                        await httpContext.Response.WriteAsync($"[Searching: {reply.SearchPhrase}] ");
-
-                        var searchResult = """
-                    For additional context, here is information from the product manual:
-                    
-                    <manual_extract ref="1">The handle is pink and made of plastic.</manual_extract>
-                    <manual_extract ref="2">Using this item outdoors is not recommended, but feel free to use it in a bathroom.</manual_extract>
-                    <manual_extract ref="3">For support, contact support@grillzone.com</manual_extract>
-                    """;
-
-                        await httpContext.Response.WriteAsync($"[Search result: {searchResult}] ");
-
-                        chatHistory.Add(new ChatMessageContent(AuthorRole.System, searchResult));
-                    }
-                    else
-                    {
-                        // Final reply
-                        await httpContext.Response.WriteAsync(reply.Answer ?? "Sorry, I don't have an answer.");
-                        break;
-                    }
+                    await httpContext.Response.WriteAsync(chunk.ToString());
                 }
             }
             catch (Exception ex)
