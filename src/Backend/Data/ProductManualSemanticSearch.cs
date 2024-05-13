@@ -1,23 +1,37 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.Json;
+using Microsoft.SemanticKernel.Connectors.Qdrant;
+using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Data;
 
-public class ProductManualSemanticSearch(ISemanticTextMemory semanticTextMemory)
+public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, HttpClient httpClient)
 {
     private const string ManualCollectionName = "manuals";
 
-    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(string query)
+    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(int productId, string query)
     {
-        var results = new List<MemoryQueryResult>();
+        var embedding = await embedder.GenerateEmbeddingAsync(query);
+        var response = await httpClient.PostAsync($"http://vector-db/collections/{ManualCollectionName}/points/search",
+            JsonContent.Create(new {
+                vector = embedding,
+                with_payload = new[] { "id", "text" },
+                limit = 3,
+                filter = new
+                {
+                    must = new[]
+                    {
+                        new { key = "additional_metadata", match = new { value = $"productid:{productId}" } }
+                    }
+                }
+            }));
+        var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();
 
-        await foreach (var result in semanticTextMemory.SearchAsync(ManualCollectionName, query, limit: 3))
-        {
-            results.Add(result);
-        }
-
-        return results;
+        return responseParsed!.Result.Select(r => new MemoryQueryResult(
+            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", "", ""),
+            r.Score,
+            null)).ToList();
     }
 
     public static async Task EnsureSeedDataImportedAsync(IServiceProvider services)
@@ -80,5 +94,22 @@ public class ProductManualSemanticSearch(ISemanticTextMemory semanticTextMemory)
         {
             yield return new ArraySegment<T>(buffer, 0, index);
         }
+    }
+
+    class QdrantResult
+    {
+        public required QdrantResultEntry[] Result { get; set; }
+    }
+
+    class QdrantResultEntry
+    {
+        public float Score { get; set; }
+        public required QdrantResultEntryPayload Payload { get; set; }
+    }
+
+    class QdrantResultEntryPayload
+    {
+        public required string Id { get; set; }
+        public required string Text { get; set; }
     }
 }

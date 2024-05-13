@@ -79,7 +79,7 @@ public static class Assistant
                     {
                         if (++numToolsExecuted < 2)
                         {
-                            var searchResults = await manualSearch.SearchAsync(assistantReply.SearchPhrase);
+                            var searchResults = await manualSearch.SearchAsync(ticket.ProductId, assistantReply.SearchPhrase);
                             chatHistory.AddMessage(AuthorRole.System, $"""
                                 The assistant performed a search with term "{assistantReply.SearchPhrase}" on the user manual,
                                 which returned the following results:
