@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ public static class Assistant
 {
     public static void MapAssistantEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/assistant/chat", async (HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest) =>
+        app.MapPost("/api/assistant/chat", async (HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest) =>
         {
             // TODO: Get the product details as well, and include them in the system message
             var ticket = await dbContext.Tickets
@@ -38,8 +39,10 @@ public static class Assistant
 
                 { "gotEnoughInfoAleady": trueOrFalse, ... }
 
-                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string }
-                Always try to use information from context instead of searching the manual.
+                If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.
+
+                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResult": number, "mostRelevantSearchQuote": string }
+                You must justify your answer by providing mostRelevantSearchResult and mostRelevantSearchQuote (which is a few words to use as a label for the link).
 
                 If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchPhrase": "a phrase to look for in the manual" }.
                 That will search the product manual for this specific product, so you don't have to restate the product ID or name.
@@ -50,19 +53,51 @@ public static class Assistant
 
             chatHistory.AddRange(chatRequest.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
 
-
             var executionSettings = new OpenAIPromptExecutionSettings
             {
-                ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
                 ResponseFormat = "json_object",
                 Temperature = 0,
             };
 
+            var numToolsExecuted = 0;
+
             try
             {
-                await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
+                while (true)
                 {
-                    await httpContext.Response.WriteAsync(chunk.ToString());
+                    var captured = string.Empty;
+                    await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
+                    {
+                        // TODO: Force it to stop as soon as the top-level JSON object is closed, otherwise it will emit a long
+                        // sequence of trailing whitespace: https://github.com/ollama/ollama/issues/2623
+                        var chunkString = chunk.ToString();
+                        await httpContext.Response.WriteAsync(chunkString);
+                        captured += chunkString;
+                    }
+
+                    if (TryParseReply(captured, out var assistantReply) && !string.IsNullOrWhiteSpace(assistantReply.SearchPhrase))
+                    {
+                        if (++numToolsExecuted < 2)
+                        {
+                            var searchResults = await manualSearch.SearchAsync(assistantReply.SearchPhrase);
+                            chatHistory.AddMessage(AuthorRole.System, $"""
+                                The assistant performed a search with term "{assistantReply.SearchPhrase}" on the user manual,
+                                which returned the following results:
+                                {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
+                                """);
+                        }
+                        else
+                        {
+                            chatHistory.AddMessage(AuthorRole.System,
+                                $"""
+                                Please note that \"searchPhrase\" is no longer available. Your reply *MUST* state your answer, even if you are simply saying you do not have an answer.
+                                """);
+                        }
+
+                        continue;
+                    }
+
+                    return;
                 }
             }
             catch (Exception ex)
@@ -73,6 +108,20 @@ public static class Assistant
                 await httpContext.Response.WriteAsync("Sorry, there was a problem. Please try again.");
             }
         });
+    }
+
+    private static bool TryParseReply(string reply, [NotNullWhen(true)] out AssistantReply? assistantReply)
+    {
+        try
+        {
+            assistantReply = JsonSerializer.Deserialize<AssistantReply>(reply, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+            return true;
+        }
+        catch
+        {
+            assistantReply = null;
+            return false;
+        }
     }
 
     class AssistantReply

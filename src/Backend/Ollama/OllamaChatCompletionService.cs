@@ -29,7 +29,8 @@ public class OllamaChatCompletionService : IChatCompletionService
     public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/chat");
-        var json = executionSettings is OpenAIPromptExecutionSettings { ResponseFormat: "json_object" };
+        var openAiPromptExecutionSettings = executionSettings as OpenAIPromptExecutionSettings;
+        var json = openAiPromptExecutionSettings?.ResponseFormat is "json_object";
         request.Content = JsonContent.Create(new
         {
             Model = _modelName,
@@ -39,6 +40,10 @@ public class OllamaChatCompletionService : IChatCompletionService
                 Content = m.ToString(),
             }),
             Format = json ? "json" : null,
+            Options = new
+            {
+                Temperature = openAiPromptExecutionSettings?.Temperature ?? 0.5,
+            }
         }, options: _jsonSerializerOptions);
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);

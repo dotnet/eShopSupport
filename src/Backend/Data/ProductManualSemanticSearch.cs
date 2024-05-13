@@ -4,9 +4,21 @@ using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Data;
 
-public class ProductManualSemanticSearch
+public class ProductManualSemanticSearch(ISemanticTextMemory semanticTextMemory)
 {
     private const string ManualCollectionName = "manuals";
+
+    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(string query)
+    {
+        var results = new List<MemoryQueryResult>();
+
+        await foreach (var result in semanticTextMemory.SearchAsync(ManualCollectionName, query, limit: 3))
+        {
+            results.Add(result);
+        }
+
+        return results;
+    }
 
     public static async Task EnsureSeedDataImportedAsync(IServiceProvider services)
     {

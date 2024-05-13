@@ -21,6 +21,7 @@ builder.Services.AddScoped<IMemoryStore>(s =>
 });
 builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
+builder.Services.AddScoped<ProductManualSemanticSearch>();
 
 builder.AddOllamaChatCompletionService("eshopsupport-ollama");
 
