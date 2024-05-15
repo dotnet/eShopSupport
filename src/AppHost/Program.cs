@@ -15,8 +15,8 @@ var vectorDb = builder
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
 var llmModelName = builder.Configuration["LlmModelName"]!;
-var ollama = builder.AddOllama("eshopsupport-ollama", enableGpu: true, models: [llmModelName])
-    .WithHttpEndpoint(port: 62393, targetPort: 11434);
+builder.AddOllama("eshopsupport-ollama", port: 62393, models: [llmModelName])
+       .WithDataVolume();
 
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
