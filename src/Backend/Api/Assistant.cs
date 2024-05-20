@@ -2,7 +2,6 @@
 using System.Text.Json;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -12,6 +11,8 @@ namespace eShopSupport.Backend.Api;
 
 public static class Assistant
 {
+    private readonly static JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+
     public static void MapAssistantEndpoints(this WebApplication app)
     {
         app.MapPost("/api/assistant/chat", async (HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest) =>
@@ -96,6 +97,7 @@ public static class Assistant
                                 which returned the following results:
                                 {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
                                 """);
+                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new { SearchResults = searchResults.Select(s => s.Metadata.Id) }, _jsonOptions));
                         }
                         else
                         {
@@ -126,7 +128,7 @@ public static class Assistant
     {
         try
         {
-            assistantReply = JsonSerializer.Deserialize<AssistantReply>(reply, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+            assistantReply = JsonSerializer.Deserialize<AssistantReply>(reply, _jsonOptions)!;
             return true;
         }
         catch

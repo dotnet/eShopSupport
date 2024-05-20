@@ -36,6 +36,7 @@ window.customElements.define('assistant-message', class extends HTMLElement {
         // but then we don't get the benefit of notifications whenever the attribute changes
         const messageJson = JSON.parse(this.getAttribute('message') || '""');
         let hasContent = false;
+        const validReferenceIds = [];
 
         messageJson && parsePartialJSON(messageJson).forEach(message => {
             if (message.searchPhrase) {
@@ -50,11 +51,19 @@ window.customElements.define('assistant-message', class extends HTMLElement {
                 this._messageText.textContent = message.answer;
             }
 
+            if (message.searchResults) {
+                validReferenceIds.push(...message.searchResults);
+            }
+
             if (message.mostRelevantSearchResult) {
-                hasContent = true;
-                this._referenceLink.style.display = 'block';
-                this._referenceLink.setAttribute('href', `/manuals/paragraph-${message.mostRelevantSearchResult}`);
-                this._referenceLinkText.textContent = message.mostRelevantSearchQuote || 'Reference';
+                // We only show the reference if the ID actually came from a search result
+                // This avoids hallucinated references, and avoids linking to partial IDs when the full ID hasn't yet streamed in
+                if (validReferenceIds.indexOf(message.mostRelevantSearchResult.toString()) >= 0) {
+                    hasContent = true;
+                    this._referenceLink.style.display = 'block';
+                    this._referenceLink.setAttribute('href', `/manuals/paragraph-${message.mostRelevantSearchResult}`);
+                    this._referenceLinkText.textContent = message.mostRelevantSearchQuote || 'Reference';
+                }
             }
         });
 
