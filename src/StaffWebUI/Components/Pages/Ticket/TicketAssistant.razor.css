@@ -16,18 +16,6 @@
     margin-bottom: auto;
 }
 
-.message {
-    display: grid;
-    grid-template-columns: 2rem 1fr;
-    grid-template-rows: min-content min-content;
-    grid-template-areas:
-        "sender-icon sender-name"
-        ". message";
-    gap: 0.25rem .75rem;
-    animation: message-appear 0.25s ease-out;
-    overflow-y: hidden;
-}
-
 ::deep .stop-responding {
     flex-shrink: 0;
     opacity: 0;
@@ -43,48 +31,6 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
-}
-
-@keyframes message-appear {
-    0% {
-        max-height: 0;
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-        max-height: 100px;
-    }
-}
-
-    .message ::deep .initials {
-        background-color: grey;
-    }
-    
-    .message.assistant ::deep .initials {
-        background-color: #d800b1;
-    }
-
-.sender-icon {
-    grid-area: sender-icon;
-    align-self: center;
-    justify-self: center;
-}
-
-.sender-icon ::deep img {
-    width: 21px !important;
-}
-
-.sender-name {
-    grid-area: sender-name;
-    font-size: 1rem;
-    font-weight: 600;
-    align-self: center;
-}
-
-.message-text {
-    grid-area: message;
-    white-space: pre-line;
-    word-break: break-word;
 }
 
 .write-message {
