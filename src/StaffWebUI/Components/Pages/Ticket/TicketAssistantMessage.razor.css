@@ -47,7 +47,7 @@
     align-self: center;
 }
 
-.message-text {
+.message-text, assistant-message {
     grid-area: message;
     white-space: pre-line;
     word-break: break-word;

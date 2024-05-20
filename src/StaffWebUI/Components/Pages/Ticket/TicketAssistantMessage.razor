@@ -1,16 +1,29 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
+@inject IJSRuntime JS
 @if (visible)
 {
-    <div class="message @(State.Message.IsAssistant ? "assistant" : "")">
-        <div class="sender-icon">
-            <FluentPersona Image="@(State.Message.IsAssistant ? assistantImage : anonymousPersonImage)" ImageSize="30px" />
+    if (!State.Message.IsAssistant)
+    {
+        <div class="message">
+            <div class="sender-icon">
+                <FluentPersona Image="@anonymousPersonImage" ImageSize="30px" />
+            </div>
+            <div class="sender-name">You</div>
+            <div class="message-text">@State.Message.Text</div>
         </div>
-        <div class="sender-name">@(State.Message.IsAssistant ? "Assistant" : "You")</div>
-        <div class="message-text">
-            @(string.IsNullOrEmpty(State.Message.Text) ? "..." : State.Message.Text)
+    }
+    else
+    {
+
+        <div class="message assistant">
+            <div class="sender-icon">
+                <FluentPersona Image="@assistantImage" ImageSize="30px" />
+            </div>
+            <div class="sender-name">Assistant</div>
+            <assistant-message message="@State.Message.Text"></assistant-message>
         </div>
-    </div>
+    }
 }
 
 @code {
@@ -27,6 +40,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Ensure the custom element is loaded
+        await JS.InvokeVoidAsync("import", "./Components/Pages/Ticket/TicketAssistantMessage.razor.js");
+
         if (State.ResponseTask is null)
         {
             // This message is already completed; there's nothing to stream
