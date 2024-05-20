@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html>
+<body>
+    <iframe frameborder="0"></iframe>
+    <style type="text/css">
+        body, html { margin: 0; padding: 0; overflow: hidden; }
+        iframe { inset: 0; width: 100vw; height: 100vh; }
+    </style>
+    <script>
+        const iframe = document.querySelector('iframe');
+        const query = { file: '/32.pdf' };
+        const hash = { page: 4, search: 'Experience the bliss of unrestricted airflow', phrase: true, zoom: 'Fit' };
+        iframe.src = 'pdfjs-4.2.67-dist/web/viewer.html?' + new URLSearchParams(query).toString() + '#' + new URLSearchParams(hash).toString();
+        iframe.focus();
+    </script>
+</body>
+</html>
