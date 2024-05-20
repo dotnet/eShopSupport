@@ -30,6 +30,10 @@
     background-color: #d800b1;
 }
 
+.message.assistant:not(.visible) {
+    display: none;
+}
+
 .sender-icon {
     grid-area: sender-icon;
     align-self: center;
@@ -47,22 +51,27 @@
     align-self: center;
 }
 
-.message-text, assistant-message {
+.message-content {
     grid-area: message;
+}
+
+.message-text {
     white-space: pre-line;
     word-break: break-word;
 }
 
-::deep .search-info {
+.search-info {
+    display: none;
     font-weight: 500;
     margin-bottom: 0.5rem;
 }
 
-    ::deep .search-info:before {
+    .search-info:before {
         content: 'Searching: ';
     }
 
-::deep .reference-link {
+.reference-link {
+    display: none;
     text-decoration: none;
     background-color: rgba(128, 128, 128, 0.3);
     padding: 0.5rem 0.9rem;
@@ -70,16 +79,16 @@
     margin-top: 1rem;
 }
 
-::deep .reference-link .ref-text {
-    display: -webkit-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
-
-    ::deep .reference-link .ref-text:before {
-        content: 'Reference: ';
-        text-decoration: none;
-        color: var(--neutral-foreground-rest);
+    .reference-link .ref-text {
+        display: -webkit-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
+
+        .reference-link .ref-text:before {
+            content: 'Reference: ';
+            text-decoration: none;
+            color: var(--neutral-foreground-rest);
+        }
