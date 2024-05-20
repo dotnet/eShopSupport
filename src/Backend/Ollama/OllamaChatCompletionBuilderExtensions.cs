@@ -7,10 +7,10 @@ public static class OllamaChatCompletionBuilderExtensions
 {
     public static void AddOllamaChatCompletionService(this IHostApplicationBuilder builder, string name)
     {
-        var modelName = Environment.GetEnvironmentVariable("LlmModelName");
+        var modelName = Environment.GetEnvironmentVariable($"{name}:LlmModelName");
         if (string.IsNullOrEmpty(modelName))
         {
-            throw new InvalidOperationException("Expected to find the LLM model name in an environment variable called LlmModelName");
+            throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
         }
 
         builder.Services.AddScoped<IChatCompletionService>(services =>

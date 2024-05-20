@@ -5,9 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Aspire.Hosting;
 
-internal class OllamaResource(string name, string[] models, bool enableGpu) : ContainerResource(name)
+internal class OllamaResource(string name, string[] models, string? defaultModel, bool enableGpu) : ContainerResource(name)
 {
     public string[] Models { get; } = models;
+    public string? DefaultModel { get; } = defaultModel;
     public bool EnableGpu { get; } = enableGpu;
 }
 
@@ -18,9 +19,9 @@ internal class OllamaModelDownloaderResource(string name, OllamaResource ollamaR
 
 internal static class OllamaResourceExtensions
 {
-    public static IResourceBuilder<OllamaResource> AddOllama(this IDistributedApplicationBuilder builder, string name, string[] models, bool enableGpu = true, int ? port = null)
+    public static IResourceBuilder<OllamaResource> AddOllama(this IDistributedApplicationBuilder builder, string name, string[] models, string? defaultModel = null, bool enableGpu = true, int? port = null)
     {
-        var resource = new OllamaResource(name, models, enableGpu);
+        var resource = new OllamaResource(name, models, defaultModel, enableGpu);
         var ollama = builder.AddResource(resource)
             .WithHttpEndpoint(port: port, targetPort: 11434)
             .WithImage("ollama/ollama");
@@ -48,6 +49,15 @@ internal static class OllamaResourceExtensions
     public static IResourceBuilder<OllamaResource> WithDataVolume(this IResourceBuilder<OllamaResource> builder)
     {
         return builder.WithVolume(CreateVolumeName(builder, builder.Resource.Name), "/root/.ollama");
+    }
+
+    public static IResourceBuilder<TDestination> WithReference<TDestination>(this IResourceBuilder<TDestination> builder, IResourceBuilder<OllamaResource> ollamaBuilder)
+        where TDestination : IResourceWithEnvironment
+    {
+        var defaultModel = ollamaBuilder.Resource.DefaultModel ?? ollamaBuilder.Resource.Models.FirstOrDefault();
+        return builder
+            .WithReference(ollamaBuilder.GetEndpoint("http"))
+            .WithEnvironment($"{ollamaBuilder.Resource.Name}:LlmModelName", defaultModel);
     }
 
     private static string CreateVolumeName<T>(IResourceBuilder<T> builder, string suffix) where T : IResource
