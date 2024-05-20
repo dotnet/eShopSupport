@@ -97,6 +97,7 @@ public static class Assistant
                                 which returned the following results:
                                 {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
                                 """);
+                            await httpContext.Response.WriteAsync(", ");
                             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new { SearchResults = searchResults.Select(s => s.Metadata.Id) }, _jsonOptions));
                         }
                         else
