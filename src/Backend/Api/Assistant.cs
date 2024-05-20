@@ -2,6 +2,7 @@
 using System.Text.Json;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -60,20 +61,30 @@ public static class Assistant
             };
 
             var numToolsExecuted = 0;
+            var isFirstMessage = true;
 
             try
             {
                 while (true)
                 {
                     var captured = string.Empty;
+                    var isFirstChunk = true;
                     await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
                     {
+                        if (isFirstChunk)
+                        {
+                            isFirstChunk = false;
+                            await httpContext.Response.WriteAsync(isFirstMessage ? "[" : ", ");
+                        }
+
                         // TODO: Force it to stop as soon as the top-level JSON object is closed, otherwise it will emit a long
                         // sequence of trailing whitespace: https://github.com/ollama/ollama/issues/2623
                         var chunkString = chunk.ToString();
                         await httpContext.Response.WriteAsync(chunkString);
                         captured += chunkString;
                     }
+
+                    isFirstMessage = false;
 
                     if (TryParseReply(captured, out var assistantReply) && !string.IsNullOrWhiteSpace(assistantReply.SearchPhrase))
                     {
@@ -97,6 +108,7 @@ public static class Assistant
                         continue;
                     }
 
+                    await httpContext.Response.WriteAsync("]");
                     return;
                 }
             }

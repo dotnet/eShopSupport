@@ -52,3 +52,34 @@
     white-space: pre-line;
     word-break: break-word;
 }
+
+::deep .search-info {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+    ::deep .search-info:before {
+        content: 'Searching: ';
+    }
+
+::deep .reference-link {
+    text-decoration: none;
+    background-color: rgba(128, 128, 128, 0.3);
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+::deep .reference-link .ref-text {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+    ::deep .reference-link .ref-text:before {
+        content: 'Reference: ';
+        text-decoration: none;
+        color: var(--neutral-foreground-rest);
+    }
