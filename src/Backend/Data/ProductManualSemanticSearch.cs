@@ -54,7 +54,7 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
                 {
                     var mappedRecords = chunkChunk.Select(chunk =>
                     {
-                        var id = chunk!.ParagraphId.ToString();
+                        var id = chunk!.ChunkId.ToString();
                         var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", "", $"productid:{chunk.ProductId}");
                         var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
                         return new MemoryRecord(metadata, embedding, null);

@@ -8,7 +8,6 @@ using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 public class ManualIngestor
 {
-
     public async Task RunAsync(string generatedDataPath)
     {
         Console.WriteLine("Ingesting manuals...");
@@ -19,8 +18,9 @@ public class ManualIngestor
         // First make a zip of the manual PDF files
         var manualsSourceDir = Path.Combine(generatedDataPath, "manuals", "pdf");
         Console.WriteLine("Compressing manuals...");
-        ZipFile.CreateFromDirectory(manualsSourceDir,
-            Path.Combine(outputDir, "manuals.zip"));
+        var manualsZipPath = Path.Combine(outputDir, "manuals.zip");
+        File.Delete(manualsZipPath);
+        ZipFile.CreateFromDirectory(manualsSourceDir, manualsZipPath);
 
         // Now chunk and embed them
         using var tika = new Tika();
@@ -31,21 +31,25 @@ public class ManualIngestor
         {
             Console.WriteLine($"Generating chunks for {file}...");
             var docId = int.Parse(Path.GetFileNameWithoutExtension(file));
-            var extractedText = await tika.ExtractTextAsync(file);
-            var paragraphs = TextChunker.SplitPlainTextParagraphs([extractedText], 200);
-            var paragraphsWithEmbeddings = paragraphs.Zip(await embeddingGenerator.GenerateEmbeddingsAsync(paragraphs));
-
-            foreach (var p in paragraphsWithEmbeddings)
+            foreach (var extract in await tika.ExtractTextAsync(file))
             {
-                var chunk = new ManualChunk
+                var paragraphs = TextChunker.SplitPlainTextParagraphs([extract.Text], 200);
+                var paragraphsWithEmbeddings = paragraphs.Zip(await embeddingGenerator.GenerateEmbeddingsAsync(paragraphs));
+
+                foreach (var p in paragraphsWithEmbeddings)
                 {
-                    ProductId = docId,
-                    ParagraphId = ++paragraphIndex,
-                    Text = p.First,
-                    Embedding = MemoryMarshal.AsBytes(p.Second.Span).ToArray()
-                };
-                chunks.Add(chunk);
+                    var chunk = new ManualChunk
+                    {
+                        ProductId = docId,
+                        PageNumber = extract.PageNumber,
+                        ChunkId = ++paragraphIndex,
+                        Text = p.First,
+                        Embedding = MemoryMarshal.AsBytes(p.Second.Span).ToArray()
+                    };
+                    chunks.Add(chunk);
+                }
             }
+            
         }
 
         var outputOptions = new JsonSerializerOptions { WriteIndented = true };
