@@ -34,4 +34,10 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+app.MapGet("/manual", async (string file, BackendClient backend, CancellationToken cancellationToken) =>
+{
+    var result = await backend.ReadManualAsync(file, cancellationToken);
+    return result is null ? Results.NotFound() : Results.Stream(result, "application/pdf");
+});
+
 app.Run();

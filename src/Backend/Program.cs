@@ -1,4 +1,5 @@
-﻿using eShopSupport.Backend.Api;
+﻿using Azure.Storage.Blobs;
+using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IMemoryStore>(s => s.GetRequiredService<QdrantMemoryS
 builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
+builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddOllamaChatCompletionService("eshopsupport-ollama");
 
@@ -85,6 +87,18 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
         .Take(maxResults)
         .Select(t => new ListTicketsResultItem(t.TicketId, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync()));
+});
+
+app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =>
+{
+    var blobClient = blobServiceClient.GetBlobContainerClient("manuals").GetBlobClient(file);
+    if (!(await blobClient.ExistsAsync()))
+    {
+        return Results.NotFound();
+    }
+
+    var download = await blobClient.DownloadStreamingAsync();
+    return Results.File(download.Value.Content, "application/pdf");
 });
 
 app.MapAssistantEndpoints();

@@ -99,8 +99,18 @@ public static class Assistant
                                 which returned the following results:
                                 {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
                                 """);
+
+                            // Also emit the search result data to the response so the UI has all the metadata
                             await httpContext.Response.WriteAsync(", ");
-                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new { SearchResults = searchResults.Select(r => new { r.Metadata.Id, PageNumber = GetPageNumber(r) }) }, _jsonOptions));
+                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new
+                            {
+                                SearchResults = searchResults.Select(r => new
+                                {
+                                    r.Metadata.Id,
+                                    ProductId = GetProductId(r),
+                                    PageNumber = GetPageNumber(r),
+                                })
+                            }, _jsonOptions));
                         }
                         else
                         {
@@ -125,6 +135,12 @@ public static class Assistant
                 await httpContext.Response.WriteAsync("Sorry, there was a problem. Please try again.");
             }
         });
+    }
+
+    private static int? GetProductId(MemoryQueryResult result)
+    {
+        var match = Regex.Match(result.Metadata.ExternalSourceName, @"productid:(\d+)");
+        return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
 
     private static int? GetPageNumber(MemoryQueryResult result)

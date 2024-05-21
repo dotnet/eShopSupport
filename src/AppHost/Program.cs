@@ -1,4 +1,5 @@
-﻿using Projects;
+﻿using Microsoft.Extensions.Hosting;
+using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -18,9 +19,18 @@ var llmModelName = builder.Configuration["LlmModelName"]!;
 var ollama = builder.AddOllama("eshopsupport-ollama", models: [llmModelName])
        .WithDataVolume();
 
+var storage = builder.AddAzureStorage("eshopsupport-storage");
+if (builder.Environment.IsDevelopment())
+{
+    storage.RunAsEmulator(r => r.WithDataVolume());
+}
+
+var blobStorage = storage.AddBlobs("eshopsupport-blobs");
+
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(ollama)
+    .WithReference(blobStorage)
     .WithReference(vectorDb.GetEndpoint("http"))
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 

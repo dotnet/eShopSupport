@@ -7,8 +7,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
-    <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="8.0.0-preview.7.24251.11" />
+    <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.4" />
