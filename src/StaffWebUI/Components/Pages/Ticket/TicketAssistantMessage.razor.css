@@ -87,10 +87,13 @@
         -webkit-box-orient: vertical;
     }
 
-        .reference-link .ref-text:before {
-            content: 'Reference: ';
-            text-decoration: none;
+        .reference-link svg {
             color: var(--neutral-foreground-rest);
+            width: var(--type-ramp-base-line-height);
+            height: var(--type-ramp-base-line-height);
+            flex-grow: 0;
+            flex-shrink: 0;
+            margin-right: 0.4rem;
         }
 
 html:not(.dark-mode) .reference-link {

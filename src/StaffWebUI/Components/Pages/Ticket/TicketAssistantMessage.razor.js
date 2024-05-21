@@ -26,7 +26,7 @@ export function addMessageChunk(elem, chunk) {
             const searchResult = allSearchResultsById.get(message.mostRelevantSearchResultId.toString());
             if (searchResult) {
                 const referenceLink = elem.querySelector('.reference-link');
-                referenceLink.style.display = 'block';
+                referenceLink.style.display = 'flex';
                 referenceLink.setAttribute('href', `manual.html?file=${searchResult.productId}.pdf&page=${searchResult.pageNumber}&search=${encodeURIComponent(message.mostRelevantSearchQuote)}`);
                 referenceLink.querySelector('.ref-text').textContent = message.mostRelevantSearchQuote || 'Reference';
             }
