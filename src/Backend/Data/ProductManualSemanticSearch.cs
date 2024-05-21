@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -16,20 +17,21 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
         var response = await httpClient.PostAsync($"http://vector-db/collections/{ManualCollectionName}/points/search",
             JsonContent.Create(new {
                 vector = embedding,
-                with_payload = new[] { "id", "text" },
+                with_payload = new[] { "id", "text", "external_source_name", "additional_metadata" },
                 limit = 3,
                 filter = new
                 {
                     must = new[]
                     {
-                        new { key = "additional_metadata", match = new { value = $"productid:{productId}" } }
+                        new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
                     }
                 }
             }));
+
         var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();
 
         return responseParsed!.Result.Select(r => new MemoryQueryResult(
-            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", "", ""),
+            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", r.Payload.External_Source_Name, r.Payload.Additional_Metadata),
             r.Score,
             null)).ToList();
     }
@@ -55,7 +57,7 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
                     var mappedRecords = chunkChunk.Select(chunk =>
                     {
                         var id = chunk!.ChunkId.ToString();
-                        var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", "", $"productid:{chunk.ProductId}");
+                        var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", $"productid:{chunk.ProductId}", $"pagenumber:{chunk.PageNumber}");
                         var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
                         return new MemoryRecord(metadata, embedding, null);
                     });
@@ -111,5 +113,7 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
     {
         public required string Id { get; set; }
         public required string Text { get; set; }
+        public required string External_Source_Name { get; set; }
+        public required string Additional_Metadata { get; set; }
     }
 }

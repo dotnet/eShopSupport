@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
 
@@ -43,8 +45,8 @@ public static class Assistant
 
                 If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.
 
-                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResult": number, "mostRelevantSearchQuote": string }
-                You must justify your answer by providing mostRelevantSearchResult and mostRelevantSearchQuote (which is a few words to use as a label for the link).
+                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string }
+                You must justify your answer by providing mostRelevantSearchResultId and mostRelevantSearchQuote (which is a few words to use as a label for the link).
 
                 If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchPhrase": "a phrase to look for in the manual" }.
                 That will search the product manual for this specific product, so you don't have to restate the product ID or name.
@@ -98,7 +100,7 @@ public static class Assistant
                                 {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
                                 """);
                             await httpContext.Response.WriteAsync(", ");
-                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new { SearchResults = searchResults.Select(s => s.Metadata.Id) }, _jsonOptions));
+                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new { SearchResults = searchResults.Select(r => new { r.Metadata.Id, PageNumber = GetPageNumber(r) }) }, _jsonOptions));
                         }
                         else
                         {
@@ -123,6 +125,12 @@ public static class Assistant
                 await httpContext.Response.WriteAsync("Sorry, there was a problem. Please try again.");
             }
         });
+    }
+
+    private static int? GetPageNumber(MemoryQueryResult result)
+    {
+        var match = Regex.Match(result.Metadata.AdditionalMetadata, @"pagenumber:(\d+)");
+        return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
 
     private static bool TryParseReply(string reply, [NotNullWhen(true)] out AssistantReply? assistantReply)

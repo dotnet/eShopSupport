@@ -7,9 +7,10 @@
         iframe { inset: 0; width: 100vw; height: 100vh; }
     </style>
     <script>
+        const params = new URL(location.href).searchParams;
         const iframe = document.querySelector('iframe');
-        const query = { file: '/32.pdf' };
-        const hash = { page: 4, search: 'Experience the bliss of unrestricted airflow', phrase: true, zoom: '100%' };
+        const query = { file: `/manual?file=${encodeURIComponent(params.get('file'))}` };
+        const hash = { page: params.get('page'), search: params.get('search'), phrase: true, zoom: '100%' };
         iframe.src = 'pdfjs-4.2.67-dist/web/viewer.html?' + new URLSearchParams(query).toString() + '#' + new URLSearchParams(hash).toString();
         iframe.focus();
     </script>
