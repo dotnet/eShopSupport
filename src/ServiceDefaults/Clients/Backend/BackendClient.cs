@@ -1,4 +1,6 @@
 ﻿using System.Net.Http.Json;
+using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
@@ -18,6 +20,13 @@ public class BackendClient(HttpClient http)
         };
         var response = await http.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         return await response.Content.ReadAsStreamAsync(cancellationToken);
+    }
+
+    public async Task<Stream?> ReadManualAsync(string file, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"/manual?file={HttpUtility.UrlEncode(file)}");
+        var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        return response.IsSuccessStatusCode ? await response.Content.ReadAsStreamAsync(cancellationToken) : null;
     }
 }
 

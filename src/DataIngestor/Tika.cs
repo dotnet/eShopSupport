@@ -38,7 +38,7 @@ public class Tika : IDisposable
         _httpClient.BaseAddress = new Uri(tika.Resource.GetEndpoint("http").Url);
     }
 
-    public async Task<string> ExtractTextAsync(string filePath)
+    public async Task<ExtractedText[]> ExtractTextAsync(string filePath)
     {
         using var fileStream = File.OpenRead(filePath);
 
@@ -53,31 +53,35 @@ public class Tika : IDisposable
         return ProcessXml(xmlText);
     }
 
-    private string ProcessXml(string xmlText)
+    private ExtractedText[] ProcessXml(string xmlText)
     {
         var doc = XDocument.Parse(xmlText);
         var ns = doc.Root!.GetDefaultNamespace().NamespaceName;
         var manager = new XmlNamespaceManager(doc.CreateNavigator().NameTable);
         manager.AddNamespace("xhtml", ns);
-        var paragraphs = doc.XPathSelectElements($"//xhtml:p", manager).ToList();
-
-        var result = new StringBuilder();
-        foreach (var p in paragraphs)
+        var pages = doc.XPathSelectElements($"//xhtml:div[@class='page']", manager).ToList();
+        return pages.Select((page, pageIndex) =>
         {
-            var text = p.Value?.Trim();
-            if (!string.IsNullOrWhiteSpace(text))
+            var paragraphs = page.XPathSelectElements($".//xhtml:p", manager).ToList();
+
+            var result = new StringBuilder();
+            foreach (var p in paragraphs)
             {
-                if (IsLikelyHeading(text))
+                var text = p.Value?.Trim();
+                if (!string.IsNullOrWhiteSpace(text))
                 {
+                    if (IsLikelyHeading(text))
+                    {
+                        result.AppendLine();
+                    }
+
+                    result.AppendLine(text.ReplaceLineEndings(" "));
                     result.AppendLine();
                 }
-
-                result.AppendLine(text.ReplaceLineEndings(" "));
-                result.AppendLine();
             }
-        }
 
-        return result.ToString();
+            return new ExtractedText(pageIndex + 1, result.ToString());
+        }).ToArray();
     }
 
     // Assume that multiple sentences mean "not a heading"
@@ -95,4 +99,6 @@ public class Tika : IDisposable
         ".pdf" => "application/pdf",
         string extension => throw new ArgumentException($"Unknown file type {extension}"),
     };
+
+    public record ExtractedText(int PageNumber, string Text);
 }

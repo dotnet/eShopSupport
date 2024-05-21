@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Text.Json;
-using Microsoft.SemanticKernel.Connectors.Qdrant;
+using Azure.Storage.Blobs;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 
@@ -14,22 +15,24 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
     {
         var embedding = await embedder.GenerateEmbeddingAsync(query);
         var response = await httpClient.PostAsync($"http://vector-db/collections/{ManualCollectionName}/points/search",
-            JsonContent.Create(new {
+            JsonContent.Create(new
+            {
                 vector = embedding,
-                with_payload = new[] { "id", "text" },
+                with_payload = new[] { "id", "text", "external_source_name", "additional_metadata" },
                 limit = 3,
                 filter = new
                 {
                     must = new[]
                     {
-                        new { key = "additional_metadata", match = new { value = $"productid:{productId}" } }
+                        new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
                     }
                 }
             }));
+
         var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();
 
         return responseParsed!.Result.Select(r => new MemoryQueryResult(
-            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", "", ""),
+            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", r.Payload.External_Source_Name, r.Payload.Additional_Metadata),
             r.Score,
             null)).ToList();
     }
@@ -40,28 +43,53 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
         if (!string.IsNullOrEmpty(importDataFromDir))
         {
             using var scope = services.CreateScope();
+            await ImportManualFilesSeedDataAsync(importDataFromDir, scope);
+            await ImportManualChunkSeedDataAsync(importDataFromDir, scope);
+        }
+    }
 
-            var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
-            var collections = semanticMemory.GetCollectionsAsync();
+    private static async Task ImportManualFilesSeedDataAsync(string importDataFromDir, IServiceScope scope)
+    {
+        var blobStorage = scope.ServiceProvider.GetRequiredService<BlobServiceClient>();
+        var blobClient = blobStorage.GetBlobContainerClient("manuals");
+        if (await blobClient.ExistsAsync())
+        {
+            return;
+        }
 
-            if (!(await HasAnyAsync(collections)))
+        await blobClient.CreateIfNotExistsAsync();
+
+        var manualsZipFilePath = Path.Combine(importDataFromDir, "manuals.zip");
+        using var zipFile = ZipFile.OpenRead(manualsZipFilePath);
+        foreach (var file in zipFile.Entries)
+        {
+            using var fileStream = file.Open();
+            await blobClient.UploadBlobAsync(file.FullName, fileStream);
+        }
+    }
+
+    private static async Task ImportManualChunkSeedDataAsync(string importDataFromDir, IServiceScope scope)
+    {
+        var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
+        var collections = semanticMemory.GetCollectionsAsync();
+
+        if (!(await HasAnyAsync(collections)))
+        {
+            await semanticMemory.CreateCollectionAsync(ManualCollectionName);
+
+            using var fileStream = File.OpenRead(Path.Combine(importDataFromDir, "manual-chunks.json"));
+            var manualChunks = JsonSerializer.DeserializeAsyncEnumerable<ManualChunk>(fileStream);
+            await foreach (var chunkChunk in ReadChunkedAsync(manualChunks, 1000))
             {
-                await semanticMemory.CreateCollectionAsync(ManualCollectionName);
-
-                using var fileStream = File.OpenRead(Path.Combine(importDataFromDir, "manual-chunks.json"));
-                var manualChunks = JsonSerializer.DeserializeAsyncEnumerable<ManualChunk>(fileStream);
-                await foreach (var chunkChunk in ReadChunkedAsync(manualChunks, 1000))
+                var mappedRecords = chunkChunk.Select(chunk =>
                 {
-                    var mappedRecords = chunkChunk.Select(chunk =>
-                    {
-                        var id = chunk!.ParagraphId.ToString();
-                        var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", "", $"productid:{chunk.ProductId}");
-                        var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
-                        return new MemoryRecord(metadata, embedding, null);
-                    });
+                    var id = chunk!.ChunkId.ToString();
+                    var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", $"productid:{chunk.ProductId}", $"pagenumber:{chunk.PageNumber}");
+                    var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
+                    return new MemoryRecord(metadata, embedding, null);
+                });
 
-                    await foreach (var _ in semanticMemory.UpsertBatchAsync(ManualCollectionName, mappedRecords)) { }
-                }
+                await foreach (var _ in semanticMemory.UpsertBatchAsync(ManualCollectionName, mappedRecords)) { }
             }
         }
     }
@@ -111,5 +139,7 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
     {
         public required string Id { get; set; }
         public required string Text { get; set; }
+        public required string External_Source_Name { get; set; }
+        public required string Additional_Metadata { get; set; }
     }
 }
