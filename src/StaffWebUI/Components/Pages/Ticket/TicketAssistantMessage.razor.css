@@ -92,3 +92,7 @@
             text-decoration: none;
             color: var(--neutral-foreground-rest);
         }
+
+html:not(.dark-mode) .reference-link {
+    color: var(--accent-fill-rest);
+}

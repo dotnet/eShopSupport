@@ -46,7 +46,7 @@ public static class Assistant
                 If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.
 
                 If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string }
-                You must justify your answer by providing mostRelevantSearchResultId and mostRelevantSearchQuote (which is a few words to use as a label for the link).
+                You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
 
                 If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchPhrase": "a phrase to look for in the manual" }.
                 That will search the product manual for this specific product, so you don't have to restate the product ID or name.
