@@ -43,7 +43,7 @@ public static class Assistant
 
                 { "gotEnoughInfoAleady": trueOrFalse, ... }
 
-                If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.
+                If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual. NEVER supply information without getting it from a search.
 
                 If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string }
                 You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
@@ -115,8 +115,8 @@ public static class Assistant
                         else
                         {
                             chatHistory.AddMessage(AuthorRole.System,
-                                $"""
-                                Please note that \"searchPhrase\" is no longer available. Your reply *MUST* state your answer, even if you are simply saying you do not have an answer.
+                                $$"""
+                                Please note that \"searchPhrase\" is no longer available. Your reply *MUST* start with { "gotEnoughInfoAlready": true } and then state an answer, even if you are simply saying you do not have an answer.
                                 """);
                         }
 

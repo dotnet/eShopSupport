@@ -1,4 +1,5 @@
-﻿using eShopSupport.ServiceDefaults.Clients.Backend;
+﻿using Azure.AI.OpenAI;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.SemanticKernel;
@@ -24,7 +25,15 @@ builder.Services.AddHttpClient<BackendClient>(client =>
 
 builder.Services.AddSmartComponents().WithInferenceBackend<NotImplementedInferenceBackend>();
 builder.Services.AddScoped<SmartTextAreaInference, BackendSmartTextAreaInference>();
-builder.AddOllamaChatCompletionService("eshopsupport-ollama");
+
+//builder.AddOllamaChatCompletionService("eshopsupport-ollama");
+
+builder.AddAzureOpenAIClient("eshopsupport-openai");
+builder.Services.AddScoped<IChatCompletionService>(s =>
+{
+    var client = s.GetRequiredService<OpenAIClient>();
+    return new OpenAIChatCompletionService("gpt-35-1106", client);
+});
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ var llmModelName = builder.Configuration["LlmModelName"]!;
 var ollama = builder.AddOllama("eshopsupport-ollama", models: [llmModelName])
        .WithDataVolume();
 
+var openAi = builder.AddConnectionString("eshopsupport-openai");
+
 var storage = builder.AddAzureStorage("eshopsupport-storage");
 if (builder.Environment.IsDevelopment())
 {
@@ -32,11 +35,13 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(ollama)
     .WithReference(blobStorage)
     .WithReference(vectorDb.GetEndpoint("http"))
+    .WithReference(openAi)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 
 builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
     .WithReference(backend)
+    .WithReference(openAi)
     .WithReference(ollama);
 
 builder.Build().Run();

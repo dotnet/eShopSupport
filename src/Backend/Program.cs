@@ -1,8 +1,11 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.AI.OpenAI;
+using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -26,7 +29,14 @@ builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
-builder.AddOllamaChatCompletionService("eshopsupport-ollama");
+//builder.AddOllamaChatCompletionService("eshopsupport-ollama");
+
+builder.AddAzureOpenAIClient("eshopsupport-openai");
+builder.Services.AddScoped<IChatCompletionService>(s =>
+{
+    var client = s.GetRequiredService<OpenAIClient>();
+    return new OpenAIChatCompletionService("gpt-35-1106", client);
+});
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
