@@ -17,14 +17,14 @@
             </div>
             <div class="write-message">
                 <div class="textarea-host">
-                    <SmartTextArea @bind-Value="@messageText" class="control" UserRole="@GetSmartTextAreaRole()" placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
+                    <SmartTextArea @bind-Value="@messageText" class="control" UserRole="@smartTextAreaRole" UserPhrases="@smartTextAreaPhrases" placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
                 </div>
             </div>
         </Panel1>
         <Panel2>
             <div class="assistant">
-                <TicketAssistant TicketId="@TicketId" />
-            </div>  
+                <TicketAssistant TicketId="@TicketId" OnAssistantMessageAdded="@UpdateSmartTextAreaPrompt" />
+            </div>
         </Panel2>
     </FluentSplitter>
 </div>
@@ -34,9 +34,11 @@
     private string? messageText;
 
     private readonly static string smartTextAreaRolePrefix = "Customer support agent for a company called Northern Mountains";
-    private readonly static string[] smartTextAreaPhrases = [
-        "Thanks for your message.",
-        "For returns, please visit https://northernmountains.example.com/returns. You can return an item within 30 days if unusued, or up to 1 year if defective.",
+    private string smartTextAreaRole = smartTextAreaRolePrefix;
+    private readonly static string[] smartTextAreaPhrases =
+    [
+    "Thanks for your message.",
+    "For returns, please visit https://northernmountains.example.com/returns. You can return an item within 30 days if unusued, or up to 1 year if defective.",
     ];
 
     [Parameter]
@@ -46,5 +48,11 @@
     {
         ticket = null;
         ticket = await Backend.GetTicketDetailsAsync(TicketId);
+        UpdateSmartTextAreaPrompt(null);
+    }
+
+    private void UpdateSmartTextAreaPrompt(List<TicketAssistant.MessageState>? messages)
+    {
+        smartTextAreaRole = GetSmartTextAreaRole(messages);
     }
 }

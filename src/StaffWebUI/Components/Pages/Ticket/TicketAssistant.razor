@@ -23,7 +23,7 @@
         {
             var id = @$"message{i}";
             var state = messages[i]!;
-            <TicketAssistantMessage @key="@id" State="@state" OnCompleted="@HandleResponseCompleted" />
+            <TicketAssistantMessage @key="@id" State="@state" OnCompleted="@HandleResponseCompletedAsync" />
         }
     </div>
 </div>
@@ -42,6 +42,9 @@
 
     [Parameter, EditorRequired]
     public int TicketId { get; set; }
+
+    [Parameter]
+    public EventCallback<List<MessageState>> OnAssistantMessageAdded { get; set; }
 
     bool ReplyInProgress => currentReplyCancellationTokenSource?.IsCancellationRequested == false;
 
@@ -76,11 +79,16 @@
         }
     }
 
-    private void HandleResponseCompleted(MessageState state)
+    private async Task HandleResponseCompletedAsync(MessageState state)
     {
         if (messages.LastOrDefault() == state)
         {
             currentReplyCancellationTokenSource = null;
+
+            if (state.Message.IsAssistant)
+            {
+                await OnAssistantMessageAdded.InvokeAsync(messages);
+            }
         }
 
         // If it was cancelled before the response started, remove the message entirely
