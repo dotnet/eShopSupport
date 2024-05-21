@@ -1,6 +1,7 @@
 ﻿@page "/ticket/{ticketId:int}"
 @using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
+@using SmartComponents
 @inject BackendClient Backend
 
 <Title>Ticket @TicketId</Title>
@@ -15,7 +16,9 @@
                 <TicketMessages Ticket="@ticket" />
             </div>
             <div class="write-message">
-                <FluentTextArea Placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
+                <div class="textarea-host">
+                    <SmartTextArea @bind-Value="@messageText" class="control" UserRole="Customer support agent" placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
+                </div>
             </div>
         </Panel1>
         <Panel2>
@@ -28,6 +31,7 @@
 
 @code {
     private TicketDetailsResult? ticket;
+    private string? messageText;
 
     [Parameter]
     public int TicketId { get; set; }

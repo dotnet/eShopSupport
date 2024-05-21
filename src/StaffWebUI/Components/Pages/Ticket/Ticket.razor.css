@@ -52,6 +52,44 @@
         flex-grow: 1;
     }
 
+    .write-message ::deep textarea {
+        background: padding-box linear-gradient(var(--neutral-fill-input-rest), var(--neutral-fill-input-rest)), border-box var(--neutral-stroke-input-rest);
+        border: calc(var(--stroke-width)* 1px) solid transparent;
+        border-radius: calc(var(--control-corner-radius)* 1px);
+        padding: calc(var(--design-unit)* 1.5px) calc(var(--design-unit)* 2px + 1px);
+        resize: none;
+    }
+
+        .write-message ::deep textarea:hover {
+            background: padding-box linear-gradient(var(--neutral-fill-input-hover), var(--neutral-fill-input-hover)), border-box var(--neutral-stroke-input-hover);
+        }
+
+        .write-message ::deep textarea:focus {
+            outline: none;
+            background: padding-box linear-gradient(var(--neutral-fill-input-focus), var(--neutral-fill-input-focus)), border-box var(--neutral-stroke-input-rest);
+        }
+
+
+.textarea-host {
+    position: relative;
+    height: 100%;
+}
+
+    .textarea-host:focus-within::after {
+        content: '';
+        position: absolute;
+        height: calc(var(--focus-stroke-width)* 1px);
+        bottom: 0;
+        border-bottom: calc(var(--focus-stroke-width)* 1px) solid var(--accent-fill-rest);
+        border-bottom-left-radius: calc(var(--control-corner-radius)* 1px);
+        border-bottom-right-radius: calc(var(--control-corner-radius)* 1px);
+        z-index: 2;
+        transition: all 300ms cubic-bezier(0.1,0.9,0.2,1);
+        width: 100%;
+        left: 0;
+        bottom: 0;
+    }
+
 .assistant {
     display: flex;
     flex-direction: column;

@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Web;
-using Microsoft.AspNetCore.Http;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
@@ -28,6 +27,12 @@ public class BackendClient(HttpClient http)
         var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         return response.IsSuccessStatusCode ? await response.Content.ReadAsStreamAsync(cancellationToken) : null;
     }
+
+    public async Task<string> GetTypeheadSuggestionAsync(TypeaheadRequest request, CancellationToken cancellationToken)
+    {
+        var response = await http.PostAsync("/api/typeahead", JsonContent.Create(request), cancellationToken);
+        return await response.Content.ReadAsStringAsync(cancellationToken);
+    }
 }
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
@@ -48,3 +53,6 @@ public class AssistantChatRequestMessage
     public bool IsAssistant { get; set; }
     public required string Text { get; set; }
 }
+
+public record TypeaheadRequest(string Params, string TextBefore, string TextAfter);
+

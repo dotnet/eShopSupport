@@ -1,6 +1,9 @@
 ﻿using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
+using SmartComponents.Inference;
+using SmartComponents.Infrastructure;
+using SmartComponents.StaticAssets.Inference;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,9 @@ builder.Services.AddFluentUIComponents();
 
 builder.Services.AddHttpClient<BackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"));
+
+builder.Services.AddSmartComponents().WithInferenceBackend<NotImplementedInferenceBackend>();
+builder.Services.AddScoped<SmartTextAreaInference, BackendSmartTextAreaInference>();
 
 var app = builder.Build();
 
@@ -41,3 +47,15 @@ app.MapGet("/manual", async (string file, BackendClient backend, CancellationTok
 });
 
 app.Run();
+
+class BackendSmartTextAreaInference(BackendClient backend) : SmartTextAreaInference
+{
+    public override Task<string> GetInsertionSuggestionAsync(IInferenceBackend inference, SmartTextAreaConfig config, string textBefore, string textAfter)
+        => backend.GetTypeheadSuggestionAsync(new TypeaheadRequest(config.Parameters!, textBefore, textAfter), CancellationToken.None);
+}
+
+class NotImplementedInferenceBackend : IInferenceBackend
+{
+    public Task<string> GetChatResponseAsync(ChatParameters options)
+        => throw new NotImplementedException();
+}

@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" />
+    <PackageReference Include="SmartComponents.AspNetCore" />
     <PackageReference Include="StatefulReconnection" />
   </ItemGroup>
 
