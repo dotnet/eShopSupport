@@ -17,7 +17,7 @@
             </div>
             <div class="write-message">
                 <div class="textarea-host">
-                    <SmartTextArea @bind-Value="@messageText" class="control" UserRole="Customer support agent" placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
+                    <SmartTextArea @bind-Value="@messageText" class="control" UserRole="@GetSmartTextAreaRole()" placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
                 </div>
             </div>
         </Panel1>
@@ -32,6 +32,12 @@
 @code {
     private TicketDetailsResult? ticket;
     private string? messageText;
+
+    private readonly static string smartTextAreaRolePrefix = "Customer support agent for a company called Northern Mountains";
+    private readonly static string[] smartTextAreaPhrases = [
+        "Thanks for your message.",
+        "For returns, please visit https://northernmountains.example.com/returns. You can return an item within 30 days if unusued, or up to 1 year if defective.",
+    ];
 
     [Parameter]
     public int TicketId { get; set; }
