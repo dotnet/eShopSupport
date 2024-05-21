@@ -1,6 +1,9 @@
 ﻿using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using SmartComponents.Inference;
 using SmartComponents.Infrastructure;
 using SmartComponents.StaticAssets.Inference;
@@ -21,6 +24,7 @@ builder.Services.AddHttpClient<BackendClient>(client =>
 
 builder.Services.AddSmartComponents().WithInferenceBackend<NotImplementedInferenceBackend>();
 builder.Services.AddScoped<SmartTextAreaInference, BackendSmartTextAreaInference>();
+builder.AddOllamaChatCompletionService("eshopsupport-ollama");
 
 var app = builder.Build();
 
@@ -48,10 +52,37 @@ app.MapGet("/manual", async (string file, BackendClient backend, CancellationTok
 
 app.Run();
 
-class BackendSmartTextAreaInference(BackendClient backend) : SmartTextAreaInference
+class BackendSmartTextAreaInference(IChatCompletionService chatCompletionService) : SmartTextAreaInference
 {
-    public override Task<string> GetInsertionSuggestionAsync(IInferenceBackend inference, SmartTextAreaConfig config, string textBefore, string textAfter)
-        => backend.GetTypeheadSuggestionAsync(new TypeaheadRequest(config.Parameters!, textBefore, textAfter), CancellationToken.None);
+    public override async Task<string> GetInsertionSuggestionAsync(IInferenceBackend inference, SmartTextAreaConfig config, string textBefore, string textAfter)
+    {
+        ChatParameters prompt = BuildPrompt(config, textBefore, textAfter);
+        var chatHistory = new ChatHistory();
+        foreach (var message in prompt.Messages ?? Enumerable.Empty<ChatMessage>())
+        {
+            var role = message.Role switch
+            {
+                ChatMessageRole.User => AuthorRole.User,
+                ChatMessageRole.Assistant => AuthorRole.Assistant,
+                ChatMessageRole.System => AuthorRole.System,
+                _ => throw new NotImplementedException($"Unknown role: " + message.Role)
+            };
+            chatHistory.Add(new ChatMessageContent(role, message.Text));
+        }
+
+        var result = await chatCompletionService.GetChatMessageContentAsync(chatHistory, new OpenAIPromptExecutionSettings
+        {
+            Temperature = prompt.Temperature ?? 1.0,
+            TopP = prompt.TopP ?? 1.0,
+            MaxTokens = prompt.MaxTokens,
+            FrequencyPenalty = prompt.FrequencyPenalty ?? 0,
+            PresencePenalty = prompt.PresencePenalty ?? 0,
+            StopSequences = prompt.StopSequences,
+        });
+
+        var resultString = result.Content!;
+        return resultString.StartsWith("OK:[") && resultString.EndsWith("]") ? resultString[4..^1] : string.Empty;
+    }
 }
 
 class NotImplementedInferenceBackend : IInferenceBackend

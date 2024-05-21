@@ -36,6 +36,7 @@ var backend = builder.AddProject<Backend>("backend")
 
 builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
-    .WithReference(backend);
+    .WithReference(backend)
+    .WithReference(ollama);
 
 builder.Build().Run();
