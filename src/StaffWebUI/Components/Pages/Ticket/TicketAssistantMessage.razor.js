@@ -6,6 +6,13 @@ export function addMessageChunk(elem, chunk) {
     const allSearchResultsById = new Map();
 
     parsePartialJSON(messageJson).forEach(message => {
+        if (typeof message === 'string') {
+            // This is not the expected format (we expected an object).
+            // It might be an error message, so display it.
+            elem.querySelector('.message-text').textContent = message;
+            return;
+        }
+
         if (message.searchPhrase) {
             const searchInfo = elem.querySelector('.search-info');
             searchInfo.style.display = 'block';
