@@ -52,8 +52,15 @@
     {
         if (firstRender)
         {
-            await using var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Ticket/TicketAssistant.razor.js");
-            await module.InvokeVoidAsync("submitOnEnter", writeMessageElement);
+            try
+            {
+                await using var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Ticket/TicketAssistant.razor.js");
+                await module.InvokeVoidAsync("submitOnEnter", writeMessageElement);
+            }
+            catch (JSDisconnectedException)
+            {
+                // Not an error
+            }
         }
     }
 
