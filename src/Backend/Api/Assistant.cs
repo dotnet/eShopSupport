@@ -63,76 +63,72 @@ public static class Assistant
                 Temperature = 0,
             };
 
-            var numToolsExecuted = 0;
-            var isFirstMessage = true;
+            var maxIterations = 3; // On each iteration, it's allowed to call a tool or to return an answer
 
             try
             {
-                while (true)
+                // The response will be a JSON array like [{}, {}, ...]
+                await httpContext.Response.WriteAsync("[");
+
+                for (var iteration = 0; iteration < maxIterations; iteration++)
                 {
+                    if (iteration == maxIterations - 1)
+                    {
+                        chatHistory.AddMessage(AuthorRole.System,
+                            $"""
+                            Please note that \"searchPhrase\" is no longer available. Your next reply *MUST* state your answer, even if you are simply saying you do not have an answer.
+                            """);
+                    }
+
+                    // Call the chat completion service and stream its output to the HTTP response
                     var captured = string.Empty;
-                    var isFirstChunk = true;
                     await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
                     {
-                        if (isFirstChunk)
-                        {
-                            isFirstChunk = false;
-                            await httpContext.Response.WriteAsync(isFirstMessage ? "[" : ", ");
-                        }
-
                         // TODO: Force it to stop as soon as the top-level JSON object is closed, otherwise it will emit a long
                         // sequence of trailing whitespace: https://github.com/ollama/ollama/issues/2623
                         var chunkString = chunk.ToString();
                         await httpContext.Response.WriteAsync(chunkString);
                         captured += chunkString;
                     }
+                    await httpContext.Response.WriteAsync(", ");
 
-                    isFirstMessage = false;
-
-                    if (TryParseReply(captured, out var assistantReply) && !string.IsNullOrWhiteSpace(assistantReply.SearchPhrase))
+                    // If it's not trying to call a tool, we're finished
+                    if (!TryParseReply(captured, out var assistantReply) || string.IsNullOrWhiteSpace(assistantReply.SearchPhrase))
                     {
-                        if (++numToolsExecuted < 2)
-                        {
-                            var searchResults = await manualSearch.SearchAsync(ticket.ProductId, assistantReply.SearchPhrase);
-                            chatHistory.AddMessage(AuthorRole.System, $"""
-                                The assistant performed a search with term "{assistantReply.SearchPhrase}" on the user manual,
-                                which returned the following results:
-                                {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
-                                """);
-
-                            // Also emit the search result data to the response so the UI has all the metadata
-                            await httpContext.Response.WriteAsync(", ");
-                            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new
-                            {
-                                SearchResults = searchResults.Select(r => new
-                                {
-                                    r.Metadata.Id,
-                                    ProductId = GetProductId(r),
-                                    PageNumber = GetPageNumber(r),
-                                })
-                            }, _jsonOptions));
-                        }
-                        else
-                        {
-                            chatHistory.AddMessage(AuthorRole.System,
-                                $"""
-                                Please note that \"searchPhrase\" is no longer available. Your reply *MUST* state your answer, even if you are simply saying you do not have an answer.
-                                """);
-                        }
-
-                        continue;
+                        await httpContext.Response.WriteAsync("{}]");
+                        return;
                     }
 
-                    await httpContext.Response.WriteAsync("]");
-                    return;
+                    // It is trying to call a tool, so do that before the next iteration
+                    var searchResults = await manualSearch.SearchAsync(ticket.ProductId, assistantReply.SearchPhrase);
+                    chatHistory.AddMessage(AuthorRole.System, $"""
+                        The assistant performed a search with term "{assistantReply.SearchPhrase}" on the user manual,
+                        which returned the following results:
+                        {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
+                        """);
+
+                    // Also emit the search result data to the response so the UI has all the metadata
+                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new
+                    {
+                        SearchResults = searchResults.Select(r => new
+                        {
+                            r.Metadata.Id,
+                            ProductId = GetProductId(r),
+                            PageNumber = GetPageNumber(r),
+                        })
+                    }, _jsonOptions));
+                    await httpContext.Response.WriteAsync(", ");
                 }
+
+                // Since we ran out of iterations and still didn't provide an answer, give up
+                await httpContext.Response.WriteAsync("{ \"answer\": \"Sorry, I couldn't find any answer to that.\" }]");
             }
             catch (Exception ex)
             {
                 // We don't want to return the raw exception to the response as it would then show up in the chat UI
                 var logger = loggerFactory.CreateLogger(typeof(Assistant).FullName!);
                 logger.LogError(ex, "Error during chat completion.");
-                await httpContext.Response.WriteAsync("Sorry, there was a problem. Please try again.");
+                await httpContext.Response.WriteAsync("{ \"answer\": \"Sorry, there was a problem. Please try again.\" }]");
             }
         });
     }
