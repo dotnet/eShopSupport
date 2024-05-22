@@ -17,7 +17,10 @@ var vectorDb = builder
     .WithVolume("eshopsupport-vector-db-storage", "/qdrant/storage")
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
+// Use this if you want to use Ollama
 var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
+
+// ... or use this if you want to use OpenAI (having also configured the API key in appsettings)
 //var chatCompletion = builder.AddConnectionString("chatcompletion");
 
 var storage = builder.AddAzureStorage("eshopsupport-storage");
