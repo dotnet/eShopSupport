@@ -49,7 +49,8 @@ public static class Assistant
                 You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
 
                 If you are asked to write a suggested reply to the customer, set isAddressedToCustomerByName to true and address your
-                answer DIRECTLY to the customer by name (e.g., begin "Dear [name]...").
+                answer DIRECTLY to the customer by name (e.g., begin "Dear [name]...", and sign off as "Northern Mountains Support").
+                Always use paragraph breaks to improve readability.
 
                 If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchProductId": numberOrNull, "searchPhrase": "a phrase to look for in the manual" }.
                 That will search the product manual for the specified product, so you don't have to restate the name in the searchPhrase.                
