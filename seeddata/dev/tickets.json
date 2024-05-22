@@ -1,31 +1,16 @@
 [
   {
     "TicketId": 1,
-    "ProductId": 29,
-    "CustomerFullName": "Lily Smith",
-    "ShortSummary": "Inquiry about bottle opener and cleaning",
-    "LongSummary": "Inquired about a bottle opener and ease of cleaning, no further questions. Helpful responses provided.",
-    "CustomerSatisfaction": 6,
+    "ProductId": 25,
+    "CustomerFullName": "Hans Johnsson",
+    "ShortSummary": "WildBeat Outdoor Speaker audio quality problem",
+    "LongSummary": "Customer encountered bad audio quality when moving too far away. Needs assistance with maximum range or pairing reset.",
+    "CustomerSatisfaction": 3,
     "Messages": [
       {
-        "MessageId": 1,
-        "AuthorName": "Lily Smith",
-        "Text": "Hey, grill looks awesome! But does it have a bottle opener? \uD83E\uDD14"
-      },
-      {
-        "MessageId": 2,
-        "AuthorName": "Support",
-        "Text": "I\u0027m sorry, but the product manual doesn\u0027t mention anything about a bottle opener. If you have any other questions about the grill, feel free to ask!"
-      },
-      {
-        "MessageId": 3,
-        "AuthorName": "Lily Smith",
-        "Text": "Cool, thanks for checking. Do you know if it\u0027s easy to clean?"
-      },
-      {
-        "MessageId": 4,
-        "AuthorName": "Support",
-        "Text": "According to the manual, the grill should be allowed to cool down completely before cleaning. After each use, you can use a damp cloth with mild detergent to clean the exterior surfaces. Additionally, you can utilize the removable grease tray for efficient disposal of grease and residue. If you have any other questions, feel free to ask!"
+        "MessageId": 1817,
+        "AuthorName": "Hans Johnsson",
+        "Text": "Hallo, ich habe kürzlich den WildBeat Outdoor-Lautsprecher gekauft. Ist mit meinem Telefon gekoppelt, aber der Ton klingt schlecht, wenn ich mich weit weg bewege. Wie weit kann ich vom Lautsprecher entfernt sein?"
       }
     ]
   },
@@ -13691,41 +13676,31 @@
   },
   {
     "TicketId": 64,
-    "ProductId": 25,
-    "CustomerFullName": "Liam Johnson",
-    "ShortSummary": "Issue with WildBeat Outdoor Speaker",
-    "LongSummary": "Customer encountered issues with the WildBeat Outdoor Speaker. Followed user manual instructions, but problem persists. Needs further assistance with Bluetooth pairing reset.",
-    "CustomerSatisfaction": 2,
+    "ProductId": 29,
+    "CustomerFullName": "Lily Smith",
+    "ShortSummary": "Inquiry about bottle opener and cleaning",
+    "LongSummary": "Inquired about a bottle opener and ease of cleaning, no further questions. Helpful responses provided.",
+    "CustomerSatisfaction": 6,
     "Messages": [
       {
-        "MessageId": 1817,
-        "AuthorName": "Liam Johnson",
-        "Text": "Hello, I recently purchased the WildBeat Outdoor Speaker from NatureTunes and have encountered an issue with it. I need assistance with resolving this problem. Please advise on the next steps to take. Thank you."
+        "MessageId": 1,
+        "AuthorName": "Lily Smith",
+        "Text": "Hey, grill looks awesome! But does it have a bottle opener? \uD83E\uDD14"
       },
       {
-        "MessageId": 1818,
+        "MessageId": 2,
         "AuthorName": "Support",
-        "Text": "Hello, to better assist you with the issue you\u0027re experiencing, could you provide more details about the specific problem with the WildBeat Outdoor Speaker?"
+        "Text": "I\u0027m sorry, but the product manual doesn\u0027t mention anything about a bottle opener. If you have any other questions about the grill, feel free to ask!"
       },
       {
-        "MessageId": 1819,
-        "AuthorName": "Liam Johnson",
-        "Text": "The WildBeat Outdoor Speaker is not functioning properly. I\u0027m not sure what the specific problem is, but it\u0027s not working as expected."
+        "MessageId": 3,
+        "AuthorName": "Lily Smith",
+        "Text": "Cool, thanks for checking. Do you know if it\u0027s easy to clean?"
       },
       {
-        "MessageId": 1820,
+        "MessageId": 4,
         "AuthorName": "Support",
-        "Text": "Thank you for the information. Based on the user manual, I recommend ensuring that the speaker is fully charged and then trying to pair it with your mobile device via Bluetooth. If the issue persists, please let us know, and we can explore other troubleshooting steps or warranty options."
-      },
-      {
-        "MessageId": 1821,
-        "AuthorName": "Liam Johnson",
-        "Text": "The issue is not resolved. I followed the instructions in the user manual and ensured that the speaker is fully charged, but it still doesn\u0027t work properly. What should I do next?"
-      },
-      {
-        "MessageId": 1822,
-        "AuthorName": "Support",
-        "Text": "I understand that you\u0027ve followed the user manual instructions and ensured that the speaker is fully charged. If you are still experiencing issues with the WildBeat Outdoor Speaker, I recommend performing a Bluetooth pairing reset. To do this, please follow these steps: 1. Turn off the speaker, 2. Turn on the speaker and press and hold the Bluetooth button for 5 seconds until the LED indicator flashes blue and red alternately. Once in pairing mode, try connecting your mobile device to the speaker again. If the issue persists, please let us know, and we can further assist you."
+        "Text": "According to the manual, the grill should be allowed to cool down completely before cleaning. After each use, you can use a damp cloth with mild detergent to clean the exterior surfaces. Additionally, you can utilize the removable grease tray for efficient disposal of grease and residue. If you have any other questions, feel free to ask!"
       }
     ]
   },
