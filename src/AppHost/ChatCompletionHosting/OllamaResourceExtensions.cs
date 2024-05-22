@@ -7,8 +7,19 @@ namespace Aspire.Hosting;
 
 internal static class OllamaResourceExtensions
 {
-    public static IResourceBuilder<OllamaResource> AddOllama(this IDistributedApplicationBuilder builder, string name, string[] models, string? defaultModel = null, bool enableGpu = true, int? port = null)
+    public static IResourceBuilder<OllamaResource> AddOllama(this IDistributedApplicationBuilder builder, string name, string[]? models = null, string? defaultModel = null, bool enableGpu = true, int? port = null)
     {
+        if (models is null or { Length: 0 })
+        {
+            const string configKey = "OllamaModel";
+            var configuredModel = builder.Configuration[configKey];
+            if (string.IsNullOrEmpty(configuredModel))
+            {
+                throw new InvalidOperationException($"Expected the parameter '{nameof(models)}' to be nonempty, or to find a configuration value '{configKey}', but neither were provided.");
+            }
+            models = [configuredModel];
+        }
+
         var resource = new OllamaResource(name, models, defaultModel, enableGpu);
         var ollama = builder.AddResource(resource)
             .WithHttpEndpoint(port: port, targetPort: 11434)
