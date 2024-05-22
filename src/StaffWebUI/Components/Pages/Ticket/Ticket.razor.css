@@ -39,7 +39,7 @@
 }
 
 .write-message {
-    height: 125px;
+    height: 200px;
     background: var(--neutral-layer-2);
     border-top: calc(var(--stroke-width)* 1px) solid var(--neutral-stroke-active);
     flex-shrink: 0;

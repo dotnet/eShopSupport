@@ -90,7 +90,7 @@ internal class OllamaChatCompletionService : IChatCompletionService
             Options = new
             {
                 Temperature = openAiPromptExecutionSettings?.Temperature ?? 0.5,
-                NumPredict = openAiPromptExecutionSettings?.MaxTokens ?? 200,
+                NumPredict = openAiPromptExecutionSettings?.MaxTokens ?? null,
                 TopP = openAiPromptExecutionSettings?.TopP ?? 1.0,
                 Stop = openAiPromptExecutionSettings?.StopSequences,
             },
