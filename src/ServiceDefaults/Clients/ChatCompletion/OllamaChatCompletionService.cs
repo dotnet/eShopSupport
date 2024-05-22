@@ -1,13 +1,13 @@
-﻿using System.Linq.Expressions;
+﻿using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-namespace eShopSupport.Backend;
+namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OllamaChatCompletionService : IChatCompletionService
+internal class OllamaChatCompletionService : IChatCompletionService
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;

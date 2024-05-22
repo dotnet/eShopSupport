@@ -26,7 +26,7 @@ builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
-builder.AddOllamaChatCompletionService("eshopsupport-ollama");
+builder.AddChatCompletionService("chatcompletion");
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
