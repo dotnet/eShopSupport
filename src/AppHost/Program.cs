@@ -17,8 +17,8 @@ var vectorDb = builder
     .WithVolume("eshopsupport-vector-db-storage", "/qdrant/storage")
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
-//var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
-var chatCompletion = builder.AddConnectionString("chatcompletion");
+var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
+//var chatCompletion = builder.AddConnectionString("chatcompletion");
 
 var storage = builder.AddAzureStorage("eshopsupport-storage");
 if (builder.Environment.IsDevelopment())

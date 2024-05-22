@@ -56,6 +56,7 @@ internal static class OllamaResourceExtensions
         var defaultModel = ollamaBuilder.Resource.DefaultModel ?? ollamaBuilder.Resource.Models.FirstOrDefault();
         return builder
             .WithReference(ollamaBuilder.GetEndpoint("http"))
+            .WithEnvironment($"{ollamaBuilder.Resource.Name}:Type", "ollama")
             .WithEnvironment($"{ollamaBuilder.Resource.Name}:LlmModelName", defaultModel);
     }
 
