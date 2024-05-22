@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Web;
-using Microsoft.AspNetCore.Http;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 

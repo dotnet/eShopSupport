@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Hosting;
 using Projects;
 
 var builder = DistributedApplication.CreateBuilder(args);
+builder.Configuration.Sources.Add(new JsonConfigurationSource { Path = "appsettings.Local.json", Optional = true });
 
 var dbPassword = builder.AddParameter("PostgresPassword", secret: true);
 
@@ -16,8 +18,10 @@ var vectorDb = builder
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
 var llmModelName = builder.Configuration["LlmModelName"]!;
-var ollama = builder.AddOllama("eshopsupport-ollama", models: [llmModelName])
-       .WithDataVolume();
+
+//var chatCompletion = builder.AddOllama("chatcompletion", models: [llmModelName])
+//       .WithDataVolume();
+var chatCompletion = builder.AddConnectionString("chatcompletion");
 
 var storage = builder.AddAzureStorage("eshopsupport-storage");
 if (builder.Environment.IsDevelopment())
@@ -29,7 +33,7 @@ var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
-    .WithReference(ollama)
+    .WithReference(chatCompletion)
     .WithReference(blobStorage)
     .WithReference(vectorDb.GetEndpoint("http"))
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));

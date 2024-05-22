@@ -5,18 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Aspire.Hosting;
 
-internal class OllamaResource(string name, string[] models, string? defaultModel, bool enableGpu) : ContainerResource(name)
-{
-    public string[] Models { get; } = models;
-    public string? DefaultModel { get; } = defaultModel;
-    public bool EnableGpu { get; } = enableGpu;
-}
-
-internal class OllamaModelDownloaderResource(string name, OllamaResource ollamaResource) : Resource(name)
-{
-    public OllamaResource ollamaResource { get; } = ollamaResource;
-}
-
 internal static class OllamaResourceExtensions
 {
     public static IResourceBuilder<OllamaResource> AddOllama(this IDistributedApplicationBuilder builder, string name, string[] models, string? defaultModel = null, bool enableGpu = true, int? port = null)
@@ -154,5 +142,10 @@ internal static class OllamaResourceExtensions
 
         record OllamaGetTagsResponse(OllamaGetTagsResponseModel[]? Models);
         record OllamaGetTagsResponseModel(string Name);
+    }
+
+    private class OllamaModelDownloaderResource(string name, OllamaResource ollamaResource) : Resource(name)
+    {
+        public OllamaResource ollamaResource { get; } = ollamaResource;
     }
 }

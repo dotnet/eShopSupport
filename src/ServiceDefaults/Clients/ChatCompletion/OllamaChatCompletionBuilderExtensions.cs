@@ -4,7 +4,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Microsoft.Extensions.Hosting;
 
-public static class OllamaChatCompletionBuilderExtensions
+internal static class OllamaChatCompletionBuilderExtensions
 {
     public static void AddOllamaChatCompletionService(this IHostApplicationBuilder builder, string name)
     {
