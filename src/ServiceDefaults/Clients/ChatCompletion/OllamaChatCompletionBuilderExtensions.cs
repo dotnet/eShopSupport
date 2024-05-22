@@ -1,4 +1,5 @@
-﻿using eShopSupport.Backend;
+﻿using eShopSupport.ServiceDefaults.Clients.ChatCompletion;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Microsoft.Extensions.Hosting;
