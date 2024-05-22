@@ -38,5 +38,13 @@ export function addMessageChunk(elem, chunk) {
                 referenceLink.querySelector('.ref-text').textContent = message.mostRelevantSearchQuote || 'Reference';
             }
         }
+        
+        if (message.isSuggestedReplyToCustomer) {
+            const suggestedReplyField = elem.querySelector('[name=suggested-reply]');
+            if (suggestedReplyField.value !== message.answer) {
+                suggestedReplyField.value = message.answer;
+                suggestedReplyField.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
     });
 }

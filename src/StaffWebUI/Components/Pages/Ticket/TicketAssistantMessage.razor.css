@@ -99,3 +99,8 @@
 html:not(.dark-mode) .reference-link {
     color: var(--accent-fill-rest);
 }
+
+::deep .use-as-reply {
+    margin-top: 0.8rem;
+    text-align: center;
+}

@@ -23,7 +23,7 @@
         {
             var id = @$"message{i}";
             var state = messages[i]!;
-            <TicketAssistantMessage @key="@id" State="@state" OnCompleted="@HandleResponseCompleted" />
+            <TicketAssistantMessage @key="@id" State="@state" OnCompleted="@HandleResponseCompleted" OnSuggestedReply="@OnSuggestedReply" />
         }
     </div>
 </div>
@@ -38,10 +38,13 @@
     List<MessageState> messages = new();
     ElementReference writeMessageElement;
     string? userMessageText;
-    string[] suggestions = ["What does the manual say about this?", "Suggest a reply for the customer."];
+    string[] suggestions = ["What does the manual say about this?", "Write a suggested reply to the customer."];
 
     [Parameter, EditorRequired]
     public int TicketId { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSuggestedReply { get; set; }
 
     bool ReplyInProgress => currentReplyCancellationTokenSource?.IsCancellationRequested == false;
 

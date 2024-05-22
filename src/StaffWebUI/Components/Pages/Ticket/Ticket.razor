@@ -15,12 +15,12 @@
                 <TicketMessages Ticket="@ticket" />
             </div>
             <div class="write-message">
-                <FluentTextArea Placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
+                <FluentTextArea @ref="replyTextArea" @bind-Value="@replyText" Placeholder="Reply to the customer" style="width: 100%; height: 100%;" />
             </div>
         </Panel1>
         <Panel2>
             <div class="assistant">
-                <TicketAssistant TicketId="@TicketId" />
+                <TicketAssistant TicketId="@TicketId" OnSuggestedReply="@AcceptSuggestedReply" />
             </div>  
         </Panel2>
     </FluentSplitter>
@@ -28,6 +28,8 @@
 
 @code {
     private TicketDetailsResult? ticket;
+    private string? replyText;
+    private FluentTextArea? replyTextArea;
 
     [Parameter]
     public int TicketId { get; set; }
@@ -36,5 +38,11 @@
     {
         ticket = null;
         ticket = await Backend.GetTicketDetailsAsync(TicketId);
+    }
+
+    private void AcceptSuggestedReply(string suggestion)
+    {
+        replyText = suggestion;
+        replyTextArea?.FocusAsync();
     }
 }
