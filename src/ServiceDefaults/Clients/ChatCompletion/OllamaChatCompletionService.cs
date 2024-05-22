@@ -11,7 +11,10 @@ internal class OllamaChatCompletionService : IChatCompletionService
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+    };
 
     public OllamaChatCompletionService(HttpClient httpClient, string modelName)
     {
@@ -21,30 +24,19 @@ internal class OllamaChatCompletionService : IChatCompletionService
 
     public IReadOnlyDictionary<string, object?> Attributes => throw new NotImplementedException();
 
-    public Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var request = new HttpRequestMessage(HttpMethod.Post, "/api/chat");
+        request.Content = PrepareChatRequestContent(chatHistory, executionSettings, false);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        var responseContent = await response.Content.ReadFromJsonAsync<OllamaResponseStreamEntry>(_jsonSerializerOptions, cancellationToken);
+        return [new ChatMessageContent(AuthorRole.Assistant, responseContent!.Message!.Content)];
     }
 
     public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/chat");
-        var openAiPromptExecutionSettings = executionSettings as OpenAIPromptExecutionSettings;
-        var json = openAiPromptExecutionSettings?.ResponseFormat is "json_object";
-        request.Content = JsonContent.Create(new
-        {
-            Model = _modelName,
-            Messages = chatHistory.Select(m => new
-            {
-                Role = ToOllamaRole(m.Role),
-                Content = m.ToString(),
-            }),
-            Format = json ? "json" : null,
-            Options = new
-            {
-                Temperature = openAiPromptExecutionSettings?.Temperature ?? 0.5,
-            }
-        }, options: _jsonSerializerOptions);
+        request.Content = PrepareChatRequestContent(chatHistory, executionSettings, true);
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         var responseStream = await response.Content.ReadAsStreamAsync();
@@ -66,6 +58,30 @@ internal class OllamaChatCompletionService : IChatCompletionService
                 throw new InvalidOperationException("Invalid response entry from Ollama");
             }
         }
+    }
+
+    private JsonContent PrepareChatRequestContent(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, bool streaming)
+    {
+        var openAiPromptExecutionSettings = executionSettings as OpenAIPromptExecutionSettings;
+        var json = openAiPromptExecutionSettings?.ResponseFormat is "json_object";
+        return JsonContent.Create(new
+        {
+            Model = _modelName,
+            Messages = chatHistory.Select(m => new
+            {
+                Role = ToOllamaRole(m.Role),
+                Content = m.ToString(),
+            }),
+            Format = json ? "json" : null,
+            Options = new
+            {
+                Temperature = openAiPromptExecutionSettings?.Temperature ?? 0.5,
+                NumPredict = openAiPromptExecutionSettings?.MaxTokens ?? 200,
+                TopP = openAiPromptExecutionSettings?.TopP ?? 1.0,
+                Stop = openAiPromptExecutionSettings?.StopSequences,
+            },
+            Stream = streaming,
+        }, options: _jsonSerializerOptions);
     }
 
     private static string ToOllamaRole(AuthorRole role)
