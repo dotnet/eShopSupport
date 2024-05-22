@@ -48,9 +48,10 @@ public static class Assistant
                 If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string }
                 You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
 
-                If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchPhrase": "a phrase to look for in the manual" }.
-                That will search the product manual for this specific product, so you don't have to restate the product ID or name.
-                
+                If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchProductId": numberOrNull, "searchPhrase": "a phrase to look for in the manual" }.
+                That will search the product manual for the specified product, so you don't have to restate the name in the searchPhrase.                
+                If the question needs information from ALL product manuals (not just the one for this product), then set searchProductId to null.
+
                 Remember that you are only answering the support agent's question to you. You are not answering the customer's question directly.
                 Here is the real support agent's question for you to answer:
                 """);
@@ -100,11 +101,11 @@ public static class Assistant
                     }
 
                     // It is trying to call a tool, so do that before the next iteration
-                    var searchResults = await manualSearch.SearchAsync(ticket.ProductId, assistantReply.SearchPhrase);
+                    var searchResults = await manualSearch.SearchAsync(assistantReply.SearchProductId, assistantReply.SearchPhrase);
                     chatHistory.AddMessage(AuthorRole.System, $"""
                         The assistant performed a search with term "{assistantReply.SearchPhrase}" on the user manual,
                         which returned the following results:
-                        {string.Join("\n", searchResults.Select(r => $"<search_result resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
+                        {string.Join("\n", searchResults.Select(r => $"<search_result productId=\"{GetProductId(r)}\" resultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
                         """);
 
                     // Also emit the search result data to the response so the UI has all the metadata
@@ -162,6 +163,7 @@ public static class Assistant
     class AssistantReply
     {
         public string? Answer { get; set; }
+        public int? SearchProductId { get; set; }
         public string? SearchPhrase { get; set; }
     }
 }

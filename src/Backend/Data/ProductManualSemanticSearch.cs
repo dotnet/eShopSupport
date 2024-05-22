@@ -11,22 +11,25 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
 {
     private const string ManualCollectionName = "manuals";
 
-    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(int productId, string query)
+    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(int? productId, string query)
     {
         var embedding = await embedder.GenerateEmbeddingAsync(query);
+        var filter = !productId.HasValue
+            ? null
+            : new
+            {
+                must = new[]
+                {
+                    new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
+                }
+            };
         var response = await httpClient.PostAsync($"http://vector-db/collections/{ManualCollectionName}/points/search",
             JsonContent.Create(new
             {
                 vector = embedding,
                 with_payload = new[] { "id", "text", "external_source_name", "additional_metadata" },
                 limit = 3,
-                filter = new
-                {
-                    must = new[]
-                    {
-                        new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
-                    }
-                }
+                filter = filter,
             }));
 
         var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();
