@@ -39,7 +39,7 @@ export function addMessageChunk(elem, chunk) {
             }
         }
         
-        if (message.isSuggestedReplyToCustomer) {
+        if (message.isAddressedToCustomerByName) {
             const suggestedReplyField = elem.querySelector('[name=suggested-reply]');
             if (suggestedReplyField.value !== message.answer) {
                 suggestedReplyField.value = message.answer;

@@ -27,7 +27,7 @@ else
             <div class="message-text">...</div>
 
             <input type="hidden" name="suggested-reply" @bind="suggestedReply" />
-            @if (!string.IsNullOrEmpty(suggestedReply))
+            @if (finished && !string.IsNullOrEmpty(suggestedReply))
             {
                 <div class="use-as-reply">
                     <FluentButton Appearance="Appearance.Accent" OnClick="@UseAsReplyAsync">Use as reply</FluentButton>
@@ -51,6 +51,7 @@ else
     private string? suggestedReply;
     private ElementReference messageContentElement;
     private bool visible;
+    private bool finished;
 
     [Parameter, EditorRequired]
     public TicketAssistant.MessageState State { get; set; } = default!;
@@ -98,6 +99,7 @@ else
                 // Not an error
             }
 
+            finished = true;
             await OnCompleted.InvokeAsync(State);
         }
     }

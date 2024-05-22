@@ -45,9 +45,11 @@ public static class Assistant
 
                 If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.
 
-                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string, "isSuggestedReplyToCustomer": trueOrFalse }
+                If the context provides information, use it to add an answer like this: { "gotEnoughInfoAlready": true, "answer": string, "mostRelevantSearchResultId": number, "mostRelevantSearchQuote": string, "isAddressedToCustomerByName": trueOrFalse }
                 You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
-                isSuggestedReplyToCustomer indicates whether the response is DIRECTLY addressed to the customer (suitable to send to them verbatim).
+
+                If you are asked to write a suggested reply to the customer, set isAddressedToCustomerByName to true and address your
+                answer DIRECTLY to the customer by name (e.g., begin "Dear [name]...").
 
                 If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchProductId": numberOrNull, "searchPhrase": "a phrase to look for in the manual" }.
                 That will search the product manual for the specified product, so you don't have to restate the name in the searchPhrase.                
@@ -164,7 +166,6 @@ public static class Assistant
     class AssistantReply
     {
         public string? Answer { get; set; }
-        public bool? IsSuggestedReplyToCustomer { get; set; }
         public int? SearchProductId { get; set; }
         public string? SearchPhrase { get; set; }
     }
