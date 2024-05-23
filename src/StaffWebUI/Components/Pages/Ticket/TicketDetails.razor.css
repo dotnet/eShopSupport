@@ -26,61 +26,7 @@
     transform: scaleY(1);
 }
 
-/* The following 50 or so lines of CSS are to make SmartComboBox look like a Fluent input */
-/* TODO: Surely there's a better way to inherit the styling by subclassing something from FluentUI */
-
-.product-lookup {
-    position: relative;
-}
-
-::deep .combobox {
-    color: var(--neutral-foreground-rest);
-    fill: currentcolor;
-    font-family: var(--body-font);
-    user-select: none;
-    width: 100%;
-    background: padding-box linear-gradient(var(--neutral-fill-input-rest), var(--neutral-fill-input-rest)), border-box var(--neutral-stroke-input-rest);
-    border: calc(var(--stroke-width)* 1px) solid transparent;
-    border-radius: calc(var(--control-corner-radius)* 1px);
-    padding: 0 calc(var(--design-unit)* 2.25px);
-    line-height: var(--type-ramp-base-line-height);
-    height: calc((var(--base-height-multiplier) + var(--density))* var(--design-unit)* 1px);
-    outline: none;
-    position: relative;
-}
-
-.product-lookup label {
-    margin-bottom: calc(var(--design-unit)* 1px);
-}
-
-.product-lookup:focus-within::after {
-    content: '';
-    position: absolute;
-    height: calc(var(--focus-stroke-width)* 1px);
-    bottom: 0;
-    border-bottom: calc(var(--focus-stroke-width)* 1px) solid var(--accent-fill-rest);
-    border-bottom-left-radius: calc(var(--control-corner-radius)* 1px);
-    border-bottom-right-radius: calc(var(--control-corner-radius)* 1px);
-    z-index: 2;
-    transition: all 300ms cubic-bezier(0.1,0.9,0.2,1);
-    width: 100%;
-    left: 0;
-    bottom: 0;
-}
-
-::deep .smartcombobox-suggestions {
-    background-color: var(--neutral-fill-rest);
-    color: var(--neutral-foreground-rest);
-    border-radius: calc(var(--layer-corner-radius)* 1px);
-    border-color: var(--neutral-stroke-rest);
-    margin-top: 2px;
-}
-
-::deep .smartcombobox-suggestion:not(.selected):hover {
-    background-color: var(--neutral-stroke-hover);
-}
-
-::deep .smartcombobox-suggestion.selected {
-    background-color: var(--accent-fill-rest);
-    color: var(--foreground-on-accent-rest);
+/* The autocomplete shows a slightly odd empty list if there's no match, so hide it in that case */
+.product-picker ::deep fluent-anchored-region:not(:has(fluent-option)) {
+    opacity: 0;
 }

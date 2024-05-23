@@ -1,5 +1,4 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
-@using SmartComponents
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject BackendClient Backend
 <EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
@@ -15,11 +14,12 @@
         <div>
             <FluentSelect TOption="TicketStatus" @bind-SelectedOption="@ticketStatus" Items="@allTicketStatuses"
                 Label="Status" OptionText="@TicketStatusDisplayText" style="width: 100%; min-width: 12rem;"
-                @bind-SelectedOption:after="@MarkTicketStatusModified"/>
+                @bind-SelectedOption:after="@MarkTicketStatusModified" />
         </div>
-        <div class="product-lookup">
-            <label>Product</label>
-            <SmartComboBox class="combobox" @bind-Value="productName" Url="product-lookup" />
+        <div class="product-picker">
+            <FluentAutocomplete TOption="FindProductsResult" @bind-SelectedOptions="@ticketProduct" MaximumSelectedOptions="1"
+                Label="Product" OptionText="@FindProductDisplayText" style="width: 100%; min-width: 12rem;"
+                OnOptionsSearch="LookupProductAsync" @bind-SelectedOptions:after="@MarkTicketProductModified" />
         </div>
         <div class="actions">
             @if (!isSaving)
@@ -45,10 +45,8 @@
     int loadedTicketId;
     TicketType ticketType;
     TicketStatus ticketStatus;
-    string? productName;
-    ProductLookup? ticketProduct;
+    IEnumerable<FindProductsResult>? ticketProduct;
     bool isSaving;
-    ProductLookup[]? productOptions;
 
     [Parameter, EditorRequired]
     public TicketDetailsResult Ticket { get; set; } = default!;
@@ -62,7 +60,7 @@
             loadedTicketId = Ticket.TicketId;
             ticketType = Ticket.TicketType;
             ticketStatus = Ticket.TicketStatus;
-            ticketProduct = Ticket.ProductId.HasValue ? new ProductLookup(Ticket.ProductId.Value, Ticket.ProductName!) : null;
+            ticketProduct = Ticket.ProductId.HasValue ? [new FindProductsResult(Ticket.ProductId.Value, Ticket.ProductBrand!, Ticket.ProductModel!)] : [];
         }
     }
 
@@ -71,11 +69,14 @@
         => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketType));
     private void MarkTicketStatusModified()
         => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketStatus));
+    private void MarkTicketProductModified()
+        => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketProduct));
 
     async Task SaveChangesAsync()
     {
         isSaving = true;
-        var saveTask = Backend.UpdateTicketDetailsAsync(Ticket.TicketId, ticketType, ticketStatus);
+        var productId = ticketProduct?.FirstOrDefault()?.ProductId;
+        var saveTask = Backend.UpdateTicketDetailsAsync(Ticket.TicketId, productId, ticketType, ticketStatus);
         await Task.WhenAll(saveTask, Task.Delay(250));
         editContext.MarkAsUnmodified();
 
@@ -102,18 +103,10 @@
         _ => "Unknown"
     };
 
-    async Task UpdateProductNameOptionsAsync()
-    {
-        await Task.Delay(500);
-        productOptions = new[]
-        {
-            new ProductLookup(1, "Product 1"),
-            new ProductLookup(2, "Product 2"),
-            new ProductLookup(3, "Product 3"),
-            new ProductLookup(4, "Product 4"),
-            new ProductLookup(5, "Product 5"),
-        };
-    }
+    string FindProductDisplayText(FindProductsResult product) => $"{product.Model} ({product.Brand})";
 
-    record ProductLookup(int ProductId, string DisplayText);
+    async Task LookupProductAsync(OptionsSearchEventArgs<FindProductsResult> args)
+    {
+        args.Items = !string.IsNullOrWhiteSpace(args.Text) ? await Backend.FindProductsAsync(args.Text) : [];
+    }
 }

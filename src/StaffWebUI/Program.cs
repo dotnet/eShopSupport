@@ -40,11 +40,4 @@ app.MapGet("/manual", async (string file, BackendClient backend, CancellationTok
     return result is null ? Results.NotFound() : Results.Stream(result, "application/pdf");
 });
 
-app.MapPost("/product-lookup", async (HttpRequest request) =>
-{
-    var form = await request.ReadFormAsync();
-    var inputValue = form["inputValue"];
-    return new string[] { "Product 1 " + inputValue, "Product 2", "Product 3" };
-});
-
 app.Run();

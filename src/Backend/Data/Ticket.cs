@@ -7,7 +7,7 @@ public class Ticket
 {
     public int TicketId { get; set; }
     
-    public int ProductId { get; set; }
+    public int? ProductId { get; set; }
 
     public Product? Product { get; set; }
 

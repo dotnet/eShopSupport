@@ -12,7 +12,6 @@
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
-    <PackageReference Include="SmartComponents.AspNetCore.Components" />
     <PackageReference Include="StatefulReconnection" />
   </ItemGroup>
 
