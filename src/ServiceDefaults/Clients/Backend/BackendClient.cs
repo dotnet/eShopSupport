@@ -27,6 +27,11 @@ public class BackendClient(HttpClient http)
         var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         return response.IsSuccessStatusCode ? await response.Content.ReadAsStreamAsync(cancellationToken) : null;
     }
+
+    public async Task SendTicketMessageAsync(int ticketId, SendTicketMessageRequest message)
+    {
+        await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
+    }
 }
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
@@ -47,3 +52,5 @@ public class AssistantChatRequestMessage
     public bool IsAssistant { get; set; }
     public required string Text { get; set; }
 }
+
+public record SendTicketMessageRequest(string Text);

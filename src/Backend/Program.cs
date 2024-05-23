@@ -102,5 +102,6 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
 });
 
 app.MapAssistantEndpoints();
+app.MapTicketMessagingEndpoints();
 
 app.Run();
