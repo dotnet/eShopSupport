@@ -44,6 +44,8 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
         ticket.CustomerFullName,
         ticket.ShortSummary,
         ticket.LongSummary,
+        ticket.TicketType,
+        ticket.TicketStatus,
         ticket.CustomerSatisfaction,
         ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.AuthorName, m.Text)).ToList()
     ));

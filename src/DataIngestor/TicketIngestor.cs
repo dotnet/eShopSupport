@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using eShopSupport.Backend.Data;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 
 class TicketIngestor
 {
@@ -19,6 +20,8 @@ class TicketIngestor
             {
                 TicketId = generated.TicketId,
                 ProductId = generated.ProductId,
+                TicketType = Enum.Parse<TicketType>(generated.TicketType),
+                TicketStatus = Enum.Parse<TicketStatus>(generated.TicketStatus),
                 CustomerFullName = generated.CustomerFullName,
                 ShortSummary = generated.ShortSummary,
                 LongSummary = generated.LongSummary,
@@ -40,6 +43,6 @@ class TicketIngestor
         Console.WriteLine($"Wrote {tickets.Count} tickets");
     }
 
-    internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
+    internal record GeneratedTicket(int TicketId, int ProductId, string TicketType, string TicketStatus, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
     internal record GeneratedMessage(int MessageId, int AuthorRole, string Text);
 }

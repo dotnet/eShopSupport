@@ -3,15 +3,17 @@
 <EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
     <div class="details-grid @(editContext.IsModified() ? "modified": "")">
         <div>
-            <FluentSelect TOption="TicketType" @bind-SelectedOption="@ticketType" Items="@TicketTypes"
-                Label="Case type" OptionText="@(x => x.DisplayText)" style="width: 100%; min-width: 12rem;"
+            <FluentSelect TOption="TicketType" @bind-SelectedOption="@ticketType" Items="@allTicketTypes"
+                Label="Case type" OptionText="@TicketTypeDisplayText" style="width: 100%; min-width: 12rem;"
                 @bind-SelectedOption:after="@MarkTicketTypeModified" />
         </div>
         <div>
             <FluentTextField Label="Customer" style="width: 100%;" Value="@Ticket?.CustomerFullName" ReadOnly />
         </div>
         <div>
-            <FluentSelect @bind-SelectedOption="@ticketStatus" TOption="string" Items="@TicketStatuses" Label="Status" style="width: 100%; min-width: 12rem;" />
+            <FluentSelect TOption="TicketStatus" @bind-SelectedOption="@ticketStatus" Items="@allTicketStatuses"
+                Label="Status" OptionText="@TicketStatusDisplayText" style="width: 100%; min-width: 12rem;"
+                @bind-SelectedOption:after="@MarkTicketStatusModified"/>
         </div>
         <div>
             <FluentTextField @bind-Value="ticketProductName" TOption="string" Label="Product" style="width: 100%;" />
@@ -35,16 +37,10 @@
     private readonly Icon saveIcon = new Icons.Regular.Size20.Save();
     EditContext editContext;
 
-    static TicketType[] TicketTypes = [
-        new TicketType(1, "❔ Question"),
-    new TicketType(2, "💭 Comment / idea"),
-    new TicketType(3, "🙁 Complaint"),
-    new TicketType(4, "📦 Returns")
-    ];
-    TicketType ticketType = TicketTypes[0];
-
-    string[] TicketStatuses = ["⏳ Open", "✅ Closed"];
-    string? ticketStatus;
+    readonly TicketType[] allTicketTypes = Enum.GetValues<TicketType>();
+    readonly TicketStatus[] allTicketStatuses = Enum.GetValues<TicketStatus>();
+    TicketType ticketType;
+    TicketStatus ticketStatus;
     string? ticketProductName;
     private bool isSaving;
 
@@ -55,14 +51,15 @@
 
     protected override void OnInitialized()
     {
-        // TODO: Populate initial state from ticket
+        ticketType = Ticket.TicketType;
+        ticketStatus = Ticket.TicketStatus;
     }
 
     // Workaround for https://github.com/microsoft/fluentui-blazor/issues/2086
     private void MarkTicketTypeModified()
         => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketType));
-
-    record TicketType(int TicketTypeId, string DisplayText);
+    private void MarkTicketStatusModified()
+        => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketStatus));
 
     async Task SaveChangesAsync()
     {
@@ -76,4 +73,20 @@
         await Task.Delay(1000);
         isSaving = false;
     }
+
+    string TicketStatusDisplayText(TicketStatus status) => status switch
+    {
+        TicketStatus.Open => "⏳ Open",
+        TicketStatus.Closed => "✅ Closed",
+        _ => "Unknown"
+    };
+
+    string TicketTypeDisplayText(TicketType type) => type switch
+    {
+        TicketType.Question => "❔ Question",
+        TicketType.Idea => "💭 Comment / idea",
+        TicketType.Complaint => "🙁 Complaint",
+        TicketType.Returns => "📦 Returns",
+        _ => "Unknown"
+    };
 }

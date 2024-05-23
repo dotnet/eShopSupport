@@ -41,6 +41,7 @@ public record ListTicketsResultItem(
 
 public record TicketDetailsResult(
     int TicketId, string CustomerFullName, string? ShortSummary, string? LongSummary,
+    TicketType TicketType, TicketStatus TicketStatus,
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
@@ -54,3 +55,17 @@ public class AssistantChatRequestMessage
 }
 
 public record SendTicketMessageRequest(string Text);
+
+public enum TicketStatus
+{
+    Open,
+    Closed,
+}
+
+public enum TicketType
+{
+    Question,
+    Idea,
+    Complaint,
+    Returns,
+}
