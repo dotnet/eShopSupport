@@ -1,4 +1,5 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using SmartComponents
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject BackendClient Backend
 <EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
@@ -16,8 +17,9 @@
                 Label="Status" OptionText="@TicketStatusDisplayText" style="width: 100%; min-width: 12rem;"
                 @bind-SelectedOption:after="@MarkTicketStatusModified"/>
         </div>
-        <div>
-            <FluentTextField @bind-Value="ticketProductName" TOption="string" Label="Product" style="width: 100%;" />
+        <div class="product-lookup">
+            <label>Product</label>
+            <SmartComboBox class="combobox" @bind-Value="productName" Url="product-lookup" />
         </div>
         <div class="actions">
             @if (!isSaving)
@@ -43,8 +45,10 @@
     int loadedTicketId;
     TicketType ticketType;
     TicketStatus ticketStatus;
-    string? ticketProductName;
-    private bool isSaving;
+    string? productName;
+    ProductLookup? ticketProduct;
+    bool isSaving;
+    ProductLookup[]? productOptions;
 
     [Parameter, EditorRequired]
     public TicketDetailsResult Ticket { get; set; } = default!;
@@ -58,7 +62,7 @@
             loadedTicketId = Ticket.TicketId;
             ticketType = Ticket.TicketType;
             ticketStatus = Ticket.TicketStatus;
-            ticketProductName = Ticket.ProductName;
+            ticketProduct = Ticket.ProductId.HasValue ? new ProductLookup(Ticket.ProductId.Value, Ticket.ProductName!) : null;
         }
     }
 
@@ -97,4 +101,19 @@
         TicketType.Returns => "📦 Returns",
         _ => "Unknown"
     };
+
+    async Task UpdateProductNameOptionsAsync()
+    {
+        await Task.Delay(500);
+        productOptions = new[]
+        {
+            new ProductLookup(1, "Product 1"),
+            new ProductLookup(2, "Product 2"),
+            new ProductLookup(3, "Product 3"),
+            new ProductLookup(4, "Product 4"),
+            new ProductLookup(5, "Product 5"),
+        };
+    }
+
+    record ProductLookup(int ProductId, string DisplayText);
 }
