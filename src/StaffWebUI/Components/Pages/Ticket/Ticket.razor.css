@@ -81,7 +81,6 @@ html.dark-mode .ticket ::deep .splitter [slot='2'] {
     height: 2.75rem;
     transform: scaleY(1);
     margin-top: 0.75rem;
-
 }
 
 .assistant {

@@ -7,8 +7,26 @@
 }
 
 .actions {
-    /* TODO: Make this appear only when there are changes to save */
-    display: none;
     grid-column: 1 / -1;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scaleY(0);
+    height: 0;
+    transition-property: opacity transform height;
+    transition-timing-function: cubic-bezier(.16,.75,.35,1.02);
+    transition-duration: 0.3s;
+    transition-delay: 0.05s;
+}
+
+.modified .actions {
+    opacity: 1;
+    height: 2.75rem;
+    transform: scaleY(1);
+}
+
+/* The autocomplete shows a slightly odd empty list if there's no match, so hide it in that case */
+.product-picker ::deep fluent-anchored-region:not(:has(fluent-option)) {
+    opacity: 0;
 }

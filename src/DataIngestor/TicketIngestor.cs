@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
 using eShopSupport.Backend.Data;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 
 class TicketIngestor
 {
-    public async Task RunAsync(string generatedDataPath)
+    public async Task RunAsync(string generatedDataPath, string outputDir)
     {
         Console.WriteLine("Ingesting tickets...");
 
@@ -19,6 +20,8 @@ class TicketIngestor
             {
                 TicketId = generated.TicketId,
                 ProductId = generated.ProductId,
+                TicketType = Enum.Parse<TicketType>(generated.TicketType),
+                TicketStatus = Enum.Parse<TicketStatus>(generated.TicketStatus),
                 CustomerFullName = generated.CustomerFullName,
                 ShortSummary = generated.ShortSummary,
                 LongSummary = generated.LongSummary,
@@ -32,14 +35,11 @@ class TicketIngestor
             });
         }
 
-        var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
-        var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
-
         var outputOptions = new JsonSerializerOptions { WriteIndented = true };
         await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets, outputOptions));
         Console.WriteLine($"Wrote {tickets.Count} tickets");
     }
 
-    internal record GeneratedTicket(int TicketId, int ProductId, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
+    internal record GeneratedTicket(int TicketId, int ProductId, string TicketType, string TicketStatus, string CustomerFullName, string ShortSummary, string LongSummary, int? CustomerSatisfaction, List<GeneratedMessage> Messages);
     internal record GeneratedMessage(int MessageId, int AuthorRole, string Text);
 }

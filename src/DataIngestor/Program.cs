@@ -28,5 +28,10 @@ if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPa
     return;
 }
 
-await new TicketIngestor().RunAsync(generatedDataPath);
-await new ManualIngestor().RunAsync(generatedDataPath);
+var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
+var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
+
+await new TicketIngestor().RunAsync(generatedDataPath, outputDir);
+await new ProductCategoryIngestor().RunAsync(generatedDataPath, outputDir);
+await new ProductIngestor().RunAsync(generatedDataPath, outputDir);
+await new ManualIngestor().RunAsync(generatedDataPath, outputDir);

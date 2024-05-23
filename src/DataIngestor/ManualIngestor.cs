@@ -8,12 +8,9 @@ using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 public class ManualIngestor
 {
-    public async Task RunAsync(string generatedDataPath)
+    public async Task RunAsync(string generatedDataPath, string outputDir)
     {
         Console.WriteLine("Ingesting manuals...");
-
-        var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
-        var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
 
         // First make a zip of the manual PDF files
         var manualsSourceDir = Path.Combine(generatedDataPath, "manuals", "pdf");

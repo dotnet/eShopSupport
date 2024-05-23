@@ -9,7 +9,10 @@
     <FluentSplitter BarSize="6" BarHandle="false" Panel1MinSize="300px" Panel2Size="350px" Panel2MinSize="200px" Class="splitter">
         <Panel1>
             <div class="details">
-                <TicketDetails Ticket="@ticket" />
+                @if (ticket is not null)
+                {
+                    <TicketDetails Ticket="@ticket" />
+                }
             </div>
             <div class="messages">
                 <TicketMessages Ticket="@ticket" />

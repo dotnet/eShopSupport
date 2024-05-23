@@ -23,6 +23,7 @@ builder.Services.AddScoped(s =>
 builder.Services.AddScoped<IMemoryStore>(s => s.GetRequiredService<QdrantMemoryStore>());
 builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
+builder.Services.AddScoped<ProductSemanticSearch>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
@@ -30,6 +31,7 @@ builder.AddChatCompletionService("chatcompletion");
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
+await ProductSemanticSearch.EnsureSeedDataImportedAsync(app.Services);
 await ProductManualSemanticSearch.EnsureSeedDataImportedAsync(app.Services);
 
 app.MapGet("/", () => "Hello World!");
@@ -38,15 +40,36 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
 {
     var ticket = await dbContext.Tickets
         .Include(t => t.Messages)
+        .Include(t => t.Product)
         .FirstOrDefaultAsync(t => t.TicketId == ticketId);
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
         ticket.CustomerFullName,
         ticket.ShortSummary,
         ticket.LongSummary,
+        ticket.ProductId,
+        ticket.Product?.Brand,
+        ticket.Product?.Model,
+        ticket.TicketType,
+        ticket.TicketStatus,
         ticket.CustomerSatisfaction,
         ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.AuthorName, m.Text)).ToList()
     ));
+});
+
+app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int ticketId, UpdateTicketDetailsRequest request) =>
+{
+    var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+    if (ticket == null)
+    {
+        return Results.NotFound();
+    }
+
+    ticket.ProductId = request.ProductId;
+    ticket.TicketType = request.TicketType;
+    ticket.TicketStatus = request.TicketStatus;
+    await dbContext.SaveChangesAsync();
+    return Results.Ok();
 });
 
 app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxResults, string? sortBy, bool sortAscending) =>
@@ -99,6 +122,11 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
 
     var download = await blobClient.DownloadStreamingAsync();
     return Results.File(download.Value.Content, "application/pdf");
+});
+
+app.MapGet("/api/products", (ProductSemanticSearch productSemanticSearch, string searchText) =>
+{
+    return productSemanticSearch.FindProductsAsync(searchText);
 });
 
 app.MapAssistantEndpoints();

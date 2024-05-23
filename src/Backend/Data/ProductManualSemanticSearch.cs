@@ -74,9 +74,9 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
     private static async Task ImportManualChunkSeedDataAsync(string importDataFromDir, IServiceScope scope)
     {
         var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
-        var collections = semanticMemory.GetCollectionsAsync();
+        var collections = await semanticMemory.GetCollectionsAsync().ToListAsync();
 
-        if (!(await HasAnyAsync(collections)))
+        if (!collections.Contains(ManualCollectionName))
         {
             await semanticMemory.CreateCollectionAsync(ManualCollectionName);
 
