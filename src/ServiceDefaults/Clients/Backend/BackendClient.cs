@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Net.Sockets;
 using System.Web;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
@@ -32,6 +33,11 @@ public class BackendClient(HttpClient http)
     {
         await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
     }
+
+    public async Task UpdateTicketDetailsAsync(int ticketId, TicketType ticketType, TicketStatus ticketStatus)
+    {
+       await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(ticketType, ticketStatus));
+    }
 }
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
@@ -45,6 +51,8 @@ public record TicketDetailsResult(
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
 public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
+
+public record UpdateTicketDetailsRequest(TicketType TicketType, TicketStatus TicketStatus);
 
 public record AssistantChatRequest(int TicketId, IReadOnlyList<AssistantChatRequestMessage> Messages);
 

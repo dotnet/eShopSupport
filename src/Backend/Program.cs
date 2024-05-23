@@ -51,6 +51,20 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
     ));
 });
 
+app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int ticketId, UpdateTicketDetailsRequest request) =>
+{
+    var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+    if (ticket == null)
+    {
+        return Results.NotFound();
+    }
+
+    ticket.TicketType = request.TicketType;
+    ticket.TicketStatus = request.TicketStatus;
+    await dbContext.SaveChangesAsync();
+    return Results.Ok();
+});
+
 app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxResults, string? sortBy, bool sortAscending) =>
 {
     if (maxResults > 100)

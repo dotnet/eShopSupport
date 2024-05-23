@@ -1,5 +1,6 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
+@inject BackendClient Backend
 <EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
     <div class="details-grid @(editContext.IsModified() ? "modified": "")">
         <div>
@@ -64,7 +65,8 @@
     async Task SaveChangesAsync()
     {
         isSaving = true;
-        await Task.Delay(250);
+        var saveTask = Backend.UpdateTicketDetailsAsync(Ticket.TicketId, ticketType, ticketStatus);
+        await Task.WhenAll(saveTask, Task.Delay(250));
         editContext.MarkAsUnmodified();
 
         // To avoid having the "save" button flash into existence before animating away,
