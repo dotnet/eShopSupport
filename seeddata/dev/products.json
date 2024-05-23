@@ -1,0 +1,802 @@
+[
+  {
+    "ProductId": 1,
+    "CategoryId": 40,
+    "Brand": "Venturevision",
+    "Model": "Venturemap GPS Navigator",
+    "Description": "The Venturemap GPS Navigator is a high-tech, rugged adventure map designed for outdoor enthusiasts. Features include detailed topographic maps, waypoints, and navigation tools to help you explore the great outdoors with confidence.",
+    "Price": 299.99
+  },
+  {
+    "ProductId": 10,
+    "CategoryId": 13,
+    "Brand": "Rugged Cook",
+    "Model": "Trailblazer Portable Camping Stove",
+    "Description": "Unleash your culinary skills in the great outdoors with the Trailblazer Portable Camping Stove by Rugged Cook. This compact and efficient stove features a wind-resistant design and adjustable flame control, making it the perfect companion for outdoor cooking adventures. Fuel your passion for exploration!",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 100,
+    "CategoryId": 29,
+    "Brand": "Snuggle Nest",
+    "Model": "TechShield Outdoor Blanket",
+    "Description": "Embrace the outdoors in comfort with the TechShield Outdoor Blanket. Featuring durable, weather-resistant fabric and integrated technology to regulate temperature, it\u0027s perfect for picnics, beach trips, and outdoor concerts.",
+    "Price": 59.99
+  },
+  {
+    "ProductId": 11,
+    "CategoryId": 50,
+    "Brand": "Nature Gaze",
+    "Model": "Panorama 360 HD Outdoor Mirror",
+    "Description": "Enhance your outdoor experience with the Panorama 360 HD Outdoor Mirror by Nature Gaze. Its wide-angle view and durable construction provide crystal-clear vision and reliable performance. Perfect for hiking, camping, and adventure trails.",
+    "Price": 99.99
+  },
+  {
+    "ProductId": 12,
+    "CategoryId": 48,
+    "Brand": "Summit Cool",
+    "Model": "Arctic Breeze Portable Cooler",
+    "Description": "Stay refreshed on your outdoor adventures with the Arctic Breeze Portable Cooler from Summit Cool. With a large capacity, efficient cooling, and rugged design, it\u0027s the perfect companion for camping, picnics, and outdoor events.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 13,
+    "CategoryId": 47,
+    "Brand": "OutdoorArmor",
+    "Model": "MaxShield Insect Repellent",
+    "Description": "Protect yourself from pesky insects with the MaxShield Insect Repellent by OutdoorArmor. Its long-lasting formula and DEET-free composition make it ideal for outdoor activities such as hiking, fishing, and camping.",
+    "Price": 19.99
+  },
+  {
+    "ProductId": 14,
+    "CategoryId": 41,
+    "Brand": "Ecofuel",
+    "Model": "FlameMaster Portable Grill",
+    "Description": "Elevate your outdoor cooking experience with the FlameMaster Portable Grill from Ecofuel. Featuring a compact design, high heat efficiency, and eco-friendly fuel options, it\u0027s perfect for camping, tailgating, and outdoor gatherings.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 15,
+    "CategoryId": 8,
+    "Brand": "Aqua Trail",
+    "Model": "VentureTech Waterproof Jacket",
+    "Description": "Conquer the elements with the VentureTech Waterproof Jacket from Aqua Trail. Its advanced waterproofing, breathable fabric, and ergonomic design make it the ultimate choice for hiking, trekking, and outdoor adventures in any weather condition.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 16,
+    "CategoryId": 12,
+    "Brand": "Restridge",
+    "Model": "ThermalVent 800 Sleeping Bag",
+    "Description": "Stay warm and cozy in the great outdoors with the ThermalVent 800 Sleeping Bag. Engineered with advanced insulation technology and lightweight materials for superior warmth and comfort. Perfect for cold weather camping trips.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 17,
+    "CategoryId": 30,
+    "Brand": "RelaxRidge",
+    "Model": "Ultimate Comfort Hammock",
+    "Description": "Relax in style and comfort with the Ultimate Comfort Hammock. Made from durable, high-quality fabric and designed for easy setup, this hammock is perfect for lounging and enjoying the outdoors. Supports up to 400lbs.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 18,
+    "CategoryId": 18,
+    "Brand": "Ecohydrate",
+    "Model": "Insulated Stainless Steel Water Bottle",
+    "Description": "Stay hydrated on your outdoor adventures with the Insulated Stainless Steel Water Bottle. Designed to keep your drinks cold for up to 24 hours or hot for 12 hours. Durable and eco-friendly construction.",
+    "Price": 29.99
+  },
+  {
+    "ProductId": 19,
+    "CategoryId": 45,
+    "Brand": "Trail Trek",
+    "Model": "Mountain View Adventure Tapestry",
+    "Description": "Bring the beauty of the wilderness into your home with the Mountain View Adventure Tapestry. Featuring high-resolution imagery and durable, lightweight fabric. Perfect for decorating your space with a touch of the outdoors.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 2,
+    "CategoryId": 24,
+    "Brand": "Explore Cam",
+    "Model": "ExploreCam 4K Action Camera",
+    "Description": "Capture your outdoor adventures in stunning 4K with the ExploreCam action camera. With waterproof and shockproof capabilities, built-in Wi-Fi, and image stabilization, it\u0027s the perfect companion for extreme sports and outdoor activities.",
+    "Price": 249.99
+  },
+  {
+    "ProductId": 20,
+    "CategoryId": 15,
+    "Brand": "Trail Track",
+    "Model": "Explorer Pro GPS Device",
+    "Description": "Navigate your outdoor excursions with confidence using the Explorer Pro GPS Device. Packed with advanced features like real-time tracking, weather updates, and topographic maps. Rugged, waterproof design for any adventure.",
+    "Price": 299.99
+  },
+  {
+    "ProductId": 21,
+    "CategoryId": 10,
+    "Brand": "EcoVision",
+    "Model": "TrekView 2000 Binoculars",
+    "Description": "The TrekView 2000 Binoculars from EcoVision are designed for outdoor enthusiasts. With high-quality optics, rugged durability, and enhanced environmental features, these binoculars provide clear and immersive views of distant landscapes and wildlife. Whether hiking, bird watching, or attending events, the TrekView 2000 is the perfect companion for any adventure.",
+    "Price": 299.99
+  },
+  {
+    "ProductId": 22,
+    "CategoryId": 37,
+    "Brand": "Garden Grove",
+    "Model": "TerracePlanter 3000",
+    "Description": "Enhance your outdoor space with the TerracePlanter 3000 from Garden Grove. This modern and durable outdoor planter is designed to elevate your garden or patio with its sleek design and ample planting space. The TerracePlanter 3000 is weather-resistant, easy to maintain, and perfect for growing a variety of plants, flowers, and herbs to create a vibrant outdoor oasis.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 23,
+    "CategoryId": 26,
+    "Brand": "Air Rest",
+    "Model": "AeroDream 5000 Inflatable Mattress",
+    "Description": "Experience ultimate comfort and convenience on your outdoor adventures with the AeroDream 5000 Inflatable Mattress from Air Rest. Featuring a durable and puncture-resistant construction, built-in pump, and adjustable firmness settings, the AeroDream 5000 ensures a restful night\u0027s sleep under the stars. Whether camping, traveling, or hosting guests, this inflatable mattress is your ticket to luxurious rest anywhere.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 24,
+    "CategoryId": 39,
+    "Brand": "Nature Nap",
+    "Model": "SummitHammock 300",
+    "Description": "Relax in style and comfort with the SummitHammock 300 from Nature Nap. Made with premium materials and innovative design, this camping hammock is lightweight, durable, and easy to set up. Whether lounging in the great outdoors or taking a nap on a camping trip, the SummitHammock 300 offers a cozy and restful retreat for outdoor enthusiasts.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 25,
+    "CategoryId": 21,
+    "Brand": "NatureTunes",
+    "Model": "WildBeat Outdoor Speaker",
+    "Description": "Elevate your outdoor adventures with the WildBeat Outdoor Speaker from NatureTunes. This rugged and waterproof speaker delivers powerful and clear sound, making it the perfect companion for camping, hiking, or backyard gatherings. With wireless connectivity, long battery life, and durable construction, the WildBeat ensures high-quality audio wherever your adventures take you.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 26,
+    "CategoryId": 25,
+    "Brand": "OutdoorGather",
+    "Model": "Portable Picnic Table Set",
+    "Description": "Elevate your outdoor dining experience with this portable picnic table set. Made of durable materials, it includes foldable table and chairs for convenient transport and setup. Perfect for picnics, camping, and outdoor gatherings.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 27,
+    "CategoryId": 30,
+    "Brand": "Trail Trek",
+    "Model": "Ultra-Light Camping Hammock",
+    "Description": "Relax in style with this ultra-light camping hammock. Constructed with high-quality, breathable materials, it offers superior comfort and support for outdoor lounging and sleeping. Easy to set up and pack for your next adventure.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 28,
+    "CategoryId": 23,
+    "Brand": "Frisbeefusion",
+    "Model": "Pro Flying Disc Set",
+    "Description": "Unleash your competitive spirit with this pro flying disc set. Designed for precision and durability, this set of professional-grade discs ensures high performance and long-lasting fun. Perfect for casual games and ultimate frisbee tournaments.",
+    "Price": 24.99
+  },
+  {
+    "ProductId": 29,
+    "CategoryId": 41,
+    "Brand": "FireFlame",
+    "Model": "Premium Portable Grill",
+    "Description": "Ignite your outdoor cooking experience with this premium portable grill. Featuring advanced technology for efficient cooking, it offers adjustable heat settings and easy cleanup. Perfect for camping, tailgating, and backyard barbecues.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 3,
+    "CategoryId": 16,
+    "Brand": "RipTide",
+    "Model": "RipTide WaveMaster Surfboard",
+    "Description": "Conquer the waves with the RipTide WaveMaster surfboard. Designed for performance and maneuverability, this high-tech surfboard is crafted with advanced materials for durability and speed, making it ideal for seasoned surfers.",
+    "Price": 599.99
+  },
+  {
+    "ProductId": 30,
+    "CategoryId": 32,
+    "Brand": "Campcompete",
+    "Model": "LED Cornhole Set",
+    "Description": "Elevate your outdoor game nights with this LED cornhole set. Equipped with vibrant LED lights, it allows for exciting gameplay even in low-light conditions. Durable construction ensures long-lasting fun for family and friends.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 31,
+    "CategoryId": 18,
+    "Brand": "Hydro Trek",
+    "Model": "AquaFlow 750ML Water Bottle",
+    "Description": "Stay hydrated on your outdoor adventures with the AquaFlow water bottle. Made by Hydro Trek, it features a rugged design, BPA-free construction, and a leak-proof lid for convenient use on the go. With a 750ml capacity, it\u0027s the perfect companion for hikers, campers, and outdoor enthusiasts.",
+    "Price": 19.99
+  },
+  {
+    "ProductId": 32,
+    "CategoryId": 17,
+    "Brand": "GearPro",
+    "Model": "TechRide Cycling Jersey",
+    "Description": "Enhance your cycling performance with the GearPro TechRide cycling jersey. This high-tech apparel is designed to wick away moisture, provide UV protection, and offer a comfortable fit for long rides. With its stylish design and breathable fabric, the TechRide jersey is a must-have for serious cyclists.",
+    "Price": 39.99
+  },
+  {
+    "ProductId": 33,
+    "CategoryId": 6,
+    "Brand": "Hikepro",
+    "Model": "SummitFlex Waterproof Hiking Boots",
+    "Description": "Conquer any trail with confidence in the SummitFlex hiking boots from Hikepro. Built for rugged terrain and harsh conditions, these boots feature waterproof construction, durable outsoles, and cushioned footbeds for superior comfort. Whether you\u0027re trekking through the mountains or exploring the wilderness, the SummitFlex boots are your reliable companion.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 34,
+    "CategoryId": 31,
+    "Brand": "Bite Free",
+    "Model": "MaxShield Insect Repellent Spray",
+    "Description": "Keep pesky bugs at bay with Bite Free\u0027s MaxShield insect repellent spray. Formulated with DEET-free ingredients, this high-tech spray provides long-lasting protection against mosquitoes, ticks, and other biting insects. Its portable size makes it perfect for outdoor activities, camping trips, and hiking adventures.",
+    "Price": 14.99
+  },
+  {
+    "ProductId": 35,
+    "CategoryId": 27,
+    "Brand": "Summitsatisfy",
+    "Model": "EnergyTrail Mix Variety Pack",
+    "Description": "Fuel your outdoor excursions with the EnergyTrail mix variety pack from Summitsatisfy. Packed with a blend of nuts, dried fruits, and seeds, this high-energy snack is perfect for hikers, climbers, and outdoor enthusiasts. With its resealable packaging and nutritious ingredients, the EnergyTrail mix is the ideal choice for on-the-go snacking.",
+    "Price": 9.99
+  },
+  {
+    "ProductId": 36,
+    "CategoryId": 8,
+    "Brand": "Ridgerover",
+    "Model": "SummitTech Waterproof Jacket",
+    "Description": "Stay dry and comfortable on your outdoor adventures with the SummitTech Waterproof Jacket from Ridgerover. Featuring advanced waterproofing technology, breathable fabric, and adjustable hood for enhanced protection.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 37,
+    "CategoryId": 4,
+    "Brand": "Wildventure",
+    "Model": "Trailblazer 4-Person Dome Tent",
+    "Description": "Experience the ultimate camping comfort with the Trailblazer 4-Person Dome Tent from Wildventure. This spacious and durable tent features quick setup, weather-resistant design, and ample ventilation for a restful night under the stars.",
+    "Price": 279.99
+  },
+  {
+    "ProductId": 38,
+    "CategoryId": 5,
+    "Brand": "Crag Master",
+    "Model": "Apex Pro Climbing Harness",
+    "Description": "Conquer new heights with the Apex Pro Climbing Harness from Crag Master. Designed for performance and safety, this harness features lightweight construction, adjustable fit, and ample gear loops for all your climbing essentials.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 39,
+    "CategoryId": 34,
+    "Brand": "NatureNourish",
+    "Model": "SunShield SPF 50\u002B Sunscreen",
+    "Description": "Protect your skin from harmful UV rays with SunShield SPF 50\u002B Sunscreen from NatureNourish. This high-performance sunscreen offers broad-spectrum protection, water-resistant formula, and skin-nourishing ingredients for all-day outdoor activities.",
+    "Price": 19.99
+  },
+  {
+    "ProductId": 4,
+    "CategoryId": 32,
+    "Brand": "Ecoentertain",
+    "Model": "Ecoentertain Outdoor LED Lawn Game Set",
+    "Description": "Elevate your outdoor gatherings with the Ecoentertain LED Lawn Game Set. This high-tech game set features energy-efficient LED lights for playing day or night, making it perfect for camping trips, backyard barbecues, and beach parties.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 40,
+    "CategoryId": 11,
+    "Brand": "NatureNest",
+    "Model": "ErgoLounge Portable Camping Chair",
+    "Description": "Relax in comfort with the ErgoLounge Portable Camping Chair from NatureNest. Featuring ergonomic design, sturdy construction, and compact foldable design, this chair is perfect for outdoor lounging and camping adventures.",
+    "Price": 69.99
+  },
+  {
+    "ProductId": 41,
+    "CategoryId": 4,
+    "Brand": "Campcraft",
+    "Model": "Vista 2-Person Tent",
+    "Description": "The Campcraft Vista 2-Person Tent is a high-tech, durable shelter for outdoor adventure. With waterproof and UV-resistant materials, it\u0027s perfect for all-weather camping. Easy to set up with lightweight aluminum poles.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 42,
+    "CategoryId": 44,
+    "Brand": "Campcomfort",
+    "Model": "DreamRest Travel Pillow",
+    "Description": "Get the perfect rest on the go with the Campcomfort DreamRest Travel Pillow. Ergonomically designed for comfort, with memory foam support and adjustable firmness. Includes a compact carrying case for easy transport.",
+    "Price": 29.99
+  },
+  {
+    "ProductId": 43,
+    "CategoryId": 33,
+    "Brand": "Naturenest",
+    "Model": "Trailblazer Foldable Chair",
+    "Description": "Relax in style with the Naturenest Trailblazer Foldable Chair. Constructed with high-quality, lightweight materials and adjustable recline settings for ultimate comfort. Perfect for camping, picnics, and outdoor events.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 44,
+    "CategoryId": 33,
+    "Brand": "CampCozy",
+    "Model": "CozyRidge Foldable Chair",
+    "Description": "The CampCozy CozyRidge Foldable Chair offers premium comfort and portability. Featuring a padded seat and backrest, sturdy construction, and a convenient carry bag. Ideal for outdoor leisure and camping trips.",
+    "Price": 59.99
+  },
+  {
+    "ProductId": 45,
+    "CategoryId": 13,
+    "Brand": "Blazingtrail",
+    "Model": "FireMaster Outdoor Cooking Stove",
+    "Description": "The Blazingtrail FireMaster Outdoor Cooking Stove is a high-performance, compact stove for outdoor culinary adventures. With adjustable heat settings, durable construction, and convenient carrying handle. Perfect for camping and outdoor cooking.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 46,
+    "CategoryId": 48,
+    "Brand": "Summit Cool",
+    "Model": "Arctic Chill Portable Cooler",
+    "Description": "Keep your drinks and food cool on your outdoor adventures with the Arctic Chill Portable Cooler. Features advanced cooling technology, durable construction, and a spacious interior to store all your essentials. Perfect for camping, picnics, and outdoor events.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 47,
+    "CategoryId": 33,
+    "Brand": "Fold Away",
+    "Model": "Trailblazer Foldable Chair",
+    "Description": "Experience comfort and convenience with the Trailblazer Foldable Chair. Its lightweight and durable design makes it perfect for outdoor activities such as camping, fishing, and picnics. Easily foldable and compact for easy transport and storage.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 48,
+    "CategoryId": 34,
+    "Brand": "UVShield",
+    "Model": "SunGuard SPF 50 Sunscreen",
+    "Description": "Protect your skin from harmful UV rays with SunGuard SPF 50 Sunscreen. Its advanced formula provides broad-spectrum protection and is water-resistant, making it ideal for outdoor enthusiasts. Keep your skin safe while enjoying your adventures.",
+    "Price": 12.99
+  },
+  {
+    "ProductId": 49,
+    "CategoryId": 19,
+    "Brand": "Power Pack",
+    "Model": "Ultimate Power Portable Charger",
+    "Description": "Stay connected and powered up on your outdoor expeditions with the Ultimate Power Portable Charger. With fast-charging technology and a high-capacity battery, it can charge multiple devices simultaneously. Lightweight and portable for easy carrying.",
+    "Price": 59.99
+  },
+  {
+    "ProductId": 5,
+    "CategoryId": 40,
+    "Brand": "Routemap",
+    "Model": "Routemap Pro Hiking GPS",
+    "Description": "Navigate the wilderness with confidence using the Routemap Pro Hiking GPS. With detailed trail maps, geocaching capabilities, and rugged construction, this high-tech GPS device is a must-have for hikers and outdoor adventurers.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 50,
+    "CategoryId": 33,
+    "Brand": "SummitSeat",
+    "Model": "ErgoVent Foldable Chair",
+    "Description": "Relax in style with the ErgoVent Foldable Chair. Its ergonomic design and breathable materials provide maximum comfort during outdoor activities. The chair is compact, lightweight, and easy to set up, making it a must-have for outdoor enthusiasts.",
+    "Price": 69.99
+  },
+  {
+    "ProductId": 51,
+    "CategoryId": 7,
+    "Brand": "Riverrun",
+    "Model": "Angler\u0027s Aid Fishing Locator",
+    "Description": "The Angler\u0027s Aid Fishing Locator by Riverrun uses advanced GPS technology to help you track and locate your favorite fishing spots. Water-resistant and durable, this device ensures you never lose track of your catch.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 52,
+    "CategoryId": 45,
+    "Brand": "Trail Trek",
+    "Model": "Wanderlust Adventure Tapestry",
+    "Description": "The Wanderlust Adventure Tapestry from Trail Trek adds a touch of outdoor inspiration to any space. Made of durable, lightweight material, it\u0027s perfect for camping, van life, or home decor. Capture the spirit of the great outdoors in your living space.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 53,
+    "CategoryId": 6,
+    "Brand": "Ridgerover",
+    "Model": "Summit Seeker Hiking Boots",
+    "Description": "Conquer any trail with the Summit Seeker Hiking Boots from Ridgerover. These rugged, waterproof boots feature high-traction outsoles and shock-absorbing midsoles for superior support and comfort. Built to withstand the toughest outdoor challenges.",
+    "Price": 189.99
+  },
+  {
+    "ProductId": 54,
+    "CategoryId": 46,
+    "Brand": "Summitsip",
+    "Model": "SummitBrew Stainless Steel Teapot",
+    "Description": "Unwind in the great outdoors with the SummitBrew Stainless Steel Teapot from Summitsip. This durable and lightweight teapot is perfect for brewing your favorite tea while camping or hiking. With its sleek design and efficient heat retention, it\u0027s a must-have for any outdoor enthusiast.",
+    "Price": 39.99
+  },
+  {
+    "ProductId": 55,
+    "CategoryId": 43,
+    "Brand": "Power Pack",
+    "Model": "SolarBoost 5000 Portable Solar Charger",
+    "Description": "Stay charged on the go with the SolarBoost 5000 Portable Solar Charger from Power Pack. Harness the power of the sun to charge your devices anywhere. Compact, lightweight, and weather-resistant, this high-performance solar charger is ideal for outdoor adventures and emergency preparedness.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 56,
+    "CategoryId": 44,
+    "Brand": "Outdoor Lounger",
+    "Model": "AirCushion Travel Pillow",
+    "Description": "Stay comfortable on long journeys with the AirCushion Travel Pillow. Its ergonomic design and inflatable air cushion provide excellent support for your neck and head. The compact and lightweight design makes it perfect for travel and outdoor adventures.",
+    "Price": 29.99
+  },
+  {
+    "ProductId": 57,
+    "CategoryId": 47,
+    "Brand": "Bugblock",
+    "Model": "UltraShield Insect Repellent",
+    "Description": "Protect yourself from mosquitoes and other insects with UltraShield Insect Repellent. Formulated with DEET for long-lasting effectiveness, this repellent is perfect for outdoor activities such as camping, hiking, and fishing. Its non-greasy formula makes it comfortable to wear for extended periods.",
+    "Price": 12.99
+  },
+  {
+    "ProductId": 58,
+    "CategoryId": 5,
+    "Brand": "RockReady",
+    "Model": "Summit Pro Climbing Harness",
+    "Description": "Conquer new heights with the Summit Pro Climbing Harness. Designed for advanced climbers, this harness features adjustable leg loops and waistbelt for a customized fit. Its durable construction and lightweight design make it ideal for challenging climbs and multi-pitch routes.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 59,
+    "CategoryId": 2,
+    "Brand": "Fireflame",
+    "Model": "Trailblazer Portable Camping Stove",
+    "Description": "Enjoy hot meals in the great outdoors with the Trailblazer Portable Camping Stove. Its compact and foldable design makes it easy to transport, while the adjustable flame control ensures efficient cooking. Perfect for camping, backpacking, and emergency preparedness.",
+    "Price": 59.99
+  },
+  {
+    "ProductId": 6,
+    "CategoryId": 1,
+    "Brand": "Ridesmart",
+    "Model": "Guardian Pro Bike Helmet",
+    "Description": "The Guardian Pro Bike Helmet by Ridesmart offers advanced impact protection and ventilation for cyclists. Features adjustable fit system and integrated LED lights for enhanced safety. Perfect for off-road adventurers and city commuters alike.",
+    "Price": 139.99
+  },
+  {
+    "ProductId": 60,
+    "CategoryId": 13,
+    "Brand": "Eco Fuel",
+    "Model": "Lakeside Grill \u0026 Cookware Set",
+    "Description": "Upgrade your outdoor cooking experience with the Lakeside Grill \u0026 Cookware Set. This all-in-one set includes a portable grill, cookware, and eco-friendly fuel source. Its lightweight and durable construction make it perfect for picnics, camping, and tailgating.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 61,
+    "CategoryId": 43,
+    "Brand": "Eco Power",
+    "Model": "SunBoost 3000 Solar Charger",
+    "Description": "The SunBoost 3000 Solar Charger by Eco Power is a high-tech charging solution for outdoor enthusiasts. With fast charging technology and durable construction, it\u0027s perfect for powering your devices on the go.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 62,
+    "CategoryId": 8,
+    "Brand": "Outdoor Life",
+    "Model": "ArcticShield Insulated Jacket",
+    "Description": "Stay warm and protected in the great outdoors with the ArcticShield Insulated Jacket from Outdoor Life. Featuring advanced insulation and weather-resistant materials, this jacket is designed for maximum comfort and performance.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 63,
+    "CategoryId": 11,
+    "Brand": "RelaxRidge",
+    "Model": "Trailblazer Camping Chair",
+    "Description": "Relax in style with the Trailblazer Camping Chair from RelaxRidge. With a lightweight and durable design, this chair is perfect for camping, picnics, and outdoor events. It\u0027s easy to carry and offers exceptional comfort.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 64,
+    "CategoryId": 23,
+    "Brand": "Frisbeefusion",
+    "Model": "AeroGrip Ultimate Frisbee",
+    "Description": "Experience ultimate performance with the AeroGrip Ultimate Frisbee from Frisbeefusion. Designed for precision flight and durability, this frisbee is perfect for casual games and competitive play. It\u0027s a must-have for any outdoor enthusiast.",
+    "Price": 19.99
+  },
+  {
+    "ProductId": 65,
+    "CategoryId": 26,
+    "Brand": "Airdream",
+    "Model": "DreamRest Inflatable Mattress",
+    "Description": "Get a good night\u0027s sleep outdoors with the DreamRest Inflatable Mattress from Airdream. Featuring a built-in pump and durable construction, this mattress offers superior comfort and support for your outdoor adventures.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 66,
+    "CategoryId": 28,
+    "Brand": "DirectionPro",
+    "Model": "Pathfinder 2000 GPS Compass",
+    "Description": "The Pathfinder 2000 GPS Compass by DirectionPro is a high-tech compass designed for outdoor enthusiasts. It features GPS navigation, digital display, and durable construction, making it the perfect companion for your outdoor adventures.",
+    "Price": 249.99
+  },
+  {
+    "ProductId": 67,
+    "CategoryId": 26,
+    "Brand": "Airdream",
+    "Model": "DreamRest ProTech Inflatable Mattress",
+    "Description": "Experience ultimate comfort with the DreamRest ProTech Inflatable Mattress from Airdream. Featuring advanced air pump technology, durable construction, and ergonomic design, this mattress is perfect for outdoor camping or overnight guests.",
+    "Price": 179.99
+  },
+  {
+    "ProductId": 68,
+    "CategoryId": 9,
+    "Brand": "OceanTrail",
+    "Model": "Voyager 3000 Pro Kayak",
+    "Description": "Explore the water in style with the Voyager 3000 Pro Kayak from OceanTrail. This high-tech kayak features a lightweight yet durable build, advanced tracking system, and comfortable seating, making it the ideal choice for adventurous paddlers.",
+    "Price": 799.99
+  },
+  {
+    "ProductId": 69,
+    "CategoryId": 9,
+    "Brand": "Currentcruise",
+    "Model": "Expedition XL Fishing Kayak",
+    "Description": "Conquer the waters with the Expedition XL Fishing Kayak from Currentcruise. Equipped with advanced fishing accessories, rugged construction, and spacious storage, this kayak is designed to enhance your fishing experience on the water.",
+    "Price": 899.99
+  },
+  {
+    "ProductId": 7,
+    "CategoryId": 36,
+    "Brand": "SummitChrono",
+    "Model": "Trekker Adventure Watch",
+    "Description": "The Trekker Adventure Watch by SummitChrono is the ultimate companion for outdoor explorers. With GPS tracking, altimeter, barometer, and digital compass, this rugged timepiece is designed to withstand the elements and keep adventurers on track.",
+    "Price": 299.99
+  },
+  {
+    "ProductId": 70,
+    "CategoryId": 16,
+    "Brand": "Beach Blast",
+    "Model": "WaveMaster Pro Surfboard",
+    "Description": "Ride the waves like a pro with the WaveMaster Pro Surfboard from Beach Blast. This high-performance surfboard features aerodynamic design, durable construction, and exceptional maneuverability, making it a must-have for surfing enthusiasts.",
+    "Price": 349.99
+  },
+  {
+    "ProductId": 71,
+    "CategoryId": 9,
+    "Brand": "Aqua Adventures",
+    "Model": "Voyager 300 Fishing Kayak",
+    "Description": "The Voyager 300 Fishing Kayak from Aqua Adventures offers a stable and durable design for all fishing enthusiasts. With its high-tech materials and ample storage space, it\u0027s perfect for all-day angling adventures.",
+    "Price": 799.99
+  },
+  {
+    "ProductId": 72,
+    "CategoryId": 5,
+    "Brand": "VerticalVibe",
+    "Model": "Summit Pro Climbing Harness",
+    "Description": "Conquer any vertical challenge with the Summit Pro Climbing Harness by VerticalVibe. Its lightweight, high-tech construction and ergonomic design provide maximum comfort and safety for all climbing enthusiasts.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 73,
+    "CategoryId": 3,
+    "Brand": "Venturex",
+    "Model": "Trekker 45L Waterproof Backpack",
+    "Description": "The Trekker 45L Waterproof Backpack from Venturex is a high-tech, versatile pack designed for outdoor adventurers. With its waterproof construction and ergonomic design, it\u0027s ideal for long hikes and camping trips.",
+    "Price": 129.99
+  },
+  {
+    "ProductId": 74,
+    "CategoryId": 11,
+    "Brand": "Camp Comfort",
+    "Model": "Ultra-Light Camp Chair",
+    "Description": "Relax in comfort with the Ultra-Light Camp Chair by Camp Comfort. Its high-tech materials and compact design make it perfect for camping, picnics, and outdoor events. With its easy setup, you\u0027ll be lounging in no time.",
+    "Price": 69.99
+  },
+  {
+    "ProductId": 75,
+    "CategoryId": 20,
+    "Brand": "ShoreShade",
+    "Model": "SunSeeker Portable Beach Umbrella",
+    "Description": "Enjoy a day at the beach with the SunSeeker Portable Beach Umbrella by ShoreShade. Its high-tech UV-resistant fabric and easy-to-set-up design provide reliable sun protection wherever you go. Stay cool and protected in style.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 76,
+    "CategoryId": 31,
+    "Brand": "Outdoor Armor",
+    "Model": "MossGuard Bug Repellent Wristband",
+    "Description": "Stay protected from bugs while outdoors with the MossGuard Bug Repellent Wristband from Outdoor Armor. Features long-lasting insect repellent and adjustable band for comfortable wear. Perfect for camping, hiking, and outdoor adventures.",
+    "Price": 12.99
+  },
+  {
+    "ProductId": 77,
+    "CategoryId": 5,
+    "Brand": "Elevation X",
+    "Model": "SummitPro Climbing Harness",
+    "Description": "Conquer new heights with the SummitPro Climbing Harness by Elevation X. Designed for maximum safety and comfort, this harness features durable construction, adjustable leg loops, and gear loops for all your climbing essentials. Ideal for rock climbing and mountaineering.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 78,
+    "CategoryId": 16,
+    "Brand": "Ocean Ollie",
+    "Model": "WaveMaster Surfboard",
+    "Description": "Ride the waves with confidence using the WaveMaster Surfboard by Ocean Ollie. This high-performance surfboard features a sleek design, durable construction, and superior stability for an exhilarating surfing experience. Perfect for both beginner and experienced surfers.",
+    "Price": 399.99
+  },
+  {
+    "ProductId": 79,
+    "CategoryId": 40,
+    "Brand": "WayFinder",
+    "Model": "ExplorerPro Adventure Map GPS",
+    "Description": "Navigate the great outdoors with ease using the ExplorerPro Adventure Map GPS by WayFinder. Packed with advanced navigation features, topographic maps, and a rugged design, this GPS device is essential for hikers, campers, and outdoor enthusiasts. Never get lost on your adventures again.",
+    "Price": 249.99
+  },
+  {
+    "ProductId": 8,
+    "CategoryId": 16,
+    "Brand": "RipTide",
+    "Model": "WaveMaster Surfboard",
+    "Description": "Catch the perfect wave with the WaveMaster Surfboard by RipTide. This high-performance board is designed for both beginners and experienced surfers, offering exceptional maneuverability and stability in the water. Get ready for an exhilarating ride!",
+    "Price": 599.99
+  },
+  {
+    "ProductId": 80,
+    "CategoryId": 41,
+    "Brand": "Ruggedcook",
+    "Model": "FireMaster Portable Grill",
+    "Description": "Elevate your outdoor cooking experience with the FireMaster Portable Grill by Ruggedcook. This high-tech grill features a compact and durable design, adjustable heat settings, and easy portability for grilling on-the-go. Perfect for camping, tailgating, and backyard barbecues.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 81,
+    "CategoryId": 15,
+    "Brand": "Nav Pro",
+    "Model": "TrailMaster 5000 GPS",
+    "Description": "Navigate confidently with the TrailMaster 5000 GPS from Nav Pro. This high-tech device features advanced mapping capabilities, rugged design for outdoor use, and long battery life for extended adventures.",
+    "Price": 299.99
+  },
+  {
+    "ProductId": 82,
+    "CategoryId": 4,
+    "Brand": "NatureNest",
+    "Model": "SummitLodge 4-Person Tent",
+    "Description": "Experience luxurious camping with the SummitLodge 4-Person Tent from NatureNest. With spacious interior, durable construction, and easy setup, this tent is perfect for outdoor enthusiasts.",
+    "Price": 399.99
+  },
+  {
+    "ProductId": 83,
+    "CategoryId": 21,
+    "Brand": "Sound Wave",
+    "Model": "TrekPro Outdoor Speaker",
+    "Description": "Elevate your outdoor adventures with the TrekPro Outdoor Speaker from Sound Wave. Enjoy high-quality sound, waterproof and rugged design, and long battery life, making it ideal for any outdoor setting.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 84,
+    "CategoryId": 22,
+    "Brand": "SummitServe",
+    "Model": "XtremeFold Camping Table",
+    "Description": "Upgrade your camping experience with the XtremeFold Camping Table from SummitServe. Its lightweight, durable construction, and compact folding design make it perfect for outdoor dining and activities.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 85,
+    "CategoryId": 8,
+    "Brand": "Climbgear",
+    "Model": "AscentTech Performance Jacket",
+    "Description": "Conquer the elements with the AscentTech Performance Jacket from Climbgear. Stay warm, dry, and comfortable with its breathable, waterproof fabric and adjustable features, designed for outdoor enthusiasts.",
+    "Price": 179.99
+  },
+  {
+    "ProductId": 86,
+    "CategoryId": 37,
+    "Brand": "Garden Grove",
+    "Model": "SolarGlow Outdoor Planter",
+    "Description": "The SolarGlow Outdoor Planter from Garden Grove is a high-tech planter with built-in solar-powered LED lights, perfect for illuminating your outdoor space. Made from durable, weather-resistant materials, it\u0027s an ideal addition to your garden or patio.",
+    "Price": 89.99
+  },
+  {
+    "ProductId": 87,
+    "CategoryId": 21,
+    "Brand": "Vibespeaker",
+    "Model": "SoundWave Outdoor Speaker",
+    "Description": "Immerse yourself in your favorite tunes with the SoundWave Outdoor Speaker from Vibespeaker. This high-tech speaker features Bluetooth connectivity, waterproof design, and 360-degree sound dispersion, making it perfect for outdoor adventures.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 88,
+    "CategoryId": 18,
+    "Brand": "Ecohydrate",
+    "Model": "HydroTech Insulated Water Bottle",
+    "Description": "Stay hydrated on the go with the HydroTech Insulated Water Bottle from Ecohydrate. With its advanced insulation technology, sleek design, and durable construction, this water bottle is perfect for outdoor enthusiasts and everyday use.",
+    "Price": 24.99
+  },
+  {
+    "ProductId": 89,
+    "CategoryId": 41,
+    "Brand": "SureHeat",
+    "Model": "FlameMaster Portable Grill",
+    "Description": "Elevate your outdoor cooking experience with the FlameMaster Portable Grill from SureHeat. This high-tech grill features infrared heating technology, foldable design, and precise temperature control, making it a must-have for grilling enthusiasts.",
+    "Price": 199.99
+  },
+  {
+    "ProductId": 9,
+    "CategoryId": 36,
+    "Brand": "Exploretimer",
+    "Model": "Navigator Pro Adventure Watch",
+    "Description": "The Navigator Pro Adventure Watch by Exploretimer is the ultimate tool for outdoor enthusiasts. With a built-in altimeter, GPS tracking, and water resistance, this watch is designed to withstand rugged conditions while providing essential navigation data. Adventure awaits!",
+    "Price": 249.99
+  },
+  {
+    "ProductId": 90,
+    "CategoryId": 20,
+    "Brand": "SandShelter",
+    "Model": "SunGuard Beach Umbrella",
+    "Description": "Enjoy a day at the beach with the SunGuard Beach Umbrella from SandShelter. Featuring UV protection, wind resistance, and a telescopic pole for easy setup, this high-tech umbrella is the perfect companion for sun-filled adventures.",
+    "Price": 69.99
+  },
+  {
+    "ProductId": 91,
+    "CategoryId": 44,
+    "Brand": "Campcozy",
+    "Model": "ComfyRest Travel Pillow",
+    "Description": "Experience comfort on the go with the ComfyRest Travel Pillow from Campcozy. Ergonomically designed for neck support, this inflatable pillow is lightweight and compact, making it an essential travel companion. The soft, washable cover ensures hygiene on your adventures.",
+    "Price": 29.99
+  },
+  {
+    "ProductId": 92,
+    "CategoryId": 10,
+    "Brand": "SightPro",
+    "Model": "VisionMaster Binoculars",
+    "Description": "Enhance your outdoor viewing experience with the VisionMaster Binoculars from SightPro. Featuring high-quality optics, these binoculars provide crisp, clear images with 10x magnification. Compact and durable, they are ideal for bird watching, hiking, and sports events.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 93,
+    "CategoryId": 29,
+    "Brand": "Snuggle Nest",
+    "Model": "AdventurePlus Outdoor Blanket",
+    "Description": "Stay cozy and warm outdoors with the AdventurePlus Outdoor Blanket from Snuggle Nest. Crafted from premium fleece and waterproof material, this versatile blanket is perfect for picnics, camping, and outdoor concerts. It folds into a compact carrying bag for easy transport.",
+    "Price": 49.99
+  },
+  {
+    "ProductId": 94,
+    "CategoryId": 9,
+    "Brand": "WaveRider",
+    "Model": "AquaSport Kayak",
+    "Description": "Conquer the waterways with the AquaSport Kayak from WaveRider. This inflatable kayak is designed for stability and maneuverability, making it suitable for beginners and experienced kayakers alike. With a durable construction and adjustable seats, it\u0027s the perfect vessel for your next adventure.",
+    "Price": 349.99
+  },
+  {
+    "ProductId": 95,
+    "CategoryId": 41,
+    "Brand": "Ruggedcook",
+    "Model": "FlameMaster Grilling Set",
+    "Description": "Elevate your outdoor cooking experience with the FlameMaster Grilling Set from Ruggedcook. This comprehensive set includes a premium grill, BBQ tools, and accessories, ensuring you have everything you need for delicious outdoor meals. Built to withstand rugged conditions, it\u0027s a must-have for outdoor enthusiasts.",
+    "Price": 99.99
+  },
+  {
+    "ProductId": 96,
+    "CategoryId": 5,
+    "Brand": "RockReady",
+    "Model": "SummitTrek Climbing Harness",
+    "Description": "Experience ultimate safety and comfort with the SummitTrek Climbing Harness. Lightweight, durable, and adjustable for all sizes. Perfect for rock climbing and mountaineering adventures.",
+    "Price": 149.99
+  },
+  {
+    "ProductId": 97,
+    "CategoryId": 14,
+    "Brand": "Glowgear",
+    "Model": "BeamPro 5000 Headlamp",
+    "Description": "Illuminate your way with the BeamPro 5000 Headlamp. Boasting a powerful beam, long battery life, and adjustable brightness settings, it\u0027s the perfect companion for outdoor night activities and trail running.",
+    "Price": 79.99
+  },
+  {
+    "ProductId": 98,
+    "CategoryId": 49,
+    "Brand": "CozyCushion",
+    "Model": "ThermalAdventure Blanket",
+    "Description": "Stay warm and cozy with the ThermalAdventure Blanket. Its high-tech thermal insulation and water-resistant material make it ideal for camping, picnics, and outdoor events. Compact and lightweight for easy transport.",
+    "Price": 69.99
+  },
+  {
+    "ProductId": 99,
+    "CategoryId": 49,
+    "Brand": "TrailTrek",
+    "Model": "UltraWarm Adventure Blanket",
+    "Description": "Experience luxurious warmth with the UltraWarm Adventure Blanket. Its advanced insulation and rugged design provide exceptional comfort and durability, perfect for cold weather camping and outdoor activities.",
+    "Price": 89.99
+  }
+]
