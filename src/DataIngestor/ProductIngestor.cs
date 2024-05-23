@@ -1,5 +1,7 @@
 ﻿using System.Text.Json;
 using eShopSupport.Backend.Data;
+using Microsoft.SemanticKernel.Embeddings;
+using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 class ProductIngestor
 {
@@ -10,6 +12,7 @@ class ProductIngestor
         var products = new List<Product>();
         var productsSourceDir = Path.Combine(generatedDataPath, "products");
         var inputOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        using var embeddingGenerator = new LocalTextEmbeddingGenerationService();
         foreach (var filename in Directory.GetFiles(productsSourceDir, "*.json"))
         {
             var generated = (await JsonSerializer.DeserializeAsync<GeneratedProduct>(File.OpenRead(filename), inputOptions))!;
@@ -21,6 +24,7 @@ class ProductIngestor
                 Model = generated.Model,
                 Description = generated.Description,
                 Price = generated.Price,
+                NameEmbedding = await embeddingGenerator.GenerateEmbeddingAsync($"{generated.Model}, {generated.Brand}"),
             });
         }
 
