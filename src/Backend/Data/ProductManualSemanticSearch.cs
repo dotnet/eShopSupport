@@ -10,6 +10,7 @@ namespace eShopSupport.Backend.Data;
 public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, HttpClient httpClient)
 {
     private const string ManualCollectionName = "manuals";
+    private const string ProductCollectionName = "products";
 
     public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(int? productId, string query)
     {
@@ -48,6 +49,29 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
             using var scope = services.CreateScope();
             await ImportManualFilesSeedDataAsync(importDataFromDir, scope);
             await ImportManualChunkSeedDataAsync(importDataFromDir, scope);
+            await ImportProductSeedDataAsync(importDataFromDir, scope);
+        }
+    }
+
+    private static async Task ImportProductSeedDataAsync(string importDataFromDir, IServiceScope scope)
+    {
+        var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
+        var collections = await ToListAsync(semanticMemory.GetCollectionsAsync());
+
+        if (!collections.Contains(ProductCollectionName))
+        {
+            var products = JsonSerializer.Deserialize<Product[]>(
+                File.ReadAllText(Path.Combine(importDataFromDir, "products.json")))!;
+
+            await semanticMemory.CreateCollectionAsync(ProductCollectionName);
+            var mappedRecords = products.Select(product =>
+            {
+                var id = product.ProductId.ToString();
+                var metadata = new MemoryRecordMetadata(false, id, $"{product.Model} ({product.Brand})", "", "", "");
+                return new MemoryRecord(metadata, product.NameEmbedding, null);
+            });
+
+            await foreach (var _ in semanticMemory.UpsertBatchAsync(ProductCollectionName, mappedRecords)) { }
         }
     }
 
@@ -74,9 +98,9 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
     private static async Task ImportManualChunkSeedDataAsync(string importDataFromDir, IServiceScope scope)
     {
         var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
-        var collections = semanticMemory.GetCollectionsAsync();
+        var collections = await ToListAsync(semanticMemory.GetCollectionsAsync());
 
-        if (!(await HasAnyAsync(collections)))
+        if (!collections.Contains(ManualCollectionName))
         {
             await semanticMemory.CreateCollectionAsync(ManualCollectionName);
 
@@ -95,6 +119,16 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
                 await foreach (var _ in semanticMemory.UpsertBatchAsync(ManualCollectionName, mappedRecords)) { }
             }
         }
+    }
+
+    private static async Task<List<T>> ToListAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
+    {
+        var result = new List<T>();
+        await foreach (var item in asyncEnumerable)
+        {
+            result.Add(item);
+        }
+        return result;
     }
 
     private static async Task<bool> HasAnyAsync<T>(IAsyncEnumerable<T> asyncEnumerable)
