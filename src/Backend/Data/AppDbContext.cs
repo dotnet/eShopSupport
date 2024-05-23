@@ -15,10 +15,13 @@ public class AppDbContext : DbContext
 
     public DbSet<Message> Messages { get; set; }
 
+    public DbSet<Product> Products { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Ticket>().HasMany(t => t.Messages).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Ticket>().HasOne(t => t.Product);
     }
 
     public static async Task EnsureDbCreatedAsync(IServiceProvider services)
@@ -45,6 +48,9 @@ public class AppDbContext : DbContext
     {
         try
         {
+            var products = JsonSerializer.Deserialize<Product[]>(
+                File.ReadAllText(Path.Combine(dirPath, "products.json")))!;
+
             var tickets = JsonSerializer.Deserialize<Ticket[]>(
                 File.ReadAllText(Path.Combine(dirPath, "tickets.json")))!;
 
@@ -58,6 +64,7 @@ public class AppDbContext : DbContext
                 }
             }
 
+            await dbContext.Products.AddRangeAsync(products);
             await dbContext.Tickets.AddRangeAsync(tickets);
             await dbContext.SaveChangesAsync();
         }

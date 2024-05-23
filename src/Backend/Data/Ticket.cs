@@ -9,6 +9,8 @@ public class Ticket
     
     public int ProductId { get; set; }
 
+    public Product? Product { get; set; }
+
     public required string CustomerFullName { get; set; }
 
     public string? ShortSummary { get; set; }

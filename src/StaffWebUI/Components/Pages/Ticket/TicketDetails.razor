@@ -40,6 +40,7 @@
 
     readonly TicketType[] allTicketTypes = Enum.GetValues<TicketType>();
     readonly TicketStatus[] allTicketStatuses = Enum.GetValues<TicketStatus>();
+    int loadedTicketId;
     TicketType ticketType;
     TicketStatus ticketStatus;
     string? ticketProductName;
@@ -50,10 +51,15 @@
 
     public TicketDetails() => editContext = new(this);
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        ticketType = Ticket.TicketType;
-        ticketStatus = Ticket.TicketStatus;
+        if (Ticket.TicketId != loadedTicketId)
+        {
+            loadedTicketId = Ticket.TicketId;
+            ticketType = Ticket.TicketType;
+            ticketStatus = Ticket.TicketStatus;
+            ticketProductName = Ticket.ProductName;
+        }
     }
 
     // Workaround for https://github.com/microsoft/fluentui-blazor/issues/2086

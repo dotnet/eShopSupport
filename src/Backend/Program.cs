@@ -38,12 +38,15 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
 {
     var ticket = await dbContext.Tickets
         .Include(t => t.Messages)
+        .Include(t => t.Product)
         .FirstOrDefaultAsync(t => t.TicketId == ticketId);
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
         ticket.CustomerFullName,
         ticket.ShortSummary,
         ticket.LongSummary,
+        ticket.ProductId,
+        ticket.Product?.Model,
         ticket.TicketType,
         ticket.TicketStatus,
         ticket.CustomerSatisfaction,

@@ -47,6 +47,7 @@ public record ListTicketsResultItem(
 
 public record TicketDetailsResult(
     int TicketId, string CustomerFullName, string? ShortSummary, string? LongSummary,
+    int? ProductId, string? ProductName,
     TicketType TicketType, TicketStatus TicketStatus,
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
