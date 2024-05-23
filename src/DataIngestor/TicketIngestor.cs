@@ -4,7 +4,7 @@ using eShopSupport.ServiceDefaults.Clients.Backend;
 
 class TicketIngestor
 {
-    public async Task RunAsync(string generatedDataPath)
+    public async Task RunAsync(string generatedDataPath, string outputDir)
     {
         Console.WriteLine("Ingesting tickets...");
 
@@ -34,9 +34,6 @@ class TicketIngestor
                 }).ToList()
             });
         }
-
-        var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
-        var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
 
         var outputOptions = new JsonSerializerOptions { WriteIndented = true };
         await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets, outputOptions));

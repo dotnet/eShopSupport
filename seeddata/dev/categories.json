@@ -1,0 +1,202 @@
+[
+  {
+    "CategoryId": 1,
+    "Name": "Bike Helmets"
+  },
+  {
+    "CategoryId": 10,
+    "Name": "Binoculars"
+  },
+  {
+    "CategoryId": 11,
+    "Name": "Camping Chairs"
+  },
+  {
+    "CategoryId": 12,
+    "Name": "Sleeping Bags"
+  },
+  {
+    "CategoryId": 13,
+    "Name": "Outdoor Cooking Equipment"
+  },
+  {
+    "CategoryId": 14,
+    "Name": "Headlamps"
+  },
+  {
+    "CategoryId": 15,
+    "Name": "GPS Devices"
+  },
+  {
+    "CategoryId": 16,
+    "Name": "Surfboards"
+  },
+  {
+    "CategoryId": 17,
+    "Name": "Cycling Apparel"
+  },
+  {
+    "CategoryId": 18,
+    "Name": "Water Bottles"
+  },
+  {
+    "CategoryId": 19,
+    "Name": "Portable Chargers"
+  },
+  {
+    "CategoryId": 2,
+    "Name": "Camping Stoves"
+  },
+  {
+    "CategoryId": 20,
+    "Name": "Beach Umbrellas"
+  },
+  {
+    "CategoryId": 21,
+    "Name": "Outdoor Speakers"
+  },
+  {
+    "CategoryId": 22,
+    "Name": "Camping Tables"
+  },
+  {
+    "CategoryId": 23,
+    "Name": "Frisbees \u0026 Discs"
+  },
+  {
+    "CategoryId": 24,
+    "Name": "Adventure Cameras"
+  },
+  {
+    "CategoryId": 25,
+    "Name": "Picnic Gear"
+  },
+  {
+    "CategoryId": 26,
+    "Name": "Inflatable Mattresses"
+  },
+  {
+    "CategoryId": 27,
+    "Name": "Trail Mixes \u0026 Snacks"
+  },
+  {
+    "CategoryId": 28,
+    "Name": "Compasses"
+  },
+  {
+    "CategoryId": 29,
+    "Name": "Outdoor Blankets"
+  },
+  {
+    "CategoryId": 3,
+    "Name": "Backpacks"
+  },
+  {
+    "CategoryId": 30,
+    "Name": "Hammocks"
+  },
+  {
+    "CategoryId": 31,
+    "Name": "Bug Repellents"
+  },
+  {
+    "CategoryId": 32,
+    "Name": "Outdoor Games"
+  },
+  {
+    "CategoryId": 33,
+    "Name": "Foldable Chairs"
+  },
+  {
+    "CategoryId": 34,
+    "Name": "Sunscreen \u0026 Skincare"
+  },
+  {
+    "CategoryId": 35,
+    "Name": "Folding Tables"
+  },
+  {
+    "CategoryId": 36,
+    "Name": "Adventure Watches"
+  },
+  {
+    "CategoryId": 37,
+    "Name": "Outdoor Planters"
+  },
+  {
+    "CategoryId": 38,
+    "Name": "Waterproof Cases"
+  },
+  {
+    "CategoryId": 39,
+    "Name": "Camping Hammocks"
+  },
+  {
+    "CategoryId": 4,
+    "Name": "Tents"
+  },
+  {
+    "CategoryId": 40,
+    "Name": "Adventure Maps"
+  },
+  {
+    "CategoryId": 41,
+    "Name": "Grilling Equipment"
+  },
+  {
+    "CategoryId": 42,
+    "Name": "Outdoor Rugs"
+  },
+  {
+    "CategoryId": 43,
+    "Name": "Solar Chargers"
+  },
+  {
+    "CategoryId": 44,
+    "Name": "Travel Pillows"
+  },
+  {
+    "CategoryId": 45,
+    "Name": "Adventure Tapestries"
+  },
+  {
+    "CategoryId": 46,
+    "Name": "Outdoor Teapots"
+  },
+  {
+    "CategoryId": 47,
+    "Name": "Insect Repellents"
+  },
+  {
+    "CategoryId": 48,
+    "Name": "Portable Coolers"
+  },
+  {
+    "CategoryId": 49,
+    "Name": "Adventure Blankets"
+  },
+  {
+    "CategoryId": 5,
+    "Name": "Climbing Gear"
+  },
+  {
+    "CategoryId": 50,
+    "Name": "Outdoor Mirrors"
+  },
+  {
+    "CategoryId": 6,
+    "Name": "Hiking Boots"
+  },
+  {
+    "CategoryId": 7,
+    "Name": "Fishing Gear"
+  },
+  {
+    "CategoryId": 8,
+    "Name": "Outdoor Clothing"
+  },
+  {
+    "CategoryId": 9,
+    "Name": "Kayaks"
+  }
+]
