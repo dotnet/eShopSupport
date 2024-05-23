@@ -1,29 +1,79 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
-<div class="details-grid">
-    <div>
-        <FluentSelect TOption="string" Items="@TicketTypes" Label="Case type" style="width: 100%; min-width: 12rem;" />
+<EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
+    <div class="details-grid @(editContext.IsModified() ? "modified": "")">
+        <div>
+            <FluentSelect TOption="TicketType" @bind-SelectedOption="@ticketType" Items="@TicketTypes"
+                Label="Case type" OptionText="@(x => x.DisplayText)" style="width: 100%; min-width: 12rem;"
+                @bind-SelectedOption:after="@MarkTicketTypeModified" />
+        </div>
+        <div>
+            <FluentTextField Label="Customer" style="width: 100%;" Value="@Ticket?.CustomerFullName" ReadOnly />
+        </div>
+        <div>
+            <FluentSelect @bind-SelectedOption="@ticketStatus" TOption="string" Items="@TicketStatuses" Label="Status" style="width: 100%; min-width: 12rem;" />
+        </div>
+        <div>
+            <FluentTextField @bind-Value="ticketProductName" TOption="string" Label="Product" style="width: 100%;" />
+        </div>
+        <div class="actions">
+            @if (!isSaving)
+            {
+                <FluentButton Type="@ButtonType.Submit" Appearance="Appearance.Accent" IconStart="@saveIcon" Style="margin-top: 0.5rem">
+                    Save changes
+                </FluentButton>
+            }
+            else
+            {
+                <FluentProgressRing />
+            }
+        </div>
     </div>
-    <div>
-        <FluentTextField Label="Customer" style="width: 100%;" Value="@Ticket?.CustomerFullName" ReadOnly />
-    </div>
-    <div>
-        <FluentSelect TOption="string" Items="@TicketStatuses" Label="Status" style="width: 100%; min-width: 12rem;" />
-    </div>
-    <div>
-        <FluentAutocomplete TOption="string" Label="Product" style="width: 100%;" />
-    </div>
-    <div class="actions">
-        <FluentButton Appearance="Appearance.Accent" Style="margin-top: 0.5rem">
-            Save changes
-        </FluentButton>
-    </div>
-</div>
+</EditForm>
 
 @code {
-    string[] TicketTypes = ["❔ Question", "💭 Comment / idea", "🙁 Complaint", "📦 Returns"];
-    string[] TicketStatuses = ["⏳ Open", "✅ Closed"];
+    private readonly Icon saveIcon = new Icons.Regular.Size20.Save();
+    EditContext editContext;
 
-    [Parameter]
-    public TicketDetailsResult? Ticket { get; set; }
+    static TicketType[] TicketTypes = [
+        new TicketType(1, "❔ Question"),
+    new TicketType(2, "💭 Comment / idea"),
+    new TicketType(3, "🙁 Complaint"),
+    new TicketType(4, "📦 Returns")
+    ];
+    TicketType ticketType = TicketTypes[0];
+
+    string[] TicketStatuses = ["⏳ Open", "✅ Closed"];
+    string? ticketStatus;
+    string? ticketProductName;
+    private bool isSaving;
+
+    [Parameter, EditorRequired]
+    public TicketDetailsResult Ticket { get; set; } = default!;
+
+    public TicketDetails() => editContext = new(this);
+
+    protected override void OnInitialized()
+    {
+        // TODO: Populate initial state from ticket
+    }
+
+    // Workaround for https://github.com/microsoft/fluentui-blazor/issues/2086
+    private void MarkTicketTypeModified()
+        => editContext.NotifyFieldChanged(FieldIdentifier.Create(() => ticketType));
+
+    record TicketType(int TicketTypeId, string DisplayText);
+
+    async Task SaveChangesAsync()
+    {
+        isSaving = true;
+        await Task.Delay(250);
+        editContext.MarkAsUnmodified();
+
+        // To avoid having the "save" button flash into existence before animating away,
+        // keep the spinner on screen for a further 1s, giving time for the animation to complete
+        StateHasChanged();
+        await Task.Delay(1000);
+        isSaving = false;
+    }
 }
