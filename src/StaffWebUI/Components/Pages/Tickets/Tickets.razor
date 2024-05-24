@@ -9,10 +9,13 @@
 
 <div class="tickets-page ensure-page-scrollbar">
     <div class="filter">
-        <Microsoft.FluentUI.AspNetCore.Components.FluentTabs Style="width: 100%">
+        <Microsoft.FluentUI.AspNetCore.Components.FluentTabs Style="flex-grow: 1">
             <Microsoft.FluentUI.AspNetCore.Components.FluentTab Label="121 Open" Icon="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Mail())" />
             <Microsoft.FluentUI.AspNetCore.Components.FluentTab Label="3722 Closed" Icon="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Checkmark())" />
         </Microsoft.FluentUI.AspNetCore.Components.FluentTabs>
+
+        <Microsoft.FluentUI.AspNetCore.Components.FluentAutocomplete Width=""
+            TOption="string" @bind-SelectedOptions="@selectedCategories" MaximumSelectedOptions="3" Placeholder="Filter by category" style="min-width: 12rem;" />
     </div>
     <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
@@ -35,6 +38,7 @@
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
     private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
+    private IEnumerable<string> selectedCategories = Array.Empty<string>();
 
     public Tickets()
     {
