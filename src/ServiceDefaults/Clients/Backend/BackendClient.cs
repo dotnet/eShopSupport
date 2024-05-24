@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Net.Sockets;
 using System.Web;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
@@ -45,7 +44,7 @@ public class BackendClient(HttpClient http)
     }
 }
 
-public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
+public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount, int TotalOpenCount, int TotalClosedCount);
 
 public record ListTicketsResultItem(
     int TicketId, TicketType TicketType, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);

@@ -1,8 +1,8 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 <div class="filter">
     <FluentTabs Style="flex-grow: 1">
-        <FluentTab Label="121 Open" Icon="@(new Icons.Regular.Size20.Mail())" />
-        <FluentTab Label="3722 Closed" Icon="@(new Icons.Regular.Size20.Checkmark())" />
+        <FluentTab Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
+        <FluentTab Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
 
     <FluentAutocomplete Width="" TOption="string" @bind-SelectedOptions="@selectedCategories"
@@ -11,4 +11,14 @@
 
 @code {
     private IEnumerable<string> selectedCategories = Array.Empty<string>();
+
+    [Parameter]
+    public int? TotalOpenCount { get; set; }
+
+    [Parameter]
+    public int? TotalClosedCount { get; set; }
+
+    private string OpenLabel => $"{TotalOpenCount} Open";
+
+    private string ClosedLabel => $"{TotalClosedCount} Closed";
 }

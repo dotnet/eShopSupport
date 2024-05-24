@@ -110,11 +110,20 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
         }
     }
 
+    // Count open/closed
+    var itemsMatchingFilterCountByStatus = await itemsMatchingFilter.GroupBy(t => t.TicketStatus)
+        .Select(g => new { Status = g.Key, Count = g.Count() })
+        .ToDictionaryAsync(g => g.Status, g => g.Count);
+    var totalOpen = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Open);
+    var totalClosed = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Closed);
+
+    // Return requested range of results
     var resultItems = itemsMatchingFilter
         .Skip(startIndex)
         .Take(maxResults)
         .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
-    return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync()));
+
+    return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });
 
 app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =>

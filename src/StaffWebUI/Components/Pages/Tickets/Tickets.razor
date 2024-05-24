@@ -8,7 +8,7 @@
 <Title>Tickets</Title>
 
 <div class="tickets-page ensure-page-scrollbar">
-    <TicketsFilter />
+    <TicketsFilter TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
     <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
@@ -30,6 +30,7 @@
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
     private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
+    private int? totalOpenCount, totalClosedCount;
 
     public Tickets()
     {
@@ -37,6 +38,16 @@
         {
             var sortColumn = request.GetSortByProperties().FirstOrDefault();
             var result = await Backend.ListTicketsAsync(request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending);
+
+            if (result.TotalOpenCount != totalOpenCount || result.TotalClosedCount != totalClosedCount)
+            {
+                // Because this callback is outside the render cycle for this component
+                // we have to notify the framework if its state changes
+                totalOpenCount = result.TotalOpenCount;
+                totalClosedCount = result.TotalClosedCount;
+                StateHasChanged();
+            }
+
             return new() { Items = result.Items, TotalItemCount = result.TotalCount };
         };
     }
