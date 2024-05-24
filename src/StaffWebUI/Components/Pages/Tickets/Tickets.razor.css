@@ -88,6 +88,14 @@
     overflow: hidden;
 }
 
+::deep .ticket-summary {
+    filter: saturate(0.7);
+}
+
+.spacer {
+    display: inline-block;
+}
+
 .filter {
     height: var(--filter-bar-height);
     position: sticky;

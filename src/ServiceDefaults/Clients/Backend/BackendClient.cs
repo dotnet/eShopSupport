@@ -48,7 +48,7 @@ public class BackendClient(HttpClient http)
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
 
 public record ListTicketsResultItem(
-    int TicketId, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
+    int TicketId, TicketType TicketType, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
 
 public record TicketDetailsResult(
     int TicketId, string CustomerFullName, string? ShortSummary, string? LongSummary,

@@ -18,7 +18,11 @@
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
             <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
-            <LinkPropertyColumn Href="@TicketHref" Title="Summary" Property="@(t => t.ShortSummary)" Class="ticket-summary" />
+            <LinkTemplateColumn Href="@TicketHref" Title="Summary" Class="ticket-summary">
+                @TicketTypeIcon(context)
+                <span class="spacer"></span>
+                @context.ShortSummary
+            </LinkTemplateColumn>
             <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction">
                 <SatisfactionIndicator Satisfaction="@context.CustomerSatisfaction" />
             </LinkTemplateColumn>
@@ -41,4 +45,13 @@
             return new() { Items = result.Items, TotalItemCount = result.TotalCount };
         };
     }
+
+    static string TicketTypeIcon(ListTicketsResultItem ticket) => ticket.TicketType switch
+    {
+        TicketType.Idea => "💭",
+        TicketType.Question => "❔",
+        TicketType.Complaint => "👎",
+        TicketType.Returns => "📦",
+        _ => string.Empty,
+    };
 }
