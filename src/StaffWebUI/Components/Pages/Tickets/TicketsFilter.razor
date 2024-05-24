@@ -1,17 +1,19 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
+@inject BackendClient Backend
 <div class="filter">
     <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@Filter.Status.ToString()" @bind-ActiveTabId:set="SetActiveTabId">
         <FluentTab Id="@TicketStatus.Open.ToString()" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
         <FluentTab Id="@TicketStatus.Closed.ToString()" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
 
-    <FluentAutocomplete Width="" TOption="string" @bind-SelectedOptions="@selectedCategories"
-        MaximumSelectedOptions="3" Placeholder="Filter by category" style="min-width: 12rem;" />
+    <FluentAutocomplete Width="" TOption="FindCategoriesResult" @bind-SelectedOptions="@selectedCategories"
+        MaximumSelectedOptions="3" Placeholder="Filter by category" OptionText="@(x => x.Name)"
+        OnOptionsSearch="LookupCategoriesAsync" style="min-width: 12rem;" />
 </div>
 
 @code {
-    private IEnumerable<string> selectedCategories = Array.Empty<string>();
+    private IEnumerable<FindCategoriesResult> selectedCategories = Array.Empty<FindCategoriesResult>();
 
     [Parameter, EditorRequired]
     public Tickets.Filter Filter { get; set; } = default!;
@@ -31,4 +33,9 @@
 
     Task SetActiveTabId(string id)
         => FilterChanged.InvokeAsync(Filter with { Status = Enum.Parse<TicketStatus>(id) });
+
+    async Task LookupCategoriesAsync(OptionsSearchEventArgs<FindCategoriesResult> args)
+    {
+        args.Items = !string.IsNullOrWhiteSpace(args.Text) ? await Backend.FindCategoriesAsync(args.Text) : [];
+    }
 }

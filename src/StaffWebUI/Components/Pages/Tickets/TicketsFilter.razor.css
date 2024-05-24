@@ -3,7 +3,7 @@
     position: sticky;
     top: var(--header-height);
     background: var(--neutral-fill-stealth-active);
-    z-index: 1;
+    z-index: 2;
     padding: 0 1.5rem;
     display: flex;
     align-items: center;

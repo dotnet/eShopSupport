@@ -41,6 +41,11 @@ public class BackendClient(HttpClient http)
         await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(productId, ticketType, ticketStatus));
     }
 
+    public Task<FindCategoriesResult[]> FindCategoriesAsync(string searchText)
+    {
+        return http.GetFromJsonAsync<FindCategoriesResult[]>($"/api/categories?searchText={HttpUtility.UrlEncode(searchText)}")!;
+    }
+
     public Task<FindProductsResult[]> FindProductsAsync(string searchText)
     {
         return http.GetFromJsonAsync<FindProductsResult[]>($"/api/products?searchText={HttpUtility.UrlEncode(searchText)}")!;
@@ -73,6 +78,8 @@ public class AssistantChatRequestMessage
 }
 
 public record SendTicketMessageRequest(string Text);
+
+public record FindCategoriesResult(int CategoryId, string Name);
 
 public record FindProductsResult(int ProductId, string Brand, string Model);
 

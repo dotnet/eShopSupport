@@ -7,6 +7,7 @@ using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,6 +142,14 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
 
     var download = await blobClient.DownloadStreamingAsync();
     return Results.File(download.Value.Content, "application/pdf");
+});
+
+app.MapGet("/api/categories", async (AppDbContext dbContext, string searchText) =>
+{
+    return await dbContext.ProductCategories
+        .Where(c => c.Name.Contains(searchText))
+        .Select(c => new FindCategoriesResult(c.CategoryId, c.Name))
+        .ToArrayAsync();
 });
 
 app.MapGet("/api/products", (ProductSemanticSearch productSemanticSearch, string searchText) =>
