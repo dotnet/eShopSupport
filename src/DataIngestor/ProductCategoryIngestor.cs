@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 using eShopSupport.Backend.Data;
 using Microsoft.SemanticKernel.Embeddings;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
@@ -20,7 +21,7 @@ class ProductCategoryIngestor
             {
                 CategoryId = generated.CategoryId,
                 Name = generated.Name,
-                NameEmbedding = await embeddingGenerator.GenerateEmbeddingAsync(generated.Name),
+                NameEmbeddingBase64 = ToBase64(await embeddingGenerator.GenerateEmbeddingAsync(generated.Name)),
             });
         }
 
@@ -28,6 +29,9 @@ class ProductCategoryIngestor
         await File.WriteAllTextAsync(Path.Combine(outputDir, "categories.json"), JsonSerializer.Serialize(categories, outputOptions));
         Console.WriteLine($"Wrote {categories.Count} categories");
     }
+
+    private static string ToBase64(ReadOnlyMemory<float> embedding)
+        => Convert.ToBase64String(MemoryMarshal.AsBytes(embedding.Span));
 
     internal record GeneratedCategory(int CategoryId, string Name);
 }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics.Tensors;
+using System.Runtime.InteropServices;
 using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
@@ -169,7 +170,7 @@ app.MapGet("/api/categories", async (AppDbContext dbContext, ITextEmbeddingGener
         matchingCategories = matchingCategories.Select(c => new
         {
             Category = c,
-            Similarity = TensorPrimitives.CosineSimilarity(c.NameEmbedding.Span, searchTextEmbedding.Span),
+            Similarity = TensorPrimitives.CosineSimilarity(FromBase64(c.NameEmbeddingBase64), searchTextEmbedding.Span),
         }).Where(x => x.Similarity > 0.5f)
         .OrderByDescending(x => x.Similarity)
         .Take(5)
@@ -178,6 +179,12 @@ app.MapGet("/api/categories", async (AppDbContext dbContext, ITextEmbeddingGener
     }
 
     return matchingCategories.Select(c => new FindCategoriesResult(c.CategoryId) { Name = c.Name });
+
+    static ReadOnlySpan<float> FromBase64(string embeddingBase64)
+    {
+        var bytes = Convert.FromBase64String(embeddingBase64);
+        return MemoryMarshal.Cast<byte, float>(bytes);
+    }
 });
 
 app.MapGet("/api/products", (ProductSemanticSearch productSemanticSearch, string searchText) =>
