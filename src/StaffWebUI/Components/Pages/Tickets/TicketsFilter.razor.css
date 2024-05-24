@@ -22,3 +22,8 @@
     justify-self: start;
     align-self: center;
 }
+
+/* The autocomplete shows a slightly odd empty list if there's no match, so hide it in that case */
+::deep fluent-anchored-region:not(:has(fluent-option)) {
+    opacity: 0;
+}

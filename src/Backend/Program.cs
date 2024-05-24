@@ -164,13 +164,19 @@ app.MapGet("/api/categories", async (AppDbContext dbContext, ITextEmbeddingGener
 
     var matchingCategories = await filteredCategories.ToArrayAsync();  
 
+    // If you have a small number of items, another pattern for semantic search is simply
+    // to do it in process. In this case we also amend the similarity rule so that if the
+    // category is an exact prefix match, it's considered a perfect match. So in effect
+    // we have both a prefix match and a semantic match working together.
     if (!string.IsNullOrWhiteSpace(searchText))
     {
         var searchTextEmbedding = await embedder.GenerateEmbeddingAsync(searchText);
         matchingCategories = matchingCategories.Select(c => new
         {
             Category = c,
-            Similarity = TensorPrimitives.CosineSimilarity(FromBase64(c.NameEmbeddingBase64), searchTextEmbedding.Span),
+            Similarity = c.Name.StartsWith(searchText, StringComparison.OrdinalIgnoreCase)
+                ? 1f
+                : TensorPrimitives.CosineSimilarity(FromBase64(c.NameEmbeddingBase64), searchTextEmbedding.Span),
         }).Where(x => x.Similarity > 0.5f)
         .OrderByDescending(x => x.Similarity)
         .Take(5)
