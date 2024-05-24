@@ -72,43 +72,14 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     return Results.Ok();
 });
 
-app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxResults, string? sortBy, bool sortAscending) =>
+app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>
 {
-    if (maxResults > 100)
+    if (request.MaxResults > 100)
     {
         return Results.BadRequest("maxResults must be 100 or less");
     }
 
     IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets;
-
-    if (!string.IsNullOrEmpty(sortBy))
-    {
-        switch (sortBy)
-        {
-            case nameof(ListTicketsResultItem.TicketId):
-                itemsMatchingFilter = sortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.TicketId);
-                break;
-            case nameof(ListTicketsResultItem.CustomerFullName):
-                itemsMatchingFilter = sortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
-                break;
-            case nameof(ListTicketsResultItem.NumMessages):
-                itemsMatchingFilter = sortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.Messages.Count).ThenBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.Messages.Count).ThenBy(t => t.TicketId);
-                break;
-            case nameof(ListTicketsResultItem.CustomerSatisfaction):
-                itemsMatchingFilter = sortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId);
-                break;
-            default:
-                return Results.BadRequest("Invalid sortBy value");
-        }
-    }
 
     // Count open/closed
     var itemsMatchingFilterCountByStatus = await itemsMatchingFilter.GroupBy(t => t.TicketStatus)
@@ -117,10 +88,44 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
     var totalOpen = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Open);
     var totalClosed = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Closed);
 
-    // Return requested range of results
+    // Sort and return requested range of
+    if (request.FilterByStatus.HasValue)
+    {
+        itemsMatchingFilter = itemsMatchingFilter.Where(t => t.TicketStatus == request.FilterByStatus.Value);
+    }
+
+    if (!string.IsNullOrEmpty(request.SortBy))
+    {
+        switch (request.SortBy)
+        {
+            case nameof(ListTicketsResultItem.TicketId):
+                itemsMatchingFilter = request.SortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.TicketId);
+                break;
+            case nameof(ListTicketsResultItem.CustomerFullName):
+                itemsMatchingFilter = request.SortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
+                break;
+            case nameof(ListTicketsResultItem.NumMessages):
+                itemsMatchingFilter = request.SortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.Messages.Count).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.Messages.Count).ThenBy(t => t.TicketId);
+                break;
+            case nameof(ListTicketsResultItem.CustomerSatisfaction):
+                itemsMatchingFilter = request.SortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId);
+                break;
+            default:
+                return Results.BadRequest("Invalid sortBy value");
+        }
+    }
+
     var resultItems = itemsMatchingFilter
-        .Skip(startIndex)
-        .Take(maxResults)
+        .Skip(request.StartIndex)
+        .Take(request.MaxResults)
         .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
 
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));

@@ -5,8 +5,11 @@ namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
 public class BackendClient(HttpClient http)
 {
-    public Task<ListTicketsResult> ListTicketsAsync(int startIndex, int maxResults, string? sortBy, bool? sortAscending)
-        => http.GetFromJsonAsync<ListTicketsResult>($"/tickets?startIndex={startIndex}&maxResults={maxResults}&sortBy={sortBy}&sortAscending={sortAscending}")!;
+    public async Task<ListTicketsResult> ListTicketsAsync(ListTicketsRequest request)
+    {
+        var result = await http.PostAsJsonAsync("/tickets", request);
+        return (await result.Content.ReadFromJsonAsync<ListTicketsResult>())!;
+    }
 
     public Task<TicketDetailsResult> GetTicketDetailsAsync(int ticketId)
         => http.GetFromJsonAsync<TicketDetailsResult>($"/tickets/{ticketId}")!;
@@ -43,6 +46,8 @@ public class BackendClient(HttpClient http)
         return http.GetFromJsonAsync<FindProductsResult[]>($"/api/products?searchText={HttpUtility.UrlEncode(searchText)}")!;
     }
 }
+
+public record ListTicketsRequest(TicketStatus? FilterByStatus, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount, int TotalOpenCount, int TotalClosedCount);
 
