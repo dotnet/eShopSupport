@@ -1,0 +1,8 @@
+﻿@if (Satisfaction.HasValue)
+{
+    <progress max="9" value="@Satisfaction" title="Satisfaction: @Satisfaction"></progress>
+}
+@code {
+    [Parameter]
+    public int? Satisfaction { get; set; }
+}

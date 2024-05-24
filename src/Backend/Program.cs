@@ -1,4 +1,6 @@
-﻿using Azure.Storage.Blobs;
+﻿using System.Numerics.Tensors;
+using System.Runtime.InteropServices;
+using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -72,33 +74,58 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     return Results.Ok();
 });
 
-app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxResults, string? sortBy, bool sortAscending) =>
+app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>
 {
-    if (maxResults > 100)
+    if (request.MaxResults > 100)
     {
         return Results.BadRequest("maxResults must be 100 or less");
     }
 
     IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets;
 
-    if (!string.IsNullOrEmpty(sortBy))
+    if (request.FilterByCategoryIds is { Count: > 0 })
     {
-        switch (sortBy)
+        itemsMatchingFilter = itemsMatchingFilter
+            .Where(t => t.Product != null)
+            .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
+    }
+
+    // Count open/closed
+    var itemsMatchingFilterCountByStatus = await itemsMatchingFilter.GroupBy(t => t.TicketStatus)
+        .Select(g => new { Status = g.Key, Count = g.Count() })
+        .ToDictionaryAsync(g => g.Status, g => g.Count);
+    var totalOpen = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Open);
+    var totalClosed = itemsMatchingFilterCountByStatus.GetValueOrDefault(TicketStatus.Closed);
+
+    // Sort and return requested range of
+    if (request.FilterByStatus.HasValue)
+    {
+        itemsMatchingFilter = itemsMatchingFilter.Where(t => t.TicketStatus == request.FilterByStatus.Value);
+    }
+
+    if (!string.IsNullOrEmpty(request.SortBy))
+    {
+        switch (request.SortBy)
         {
-            case "TicketId":
-                itemsMatchingFilter = sortAscending == true
+            case nameof(ListTicketsResultItem.TicketId):
+                itemsMatchingFilter = request.SortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.TicketId);
                 break;
-            case "CustomerFullName":
-                itemsMatchingFilter = sortAscending == true
+            case nameof(ListTicketsResultItem.CustomerFullName):
+                itemsMatchingFilter = request.SortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
                 break;
-            case "NumMessages":
-                itemsMatchingFilter = sortAscending == true
+            case nameof(ListTicketsResultItem.NumMessages):
+                itemsMatchingFilter = request.SortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.Messages.Count).ThenBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.Messages.Count).ThenBy(t => t.TicketId);
+                break;
+            case nameof(ListTicketsResultItem.CustomerSatisfaction):
+                itemsMatchingFilter = request.SortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId);
                 break;
             default:
                 return Results.BadRequest("Invalid sortBy value");
@@ -106,10 +133,11 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
     }
 
     var resultItems = itemsMatchingFilter
-        .Skip(startIndex)
-        .Take(maxResults)
-        .Select(t => new ListTicketsResultItem(t.TicketId, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
-    return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync()));
+        .Skip(request.StartIndex)
+        .Take(request.MaxResults)
+        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
+
+    return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });
 
 app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =>
@@ -122,6 +150,41 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
 
     var download = await blobClient.DownloadStreamingAsync();
     return Results.File(download.Value.Content, "application/pdf");
+});
+
+app.MapGet("/api/categories", async (AppDbContext dbContext, ITextEmbeddingGenerationService embedder, string? searchText, string? ids) =>
+{
+    IQueryable<ProductCategory> filteredCategories = dbContext.ProductCategories;
+
+    if (!string.IsNullOrWhiteSpace(ids))
+    {
+        var idsParsed = ids.Split(',').Select(int.Parse).ToList();
+        filteredCategories = filteredCategories.Where(c => idsParsed.Contains(c.CategoryId));
+    }
+
+    var matchingCategories = await filteredCategories.ToArrayAsync();  
+
+    if (!string.IsNullOrWhiteSpace(searchText))
+    {
+        var searchTextEmbedding = await embedder.GenerateEmbeddingAsync(searchText);
+        matchingCategories = matchingCategories.Select(c => new
+        {
+            Category = c,
+            Similarity = TensorPrimitives.CosineSimilarity(FromBase64(c.NameEmbeddingBase64), searchTextEmbedding.Span),
+        }).Where(x => x.Similarity > 0.5f)
+        .OrderByDescending(x => x.Similarity)
+        .Take(5)
+        .Select(x => x.Category)
+        .ToArray();
+    }
+
+    return matchingCategories.Select(c => new FindCategoriesResult(c.CategoryId) { Name = c.Name });
+
+    static ReadOnlySpan<float> FromBase64(string embeddingBase64)
+    {
+        var bytes = Convert.FromBase64String(embeddingBase64);
+        return MemoryMarshal.Cast<byte, float>(bytes);
+    }
 });
 
 app.MapGet("/api/products", (ProductSemanticSearch productSemanticSearch, string searchText) =>

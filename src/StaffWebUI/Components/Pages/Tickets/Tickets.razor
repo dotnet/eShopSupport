@@ -1,0 +1,79 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using eShopSupport.ServiceDefaults.Clients.Backend
+@using eShopSupport.StaffWebUI.Components.Pages.Tickets.Columns
+@inject BackendClient Backend
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<Title>Tickets</Title>
+
+<div class="tickets-page ensure-page-scrollbar">
+    <TicketsFilter @bind-Filter="@filter" @bind-Filter:after="@OnFilterChangedAsync" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
+    <QuickGrid @ref="ticketsGrid" TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
+        <ChildContent>
+            <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
+            <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
+            <LinkTemplateColumn Href="@TicketHref" Title="Summary" Class="ticket-summary">
+                @TicketTypeIcon(context)
+                <span class="spacer"></span>
+                @context.ShortSummary
+            </LinkTemplateColumn>
+            <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction">
+                <SatisfactionIndicator Satisfaction="@context.CustomerSatisfaction" />
+            </LinkTemplateColumn>
+            <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
+        </ChildContent>
+    </QuickGrid>
+</div>
+
+@code {
+    private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
+    private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
+    private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
+    private QuickGrid<ListTicketsResultItem>? ticketsGrid;
+    private int? totalOpenCount, totalClosedCount;
+    private Filter filter = default!;
+
+    public Tickets()
+    {
+        TicketsProvider = async request =>
+        {
+            var sortColumn = request.GetSortByProperties().FirstOrDefault();
+            var categoryIds = filter.Categories.Select(c => c.CategoryId).ToList();
+            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
+
+            if (result.TotalOpenCount != totalOpenCount || result.TotalClosedCount != totalClosedCount)
+            {
+                // Because this callback is outside the render cycle for this component
+                // we have to notify the framework if its state changes
+                totalOpenCount = result.TotalOpenCount;
+                totalClosedCount = result.TotalClosedCount;
+                StateHasChanged();
+            }
+
+            return new() { Items = result.Items, TotalItemCount = result.TotalCount };
+        };
+    }
+
+    async Task OnFilterChangedAsync()
+    {
+        await JS.InvokeVoidAsync("scrollToTop");
+
+        if (ticketsGrid is not null)
+        {
+            await ticketsGrid.RefreshDataAsync();
+        }
+    }
+
+    static string TicketTypeIcon(ListTicketsResultItem ticket) => ticket.TicketType switch
+    {
+        TicketType.Idea => "💭",
+        TicketType.Question => "❔",
+        TicketType.Complaint => "👎",
+        TicketType.Returns => "📦",
+        _ => string.Empty,
+    };
+
+    public record Filter(TicketStatus Status, IEnumerable<FindCategoriesResult> Categories);
+}

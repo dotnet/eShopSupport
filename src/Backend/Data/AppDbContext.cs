@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
 
     public DbSet<Message> Messages { get; set; }
 
+    public DbSet<ProductCategory> ProductCategories { get; set; }
+
     public DbSet<Product> Products { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +50,9 @@ public class AppDbContext : DbContext
     {
         try
         {
+            var categories = JsonSerializer.Deserialize<ProductCategory[]>(
+                File.ReadAllText(Path.Combine(dirPath, "categories.json")))!;
+
             var products = JsonSerializer.Deserialize<Product[]>(
                 File.ReadAllText(Path.Combine(dirPath, "products.json")))!;
 
@@ -64,6 +69,7 @@ public class AppDbContext : DbContext
                 }
             }
 
+            await dbContext.ProductCategories.AddRangeAsync(categories);
             await dbContext.Products.AddRangeAsync(products);
             await dbContext.Tickets.AddRangeAsync(tickets);
             await dbContext.SaveChangesAsync();

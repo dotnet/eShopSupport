@@ -1,0 +1,103 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using eShopSupport.ServiceDefaults.Clients.Backend
+@inject BackendClient Backend
+@inject NavigationManager Nav
+
+<div class="filter">
+    <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@Filter.Status.ToString()" @bind-ActiveTabId:set="SetActiveTabId">
+        <FluentTab Id="@TicketStatus.Open.ToString()" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
+        <FluentTab Id="@TicketStatus.Closed.ToString()" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
+    </FluentTabs>
+
+    <FluentAutocomplete Width="" TOption="FindCategoriesResult"
+        @bind-SelectedOptions:get="@Filter.Categories" @bind-SelectedOptions:set="SetSelectedCategories"
+        MaximumSelectedOptions="3" Placeholder="Filter by category" OptionText="@(x => x.Name)"
+        OnOptionsSearch="LookupCategoriesAsync" style="min-width: 12rem;" />
+</div>
+
+@code {
+    private IEnumerable<FindCategoriesResult> selectedCategories = Array.Empty<FindCategoriesResult>();
+
+    [Parameter, EditorRequired]
+    public Tickets.Filter Filter { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<Tickets.Filter> FilterChanged { get; set; }
+
+    [Parameter]
+    public int? TotalOpenCount { get; set; }
+
+    [Parameter]
+    public int? TotalClosedCount { get; set; }
+
+    [SupplyParameterFromQuery(Name = "status")]
+    public string? InitialFilterStatus { get; set; }
+
+    [SupplyParameterFromQuery(Name = "categories")]
+    public string? InitialFilterCategoryIds { get; set; }
+
+    private string OpenLabel => $"{TotalOpenCount} Open";
+
+    private string ClosedLabel => $"{TotalClosedCount} Closed";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var filterStatus = Enum.TryParse<TicketStatus>(InitialFilterStatus, out var status) ? status : TicketStatus.Open;
+
+        var filterCategories = new List<FindCategoriesResult>();
+        if (!string.IsNullOrEmpty(InitialFilterCategoryIds))
+        {
+            foreach (var idText in InitialFilterCategoryIds.Split('-'))
+            {
+                if (int.TryParse(idText, out var id))
+                {
+                    // We don't know the category names, but will load them asynchronously later
+                    filterCategories.Add(new(id) { Name = "..." });
+                }
+            }
+        }
+
+        await FilterChanged.InvokeAsync(new(filterStatus, filterCategories));
+
+        // Now in the background we can load the category names
+        var categoryNames = await Backend.FindCategoriesAsync(filterCategories.Select(x => x.CategoryId));
+        var categoryNamesById = categoryNames.ToDictionary(x => x.CategoryId);
+        foreach (var filterCategory in filterCategories)
+        {
+            if (categoryNamesById.TryGetValue(filterCategory.CategoryId, out var name))
+            {
+                filterCategory.Name = name.Name;
+            }
+        }
+    }
+
+    Task SetActiveTabId(string id)
+    {
+        var newFilter = Filter with { Status = Enum.Parse<TicketStatus>(id) };
+        UpdateUrl(newFilter);
+        return FilterChanged.InvokeAsync(newFilter);
+    }
+
+    async Task LookupCategoriesAsync(OptionsSearchEventArgs<FindCategoriesResult> args)
+    {
+        args.Items = !string.IsNullOrWhiteSpace(args.Text) ? await Backend.FindCategoriesAsync(args.Text) : [];
+    }
+
+    Task SetSelectedCategories(IEnumerable<FindCategoriesResult> values)
+    {
+        var newFilter = Filter with { Categories = values };
+        UpdateUrl(newFilter);
+        return FilterChanged.InvokeAsync(newFilter);
+    }
+
+    void UpdateUrl(Tickets.Filter filter)
+    {
+        // By storing the current filter in the URL, we make it bookmarkable/linkable
+        var categoriesUrlParam = string.Join("-", filter.Categories.Select(c => c.CategoryId));
+        Nav.NavigateTo(Nav.GetUriWithQueryParameters(new Dictionary<string, object?>
+        {
+            { "status", filter.Status is TicketStatus.Open ? null : filter.Status.ToString() },
+            { "categories", categoriesUrlParam is "" ? null : categoriesUrlParam },
+        }), replace: true);
+    }
+}

@@ -1,13 +1,15 @@
 ﻿using System.Net.Http.Json;
-using System.Net.Sockets;
 using System.Web;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
 public class BackendClient(HttpClient http)
 {
-    public Task<ListTicketsResult> ListTicketsAsync(int startIndex, int maxResults, string? sortBy, bool? sortAscending)
-        => http.GetFromJsonAsync<ListTicketsResult>($"/tickets?startIndex={startIndex}&maxResults={maxResults}&sortBy={sortBy}&sortAscending={sortAscending}")!;
+    public async Task<ListTicketsResult> ListTicketsAsync(ListTicketsRequest request)
+    {
+        var result = await http.PostAsJsonAsync("/tickets", request);
+        return (await result.Content.ReadFromJsonAsync<ListTicketsResult>())!;
+    }
 
     public Task<TicketDetailsResult> GetTicketDetailsAsync(int ticketId)
         => http.GetFromJsonAsync<TicketDetailsResult>($"/tickets/{ticketId}")!;
@@ -39,16 +41,28 @@ public class BackendClient(HttpClient http)
         await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(productId, ticketType, ticketStatus));
     }
 
+    public Task<FindCategoriesResult[]> FindCategoriesAsync(string searchText)
+    {
+        return http.GetFromJsonAsync<FindCategoriesResult[]>($"/api/categories?searchText={HttpUtility.UrlEncode(searchText)}")!;
+    }
+
+    public Task<FindCategoriesResult[]> FindCategoriesAsync(IEnumerable<int> categoryIds)
+    {
+        return http.GetFromJsonAsync<FindCategoriesResult[]>($"/api/categories?ids={string.Join(",", categoryIds)}")!;
+    }
+
     public Task<FindProductsResult[]> FindProductsAsync(string searchText)
     {
         return http.GetFromJsonAsync<FindProductsResult[]>($"/api/products?searchText={HttpUtility.UrlEncode(searchText)}")!;
     }
 }
 
-public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount);
+public record ListTicketsRequest(TicketStatus? FilterByStatus, List<int>? FilterByCategoryIds, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
+
+public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount, int TotalOpenCount, int TotalClosedCount);
 
 public record ListTicketsResultItem(
-    int TicketId, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
+    int TicketId, TicketType TicketType, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
 
 public record TicketDetailsResult(
     int TicketId, string CustomerFullName, string? ShortSummary, string? LongSummary,
@@ -69,6 +83,11 @@ public class AssistantChatRequestMessage
 }
 
 public record SendTicketMessageRequest(string Text);
+
+public record FindCategoriesResult(int CategoryId)
+{
+    public required string Name { get; set; }
+}
 
 public record FindProductsResult(int ProductId, string Brand, string Model);
 

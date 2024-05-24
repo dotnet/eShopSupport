@@ -1,0 +1,24 @@
+﻿.filter {
+    height: var(--filter-bar-height);
+    position: sticky;
+    top: var(--header-height);
+    background: var(--neutral-fill-stealth-active);
+    z-index: 2;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+::deep fluent-tab {
+    margin-right: 1rem;
+}
+
+::deep .fluent-tab-icon {
+    margin-right: 0.5rem;
+}
+
+::deep fluent-tabs::part(activeIndicator) {
+    width: calc(100% - 1rem);
+    justify-self: start;
+    align-self: center;
+}

@@ -27,3 +27,7 @@ class LoadingThemeInfo extends HTMLElement {
 
 window.customElements.define('loading-theme-info', LoadingThemeInfo);
 window.LoadingThemeInfo = LoadingThemeInfo;
+
+window.scrollToTop = function () {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+}

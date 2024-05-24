@@ -1,4 +1,8 @@
-﻿::deep .tickets-grid {
+﻿.tickets-page {
+    --filter-bar-height: 3.25rem;
+}
+
+::deep .tickets-grid {
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
@@ -8,7 +12,7 @@
 
 ::deep thead {
     position: sticky;
-    top: var(--header-height);
+    top: calc(var(--header-height) + var(--filter-bar-height));
     background: var(--neutral-fill-stealth-active);
     z-index: 1;
     border-bottom: 1px solid silver;
@@ -25,15 +29,29 @@
 }
 
 ::deep th {
-    padding: 0.7rem 0 0.2rem 0;
+    padding: 0 0 0.2rem 0;
     border-bottom: calc(var(--stroke-width)* 1px) solid var(--neutral-layer-4);
 }
 
-::deep th.ticket-id { width: 100px; }
-::deep th.ticket-satisfaction { width: 120px; }
-::deep th.ticket-messages { width: 120px; }
-::deep th.ticket-customer { width: 20%; }
-::deep th.ticket-summary { width: 60%; }
+    ::deep th.ticket-id {
+        width: 100px;
+    }
+
+    ::deep th.ticket-satisfaction {
+        width: 120px;
+    }
+
+    ::deep th.ticket-messages {
+        width: 120px;
+    }
+
+    ::deep th.ticket-customer {
+        width: 20%;
+    }
+
+    ::deep th.ticket-summary {
+        width: 60%;
+    }
 
 ::deep .tickets-grid tbody > tr > td {
     white-space: nowrap;
@@ -68,4 +86,12 @@
     padding: 0.4rem;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+::deep .ticket-summary {
+    filter: saturate(0.7);
+}
+
+.spacer {
+    display: inline-block;
 }
