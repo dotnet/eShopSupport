@@ -8,7 +8,7 @@
 <Title>Tickets</Title>
 
 <div class="tickets-page ensure-page-scrollbar">
-    <TicketsFilter TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
+    <TicketsFilter @bind-Filter="@filter" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
     <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
@@ -31,6 +31,7 @@
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
     private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
     private int? totalOpenCount, totalClosedCount;
+    private Filter filter = new(TicketStatus.Closed);
 
     public Tickets()
     {
@@ -60,4 +61,6 @@
         TicketType.Returns => "📦",
         _ => string.Empty,
     };
+
+    public record Filter(TicketStatus Status);
 }

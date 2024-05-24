@@ -1,8 +1,9 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using eShopSupport.ServiceDefaults.Clients.Backend
 <div class="filter">
-    <FluentTabs Style="flex-grow: 1">
-        <FluentTab Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
-        <FluentTab Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
+    <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@Filter.Status.ToString()" @bind-ActiveTabId:set="SetActiveTabId">
+        <FluentTab Id="@TicketStatus.Open.ToString()" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
+        <FluentTab Id="@TicketStatus.Closed.ToString()" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
 
     <FluentAutocomplete Width="" TOption="string" @bind-SelectedOptions="@selectedCategories"
@@ -11,6 +12,12 @@
 
 @code {
     private IEnumerable<string> selectedCategories = Array.Empty<string>();
+
+    [Parameter, EditorRequired]
+    public Tickets.Filter Filter { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<Tickets.Filter> FilterChanged { get; set; }
 
     [Parameter]
     public int? TotalOpenCount { get; set; }
@@ -21,4 +28,7 @@
     private string OpenLabel => $"{TotalOpenCount} Open";
 
     private string ClosedLabel => $"{TotalClosedCount} Closed";
+
+    Task SetActiveTabId(string id)
+        => FilterChanged.InvokeAsync(Filter with { Status = Enum.Parse<TicketStatus>(id) });
 }
