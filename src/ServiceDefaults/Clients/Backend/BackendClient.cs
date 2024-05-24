@@ -46,6 +46,11 @@ public class BackendClient(HttpClient http)
         return http.GetFromJsonAsync<FindCategoriesResult[]>($"/api/categories?searchText={HttpUtility.UrlEncode(searchText)}")!;
     }
 
+    public Task<FindCategoriesResult[]> FindCategoriesAsync(IEnumerable<int> categoryIds)
+    {
+        return http.GetFromJsonAsync<FindCategoriesResult[]>($"/api/categories?ids={string.Join(",", categoryIds)}")!;
+    }
+
     public Task<FindProductsResult[]> FindProductsAsync(string searchText)
     {
         return http.GetFromJsonAsync<FindProductsResult[]>($"/api/products?searchText={HttpUtility.UrlEncode(searchText)}")!;
@@ -79,7 +84,10 @@ public class AssistantChatRequestMessage
 
 public record SendTicketMessageRequest(string Text);
 
-public record FindCategoriesResult(int CategoryId, string Name);
+public record FindCategoriesResult(int CategoryId)
+{
+    public required string Name { get; set; }
+}
 
 public record FindProductsResult(int ProductId, string Brand, string Model);
 

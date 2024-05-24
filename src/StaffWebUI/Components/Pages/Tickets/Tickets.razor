@@ -35,9 +35,6 @@
     private int? totalOpenCount, totalClosedCount;
     private Filter filter = default!;
 
-    [SupplyParameterFromQuery(Name = "status")]
-    public string? InitialFilterStatus { get; set; }
-
     public Tickets()
     {
         TicketsProvider = async request =>
@@ -59,17 +56,8 @@
         };
     }
 
-    protected override void OnInitialized()
-    {
-        var filterStatus = Enum.TryParse<TicketStatus>(InitialFilterStatus, out var status) ? status : TicketStatus.Open;
-        filter = new(filterStatus, new List<FindCategoriesResult>());
-    }
-
     async Task OnFilterChangedAsync()
     {
-        // By storing the current filter in the URL, we make it bookmarkable/linkable
-        Nav.NavigateTo(Nav.GetUriWithQueryParameter("status", filter.Status.ToString()), replace: true);
-
         await JS.InvokeVoidAsync("scrollToTop");
 
         if (ticketsGrid is not null)

@@ -151,11 +151,24 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
     return Results.File(download.Value.Content, "application/pdf");
 });
 
-app.MapGet("/api/categories", async (AppDbContext dbContext, string searchText) =>
+app.MapGet("/api/categories", async (AppDbContext dbContext, string? searchText, string? ids) =>
 {
-    return await dbContext.ProductCategories
-        .Where(c => c.Name.Contains(searchText))
-        .Select(c => new FindCategoriesResult(c.CategoryId, c.Name))
+    IQueryable<ProductCategory> filteredCategories = dbContext.ProductCategories;
+
+    if (!string.IsNullOrWhiteSpace(searchText))
+    {
+        filteredCategories = filteredCategories.Where(c => c.Name.Contains(searchText));
+    }
+
+
+    if (!string.IsNullOrWhiteSpace(ids))
+    {
+        var idsParsed = ids.Split(',').Select(int.Parse).ToList();
+        filteredCategories = filteredCategories.Where(c => idsParsed.Contains(c.CategoryId));
+    }
+
+    return await filteredCategories
+        .Select(c => new FindCategoriesResult(c.CategoryId) { Name = c.Name })
         .ToArrayAsync();
 });
 
