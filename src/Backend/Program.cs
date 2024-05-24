@@ -85,20 +85,25 @@ app.MapGet("/tickets", async (AppDbContext dbContext, int startIndex, int maxRes
     {
         switch (sortBy)
         {
-            case "TicketId":
+            case nameof(ListTicketsResultItem.TicketId):
                 itemsMatchingFilter = sortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.TicketId);
                 break;
-            case "CustomerFullName":
+            case nameof(ListTicketsResultItem.CustomerFullName):
                 itemsMatchingFilter = sortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
                 break;
-            case "NumMessages":
+            case nameof(ListTicketsResultItem.NumMessages):
                 itemsMatchingFilter = sortAscending == true
                     ? itemsMatchingFilter.OrderBy(t => t.Messages.Count).ThenBy(t => t.TicketId)
                     : itemsMatchingFilter.OrderByDescending(t => t.Messages.Count).ThenBy(t => t.TicketId);
+                break;
+            case nameof(ListTicketsResultItem.CustomerSatisfaction):
+                itemsMatchingFilter = sortAscending == true
+                    ? itemsMatchingFilter.OrderBy(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerSatisfaction).ThenBy(t => t.TicketId);
                 break;
             default:
                 return Results.BadRequest("Invalid sortBy value");

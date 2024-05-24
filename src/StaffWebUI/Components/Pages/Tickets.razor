@@ -18,10 +18,7 @@
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
             <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
             <LinkPropertyColumn Href="@TicketHref" Title="Summary" Property="@(t => t.ShortSummary)" Class="ticket-summary" />
-            <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" Class="ticket-satisfaction">
-                @(context.CustomerSatisfaction.HasValue ? SatisfactionSymbols[context.CustomerSatisfaction.Value] : "")
-                @context.CustomerSatisfaction
-            </LinkTemplateColumn>
+            <CustomerSatisfactionColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction" />
             <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
         </ChildContent>
     </QuickGrid>
@@ -30,7 +27,7 @@
 @code {
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
-    private readonly static string[] SatisfactionSymbols = ["", "😡", "😠", "😟", "😕", "😐", "😊", "🙂", "😃", "😄", "😍"];
+    private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
 
     public Tickets()
     {

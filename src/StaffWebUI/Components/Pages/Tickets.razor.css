@@ -33,11 +33,25 @@
     border-bottom: calc(var(--stroke-width)* 1px) solid var(--neutral-layer-4);
 }
 
-::deep th.ticket-id { width: 100px; }
-::deep th.ticket-satisfaction { width: 120px; }
-::deep th.ticket-messages { width: 120px; }
-::deep th.ticket-customer { width: 20%; }
-::deep th.ticket-summary { width: 60%; }
+    ::deep th.ticket-id {
+        width: 100px;
+    }
+
+    ::deep th.ticket-satisfaction {
+        width: 120px;
+    }
+
+    ::deep th.ticket-messages {
+        width: 120px;
+    }
+
+    ::deep th.ticket-customer {
+        width: 20%;
+    }
+
+    ::deep th.ticket-summary {
+        width: 60%;
+    }
 
 ::deep .tickets-grid tbody > tr > td {
     white-space: nowrap;
@@ -97,4 +111,42 @@
     width: calc(100% - 1rem);
     justify-self: start;
     align-self: center;
+}
+
+::deep progress {
+    width: 2rem;
+    height: 0.8rem;
+    --accent-color: gray;
+    --accent-color-low: #ed4242;
+    --accent-color-medium: #ff9a0f;
+    --accent-color-high: #1da51d;
+    border: 1.5px solid var(--accent-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+html.dark-mode .tickets-page ::deep progress {
+    --accent-color-low: #ff3b3b;
+    --accent-color-medium: #ffa427;
+    --accent-color-high: #56ca56;
+}
+
+::deep progress::-webkit-progress-bar {
+    background: none;
+}
+
+::deep progress::-webkit-progress-value {
+    background-color: var(--accent-color);
+}
+
+::deep progress[value="0"], ::deep progress[value="1"] {
+    --accent-color: var(--accent-color-low);
+}
+
+::deep progress[value="2"], ::deep progress[value="3"] {
+    --accent-color: var(--accent-color-medium);
+}
+
+::deep progress[value="4"], ::deep progress[value="5"], ::deep progress[value="6"], ::deep progress[value="7"], ::deep progress[value="8"], ::deep progress[value="9"] {
+    --accent-color: var(--accent-color-high);
 }
