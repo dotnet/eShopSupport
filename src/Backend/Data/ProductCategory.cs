@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace eShopSupport.Backend.Data;
 
@@ -8,4 +10,7 @@ public class ProductCategory
     public int CategoryId { get; set; }
 
     public required string Name { get; set; }
+
+    [NotMapped, JsonConverter(typeof(EmbeddingJsonConverter))]
+    public required ReadOnlyMemory<float> NameEmbedding { get; set; }
 }
