@@ -6,7 +6,13 @@
 
 <Title>Tickets</Title>
 
-<div class="main-grid ensure-page-scrollbar">
+<div class="tickets-page ensure-page-scrollbar">
+    <div class="filter">
+        <Microsoft.FluentUI.AspNetCore.Components.FluentTabs Style="width: 100%">
+            <Microsoft.FluentUI.AspNetCore.Components.FluentTab Label="121 Open" Icon="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Mail())" />
+            <Microsoft.FluentUI.AspNetCore.Components.FluentTab Label="3722 Closed" Icon="@(new Microsoft.FluentUI.AspNetCore.Components.Icons.Regular.Size20.Checkmark())" />
+        </Microsoft.FluentUI.AspNetCore.Components.FluentTabs>
+    </div>
     <QuickGrid TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />

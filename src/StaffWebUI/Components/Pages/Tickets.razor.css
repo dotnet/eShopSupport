@@ -1,4 +1,8 @@
-﻿::deep .tickets-grid {
+﻿.tickets-page {
+    --filter-bar-height: 3rem;
+}
+
+::deep .tickets-grid {
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
@@ -8,7 +12,7 @@
 
 ::deep thead {
     position: sticky;
-    top: var(--header-height);
+    top: calc(var(--header-height) + var(--filter-bar-height));
     background: var(--neutral-fill-stealth-active);
     z-index: 1;
     border-bottom: 1px solid silver;
@@ -25,7 +29,7 @@
 }
 
 ::deep th {
-    padding: 0.7rem 0 0.2rem 0;
+    padding: 0 0 0.2rem 0;
     border-bottom: calc(var(--stroke-width)* 1px) solid var(--neutral-layer-4);
 }
 
@@ -68,4 +72,29 @@
     padding: 0.4rem;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.filter {
+    height: var(--filter-bar-height);
+    position: sticky;
+    top: var(--header-height);
+    background: var(--neutral-fill-stealth-active);
+    z-index: 1;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+::deep fluent-tab {
+    margin-right: 1rem;
+}
+
+::deep .fluent-tab-icon {
+    margin-right: 0.5rem;
+}
+
+::deep fluent-tabs::part(activeIndicator) {
+    width: calc(100% - 1rem);
+    justify-self: start;
+    align-self: center;
 }
