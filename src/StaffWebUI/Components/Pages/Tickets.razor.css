@@ -1,5 +1,5 @@
 ﻿.tickets-page {
-    --filter-bar-height: 3rem;
+    --filter-bar-height: 3.25rem;
 }
 
 ::deep .tickets-grid {
@@ -114,8 +114,8 @@
 }
 
 ::deep progress {
-    width: 2rem;
-    height: 0.8rem;
+    width: 1.9rem;
+    height: 0.7rem;
     --accent-color: gray;
     --accent-color-low: #ed4242;
     --accent-color-medium: #ff9a0f;
