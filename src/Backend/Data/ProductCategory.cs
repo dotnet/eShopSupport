@@ -11,6 +11,6 @@ public class ProductCategory
 
     public required string Name { get; set; }
 
-    [NotMapped, JsonConverter(typeof(EmbeddingJsonConverter))]
+    [JsonConverter(typeof(EmbeddingJsonConverter))]
     public required ReadOnlyMemory<float> NameEmbedding { get; set; }
 }

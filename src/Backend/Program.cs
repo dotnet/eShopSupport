@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using System.Numerics.Tensors;
+using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -7,7 +8,6 @@ using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -151,15 +151,9 @@ app.MapGet("/manual", async (string file, BlobServiceClient blobServiceClient) =
     return Results.File(download.Value.Content, "application/pdf");
 });
 
-app.MapGet("/api/categories", async (AppDbContext dbContext, string? searchText, string? ids) =>
+app.MapGet("/api/categories", async (AppDbContext dbContext, ITextEmbeddingGenerationService embedder, string? searchText, string? ids) =>
 {
     IQueryable<ProductCategory> filteredCategories = dbContext.ProductCategories;
-
-    if (!string.IsNullOrWhiteSpace(searchText))
-    {
-        filteredCategories = filteredCategories.Where(c => c.Name.Contains(searchText));
-    }
-
 
     if (!string.IsNullOrWhiteSpace(ids))
     {
@@ -167,9 +161,23 @@ app.MapGet("/api/categories", async (AppDbContext dbContext, string? searchText,
         filteredCategories = filteredCategories.Where(c => idsParsed.Contains(c.CategoryId));
     }
 
-    return await filteredCategories
-        .Select(c => new FindCategoriesResult(c.CategoryId) { Name = c.Name })
-        .ToArrayAsync();
+    var matchingCategories = await filteredCategories.ToArrayAsync();  
+
+    if (!string.IsNullOrWhiteSpace(searchText))
+    {
+        var searchTextEmbedding = await embedder.GenerateEmbeddingAsync(searchText);
+        matchingCategories = matchingCategories.Select(c => new
+        {
+            Category = c,
+            Similarity = TensorPrimitives.CosineSimilarity(c.NameEmbedding.Span, searchTextEmbedding.Span),
+        }).Where(x => x.Similarity > 0.5f)
+        .OrderByDescending(x => x.Similarity)
+        .Take(5)
+        .Select(x => x.Category)
+        .ToArray();
+    }
+
+    return matchingCategories.Select(c => new FindCategoriesResult(c.CategoryId) { Name = c.Name });
 });
 
 app.MapGet("/api/products", (ProductSemanticSearch productSemanticSearch, string searchText) =>

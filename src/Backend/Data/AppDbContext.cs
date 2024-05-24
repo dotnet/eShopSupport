@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Polly;
 using Polly.Retry;
 
@@ -24,6 +26,7 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Ticket>().HasMany(t => t.Messages).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Ticket>().HasOne(t => t.Product);
+        modelBuilder.Entity<ProductCategory>().Property(p => p.NameEmbedding).HasConversion(EmbeddingConverter.Instance);
     }
 
     public static async Task EnsureDbCreatedAsync(IServiceProvider services)
@@ -79,6 +82,18 @@ public class AppDbContext : DbContext
             // If the initial import failed, we drop the DB so it will try again next time
             await dbContext.Database.EnsureDeletedAsync();
             throw;
+        }
+    }
+
+    private class EmbeddingConverter : ValueConverter<ReadOnlyMemory<float>, byte[]>
+    {
+        public static EmbeddingConverter Instance { get; } = new EmbeddingConverter();
+
+        // TODO: See if there's a way to do this with fewer allocations
+        public EmbeddingConverter() : base(
+            floats => MemoryMarshal.Cast<float, byte>(floats.ToArray()).ToArray(),
+            bytes => MemoryMarshal.Cast<byte, float>(bytes).ToArray())
+        {
         }
     }
 }
