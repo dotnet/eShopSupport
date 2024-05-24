@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace eShopSupport.StaffWebUI.Components;
+namespace eShopSupport.StaffWebUI.Components.Pages.Tickets.Columns;
 
-public class LinkPropertyColumn<TGridItem, TProp> : PropertyColumn<TGridItem, TProp>
+public class LinkTemplateColumn<TGridItem> : TemplateColumn<TGridItem>
 {
     [Parameter]
     public required Func<TGridItem, string>? Href { get; set; }

@@ -1,0 +1,37 @@
+﻿progress {
+    width: 1.9rem;
+    height: 0.7rem;
+    --accent-color: gray;
+    --accent-color-low: #ed4242;
+    --accent-color-medium: #ff9a0f;
+    --accent-color-high: #1da51d;
+    border: 1.5px solid var(--accent-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+html.dark-mode progress {
+    --accent-color-low: #ff3b3b;
+    --accent-color-medium: #ffa427;
+    --accent-color-high: #56ca56;
+}
+
+progress::-webkit-progress-bar {
+    background: none;
+}
+
+progress::-webkit-progress-value {
+    background-color: var(--accent-color);
+}
+
+progress[value="0"], progress[value="1"] {
+    --accent-color: var(--accent-color-low);
+}
+
+progress[value="2"], progress[value="3"] {
+    --accent-color: var(--accent-color-medium);
+}
+
+progress[value="4"], progress[value="5"], progress[value="6"], progress[value="7"], progress[value="8"], progress[value="9"] {
+    --accent-color: var(--accent-color-high);
+}

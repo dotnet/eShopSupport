@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using eShopSupport.ServiceDefaults.Clients.Backend
+@using eShopSupport.StaffWebUI.Components.Pages.Tickets.Columns
 @inject BackendClient Backend
 @inject NavigationManager Nav
 
@@ -18,7 +19,9 @@
             <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
             <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
             <LinkPropertyColumn Href="@TicketHref" Title="Summary" Property="@(t => t.ShortSummary)" Class="ticket-summary" />
-            <CustomerSatisfactionColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction" />
+            <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction">
+                <SatisfactionIndicator Satisfaction="@context.CustomerSatisfaction" />
+            </LinkTemplateColumn>
             <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
         </ChildContent>
     </QuickGrid>
