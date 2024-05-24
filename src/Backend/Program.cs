@@ -82,6 +82,13 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
 
     IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets;
 
+    if (request.FilterByCategoryIds is { Count: > 0 })
+    {
+        itemsMatchingFilter = itemsMatchingFilter
+            .Where(t => t.Product != null)
+            .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
+    }
+
     // Count open/closed
     var itemsMatchingFilterCountByStatus = await itemsMatchingFilter.GroupBy(t => t.TicketStatus)
         .Select(g => new { Status = g.Key, Count = g.Count() })

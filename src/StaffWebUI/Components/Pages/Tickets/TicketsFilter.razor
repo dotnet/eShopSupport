@@ -7,7 +7,8 @@
         <FluentTab Id="@TicketStatus.Closed.ToString()" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
 
-    <FluentAutocomplete Width="" TOption="FindCategoriesResult" @bind-SelectedOptions="@selectedCategories"
+    <FluentAutocomplete Width="" TOption="FindCategoriesResult"
+        @bind-SelectedOptions:get="@Filter.Categories" @bind-SelectedOptions:set="SetSelectedCategories"
         MaximumSelectedOptions="3" Placeholder="Filter by category" OptionText="@(x => x.Name)"
         OnOptionsSearch="LookupCategoriesAsync" style="min-width: 12rem;" />
 </div>
@@ -38,4 +39,7 @@
     {
         args.Items = !string.IsNullOrWhiteSpace(args.Text) ? await Backend.FindCategoriesAsync(args.Text) : [];
     }
+
+    Task SetSelectedCategories(IEnumerable<FindCategoriesResult> values)
+        => FilterChanged.InvokeAsync(Filter with { Categories = values });
 }

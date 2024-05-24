@@ -43,7 +43,8 @@
         TicketsProvider = async request =>
         {
             var sortColumn = request.GetSortByProperties().FirstOrDefault();
-            var result = await Backend.ListTicketsAsync(new(filter.Status, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
+            var categoryIds = filter.Categories.Select(c => c.CategoryId).ToList();
+            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
 
             if (result.TotalOpenCount != totalOpenCount || result.TotalClosedCount != totalClosedCount)
             {
@@ -61,7 +62,7 @@
     protected override void OnInitialized()
     {
         var filterStatus = Enum.TryParse<TicketStatus>(InitialFilterStatus, out var status) ? status : TicketStatus.Open;
-        filter = new(filterStatus);
+        filter = new(filterStatus, new List<FindCategoriesResult>());
     }
 
     async Task OnFilterChangedAsync()
@@ -86,5 +87,5 @@
         _ => string.Empty,
     };
 
-    public record Filter(TicketStatus Status);
+    public record Filter(TicketStatus Status, IEnumerable<FindCategoriesResult> Categories);
 }

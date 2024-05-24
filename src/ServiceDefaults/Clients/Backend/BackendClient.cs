@@ -52,7 +52,7 @@ public class BackendClient(HttpClient http)
     }
 }
 
-public record ListTicketsRequest(TicketStatus? FilterByStatus, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
+public record ListTicketsRequest(TicketStatus? FilterByStatus, List<int>? FilterByCategoryIds, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount, int TotalOpenCount, int TotalClosedCount);
 
