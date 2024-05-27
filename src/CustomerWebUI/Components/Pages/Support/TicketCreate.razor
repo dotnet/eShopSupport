@@ -1,7 +1,10 @@
 ﻿@page "/support/new"
 @implements IValidatableObject
+@inject BackendClient Backend
+@inject NavigationManager Nav
 @using System.ComponentModel.DataAnnotations
 @using SmartComponents
+@using eShopSupport.ServiceDefaults.Clients.Backend
 
 <PageTitle>Support | AdventureWorks</PageTitle>
 <SectionContent SectionName="page-header-title">New support request</SectionContent>
@@ -58,16 +61,17 @@
     [SupplyParameterFromForm, Required(ErrorMessage = "Please enter your support request here")]
     public string? Message { get; set; }
 
-    async Task HandleSubmitAsync()
-    {
-        await Task.Delay(1000);
-    }
-
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (IsSpecificProduct == true && string.IsNullOrWhiteSpace(ProductName))
         {
             yield return new ValidationResult("Please specify the product", new[] { nameof(ProductName) });
         }
+    }
+
+    async Task HandleSubmitAsync()
+    {
+        await Backend.CreateTicketAsync(new ("Alice", ProductName, Message!));
+        Nav.NavigateTo("support");
     }
 }

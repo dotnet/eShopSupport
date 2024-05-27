@@ -5,6 +5,9 @@ namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
 public class BackendClient(HttpClient http)
 {
+    public Task CreateTicketAsync(CreateTicketRequest request)
+        => http.PostAsJsonAsync("/tickets/create", request);
+
     public async Task<ListTicketsResult> ListTicketsAsync(ListTicketsRequest request)
     {
         var result = await http.PostAsJsonAsync("/tickets", request);
@@ -104,3 +107,8 @@ public enum TicketType
     Complaint,
     Returns,
 }
+
+public record CreateTicketRequest(
+    string CustomerFullName, 
+    string? ProductName,
+    string Message);

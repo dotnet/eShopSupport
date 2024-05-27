@@ -1,5 +1,6 @@
 ﻿using System.Numerics.Tensors;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
@@ -72,6 +73,35 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     ticket.TicketStatus = request.TicketStatus;
     await dbContext.SaveChangesAsync();
     return Results.Ok();
+});
+
+app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketRequest request) =>
+{
+    var ticket = new Ticket
+    {
+        CustomerFullName = request.CustomerFullName,
+        TicketStatus = TicketStatus.Open,
+        TicketType = TicketType.Question, // TODO
+    };
+
+    // TODO: Better lookup using ID
+    if (!string.IsNullOrEmpty(request.ProductName)
+        && Regex.Match(request.ProductName, @"^(.*) \((.*)\)$") is { Success: true } match)
+    {
+        var brand = match.Groups[2].Value;
+        var model = match.Groups[1].Value;
+        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Brand == brand && p.Model == model);
+        ticket.ProductId = product?.ProductId;
+    }
+
+    ticket.Messages.Add(new Message
+    {
+        AuthorName = request.CustomerFullName,
+        Text = request.Message
+    });
+
+    dbContext.Tickets.Add(ticket);
+    await dbContext.SaveChangesAsync();
 });
 
 app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>
