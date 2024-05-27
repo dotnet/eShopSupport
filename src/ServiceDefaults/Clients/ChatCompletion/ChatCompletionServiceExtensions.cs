@@ -1,4 +1,6 @@
-﻿using Azure.AI.OpenAI;
+﻿using System.Data.Common;
+using Azure.AI.OpenAI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -18,11 +20,17 @@ public static class ChatCompletionServiceExtensions
         {
             builder.AddAzureOpenAIClient(name);
 
-            var deploymentName = "gpt-35-1106"; // TODO: Get from connection string
+            var connectionStringBuilder = new DbConnectionStringBuilder();
+            connectionStringBuilder.ConnectionString = builder.Configuration.GetConnectionString(name);
+            if (!connectionStringBuilder.TryGetValue("Deployment", out var deploymentName))
+            {
+                throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
+            }
+
             builder.Services.AddScoped<IChatCompletionService>(services =>
             {
                 var client = services.GetRequiredService<OpenAIClient>();
-                return new AzureOpenAIChatCompletionService(deploymentName, client);
+                return new AzureOpenAIChatCompletionService((string)deploymentName, client);
             });
         }
     }
