@@ -48,6 +48,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
         .FirstOrDefaultAsync(t => t.TicketId == ticketId);
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
+        ticket.CreatedAt,
         ticket.Customer.FullName,
         ticket.ShortSummary,
         ticket.LongSummary,
@@ -57,7 +58,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
         ticket.TicketType,
         ticket.TicketStatus,
         ticket.CustomerSatisfaction,
-        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.IsCustomerMessage, m.Text)).ToList()
+        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.CreatedAt, m.IsCustomerMessage, m.Text)).ToList()
     ));
 });
 
@@ -80,6 +81,7 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketReques
 {
     var ticket = new Ticket
     {
+        CreatedAt = DateTime.UtcNow,
         CustomerId = request.CustomerId,
         Customer = default!, // Will be populated by DB reference
         TicketStatus = TicketStatus.Open,
@@ -99,7 +101,8 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketReques
     ticket.Messages.Add(new Message
     {
         IsCustomerMessage = true,
-        Text = request.Message
+        Text = request.Message,
+        CreatedAt = DateTime.UtcNow,
     });
 
     dbContext.Tickets.Add(ticket);
@@ -173,7 +176,7 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
     var resultItems = itemsMatchingFilter
         .Skip(request.StartIndex)
         .Take(request.MaxResults)
-        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.TicketStatus, t.Customer.FullName, t.Product == null ? null : t.Product.Model, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
+        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.TicketStatus, t.CreatedAt, t.Customer.FullName, t.Product == null ? null : t.Product.Model, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
 
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });

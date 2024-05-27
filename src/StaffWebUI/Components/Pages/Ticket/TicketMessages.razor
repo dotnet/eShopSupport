@@ -27,7 +27,7 @@ else
         {
             <div class="message @(message.IsCustomerMessage ? "customer" : "support")">
                 <div class="message-metadata">
-                    <span class="timestamp">2 days ago</span>
+                    <span class="timestamp">@message.CreatedAt.ToShortDateString()</span>
                     <span class="filler">by</span>
                     <span class="sender">@(message.IsCustomerMessage ? Ticket.CustomerFullName : "Support")</span>
                 </div>

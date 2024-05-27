@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Retry;
@@ -69,9 +70,11 @@ public class AppDbContext : DbContext
             {
                 ticket.TicketId = 0;
                 ticket.Customer = customers.First(c => c.CustomerId == ticket.CustomerId);
+                ticket.CreatedAt = DateTime.UtcNow;
                 foreach (var message in ticket.Messages)
                 {
                     message.MessageId = 0;
+                    message.CreatedAt = DateTime.UtcNow;
                 }
             }
             foreach (var customer in customers)

@@ -9,6 +9,8 @@ public class Ticket
     
     public int? ProductId { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     [JsonIgnore]
     public Product? Product { get; set; }
 

@@ -4,6 +4,8 @@ public class Message
 {
     public int MessageId { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public int TicketId { get; set; }
 
     public bool IsCustomerMessage { get; set; }

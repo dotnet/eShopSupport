@@ -12,6 +12,7 @@ public static class TicketMessaging
             dbContext.Messages.Add(new Message
             {
                 TicketId = ticketId,
+                CreatedAt = DateTime.UtcNow,
                 IsCustomerMessage = sendRequest.IsCustomerMessage,
                 Text = sendRequest.Text,
             });
