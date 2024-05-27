@@ -1,7 +1,5 @@
 ﻿using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace eShopSupport.Backend.Api;
 
@@ -14,7 +12,8 @@ public static class TicketMessaging
             dbContext.Messages.Add(new Message
             {
                 TicketId = ticketId,
-                AuthorName = "Support",
+                CreatedAt = DateTime.UtcNow,
+                IsCustomerMessage = sendRequest.IsCustomerMessage,
                 Text = sendRequest.Text,
             });
             await dbContext.SaveChangesAsync(cancellationToken);

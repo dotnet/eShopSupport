@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Components.Endpoints
+
+<div class="eshop-header">
+    <div class="eshop-header-hero">
+        <img role="presentation" src="images/header.webp" />
+    </div>
+    <div class="eshop-header-container">
+        <nav class="eshop-header-navbar">
+            <a class="logo logo-header" href="">
+                <img alt="AdventureWorks" src="images/logo-header.svg" class="logo logo-header" />
+            </a>
+
+            <UserMenu />
+        </nav>
+        <div class="eshop-header-intro">
+            <h1><SectionOutlet SectionName="page-header-title" /></h1>
+            <p><SectionOutlet SectionName="page-header-subtitle" /></p>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,6 @@
 ﻿using System.Numerics.Tensors;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
@@ -43,10 +44,13 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
     var ticket = await dbContext.Tickets
         .Include(t => t.Messages)
         .Include(t => t.Product)
+        .Include(t => t.Customer)
         .FirstOrDefaultAsync(t => t.TicketId == ticketId);
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
-        ticket.CustomerFullName,
+        ticket.CreatedAt,
+        ticket.CustomerId,
+        ticket.Customer.FullName,
         ticket.ShortSummary,
         ticket.LongSummary,
         ticket.ProductId,
@@ -55,7 +59,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
         ticket.TicketType,
         ticket.TicketStatus,
         ticket.CustomerSatisfaction,
-        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.AuthorName, m.Text)).ToList()
+        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.CreatedAt, m.IsCustomerMessage, m.Text)).ToList()
     ));
 });
 
@@ -74,6 +78,51 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     return Results.Ok();
 });
 
+app.MapPut("/api/ticket/{ticketId:int}/close", async (AppDbContext dbContext, int ticketId) =>
+{
+    var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+    if (ticket == null)
+    {
+        return Results.NotFound();
+    }
+
+    ticket.TicketStatus = TicketStatus.Closed;
+    await dbContext.SaveChangesAsync();
+    return Results.Ok();
+});
+
+app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketRequest request) =>
+{
+    var ticket = new Ticket
+    {
+        CreatedAt = DateTime.UtcNow,
+        CustomerId = request.CustomerId,
+        Customer = default!, // Will be populated by DB reference
+        TicketStatus = TicketStatus.Open,
+        TicketType = TicketType.Question, // TODO
+    };
+
+    // TODO: Better lookup using ID
+    if (!string.IsNullOrEmpty(request.ProductName)
+        && Regex.Match(request.ProductName, @"^(.*) \((.*)\)$") is { Success: true } match)
+    {
+        var brand = match.Groups[2].Value;
+        var model = match.Groups[1].Value;
+        var product = await dbContext.Products.FirstOrDefaultAsync(p => p.Brand == brand && p.Model == model);
+        ticket.ProductId = product?.ProductId;
+    }
+
+    ticket.Messages.Add(new Message
+    {
+        IsCustomerMessage = true,
+        Text = request.Message,
+        CreatedAt = DateTime.UtcNow,
+    });
+
+    dbContext.Tickets.Add(ticket);
+    await dbContext.SaveChangesAsync();
+});
+
 app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>
 {
     if (request.MaxResults > 100)
@@ -81,13 +130,19 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
         return Results.BadRequest("maxResults must be 100 or less");
     }
 
-    IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets;
+    IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets
+        .Include(t => t.Product);
 
     if (request.FilterByCategoryIds is { Count: > 0 })
     {
         itemsMatchingFilter = itemsMatchingFilter
             .Where(t => t.Product != null)
             .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
+    }
+
+    if (request.FilterByCustomerId is int customerId)
+    {
+        itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == customerId);
     }
 
     // Count open/closed
@@ -114,8 +169,8 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
                 break;
             case nameof(ListTicketsResultItem.CustomerFullName):
                 itemsMatchingFilter = request.SortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
+                    ? itemsMatchingFilter.OrderBy(t => t.Customer.FullName).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.Customer.FullName).ThenBy(t => t.TicketId);
                 break;
             case nameof(ListTicketsResultItem.NumMessages):
                 itemsMatchingFilter = request.SortAscending == true
@@ -135,7 +190,7 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
     var resultItems = itemsMatchingFilter
         .Skip(request.StartIndex)
         .Take(request.MaxResults)
-        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
+        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.TicketStatus, t.CreatedAt, t.Customer.FullName, t.Product == null ? null : t.Product.Model, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
 
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });

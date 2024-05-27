@@ -1,0 +1,89 @@
+﻿.messages {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding-bottom: 2rem;
+    flex-grow: 1;
+}
+
+.message {
+    min-width: 35%;
+    max-width: 75%;
+}
+
+.message-text {
+    background: #6e4999;
+    color: white;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    white-space: pre-line;
+    word-break: break-word;
+    line-height: 1.5rem;
+}
+
+.message.support {
+    align-self: flex-end;
+}
+
+    .message.support .message-text {
+        background-color: #dcd9d9;
+        color: black;
+    }
+
+.message-metadata {
+    margin: 0 0.5rem 0.4rem 0.5rem;
+    font-size: 90%;
+}
+
+.message.support .message-metadata {
+    text-align: right;
+}
+
+.message-metadata .timestamp, .message-metadata .sender {
+    font-weight: 500;
+}
+
+.message-metadata .filler {
+    opacity: 0.7;
+}
+
+::deep textarea {
+    width: 100%;
+    height: 5rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: #f6f6f6;
+}
+
+button:focus {
+    outline: 2px solid orange;
+    outline-offset: 1px;
+}
+
+button {
+    text-decoration: none;
+    background: black;
+    color: white;
+    display: inline-block;
+    border-radius: 0.4rem;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border: 1px solid black;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+    button:hover {
+        background: #666;
+    }
+
+    button:active {
+        background: #333;
+    }
+
+button[value=close] {
+    background-color: white;
+    border-color: black;
+    color: black;
+}

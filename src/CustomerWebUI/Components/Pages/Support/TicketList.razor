@@ -1,0 +1,75 @@
+﻿@page "/support"
+@attribute [StreamRendering]
+@inject BackendClient Backend
+@using Microsoft.AspNetCore.Authorization
+@using eShopSupport.Backend.Data
+@using eShopSupport.ServiceDefaults.Clients.Backend
+
+<PageTitle>Support | AdventureWorks</PageTitle>
+<SectionContent SectionName="page-header-title">Support</SectionContent>
+
+<div class="page-gutters">
+    <h1>We're here to support your adventure</h1>
+    <p>
+        If you have questions about our products, or are having
+        trouble with anything you bought from us, just send us a message.
+    </p>
+
+    @if (tickets is null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!tickets.Any())
+    {
+        <a class="start-button" href="support/new">Get started</a>
+    }
+    else
+    {
+        <h2>Your support requests</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Created</th>
+                    <th>Product</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in tickets)
+                {
+                    <tr>
+                        <td>@ticket.TicketId</td>
+                        <td>@ticket.CreatedAt.ToShortDateString()</td>
+                        <td>@ticket.ProductName</td>
+                        <td>@ticket.TicketStatus</td>
+                        <td>
+                            <a class="action-button" href="support/tickets/@ticket.TicketId">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a class="start-button" href="support/new">Start a new support request</a>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
+    IEnumerable<ListTicketsResultItem>? tickets;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContext.GetCustomerId() is int customerId)
+        {
+            var request = new ListTicketsRequest(null, null, customerId, 0, 100, nameof(ListTicketsResultItem.TicketId), false);
+            var result = await Backend.ListTicketsAsync(request);
+            tickets = result.Items;
+        }
+    }
+}

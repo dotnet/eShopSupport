@@ -1,0 +1,76 @@
+﻿.answer {
+    background-color: #eee;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    margin: 0.5rem 0;
+    min-width: 20rem;
+    display: inline-block;
+}
+
+.is-specific-product {
+    padding: 0.75rem 0.75rem;
+}
+
+label:has(input[type=radio]) {
+    padding: 0.5rem 0.75rem;
+    display: block;
+    cursor: pointer;
+    border-radius: 0.2rem;
+}
+
+label:has(input[type=radio]):hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.answer p {
+    padding: 0;
+    margin: 0;
+}
+
+.choose-product, .submit, .message {
+    display: none;
+}
+
+form:has(.is-specific-product input[value=True]:checked) .choose-product {
+    display: block;
+}
+
+form:has(.is-specific-product input:checked) .message, form:has(.is-specific-product input:checked) .submit {
+    display: block;
+}
+
+::deep input[type=text], ::deep textarea, ::deep input[role=combobox] {
+    min-width: 50vw;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    border-width: 1px;
+}
+
+::deep textarea {
+    height: 8rem;
+    padding: 1rem; 1rem 1rem 1rem;
+}
+
+button {
+    text-decoration: none;
+    background: black;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    margin-top: 0.75rem;
+    display: inline-block;
+    border-radius: 0.4rem;
+    font-weight: 500;
+    border-width: 0;
+}
+
+    button:hover {
+        background: #666;
+    }
+
+    button:active {
+        background: #333;
+    }
+
+::deep .validation-message {
+    margin-top: 0.5rem;
+}

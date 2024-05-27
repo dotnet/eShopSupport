@@ -1,0 +1,118 @@
+﻿@page "/support/tickets/{UntrustedTicketId:int}"
+@inject BackendClient Backend
+@inject NavigationManager Nav
+@implements IValidatableObject
+@using System.ComponentModel.DataAnnotations
+@using eShopSupport.ServiceDefaults.Clients.Backend
+
+<PageTitle>Support | AdventureWorks</PageTitle>
+<SectionContent SectionName="page-header-title">Your support request</SectionContent>
+
+<div class="page-gutters">
+    @if (TicketDetails is { } ticket)
+    {
+        <h3>Created: @ticket.CreatedAt.ToShortDateString()</h3>
+
+        @if (ticket.ProductModel is { } productModel)
+        {
+            <h3>Product: @productModel</h3>
+        }
+
+        <div class="messages">
+            @foreach (var message in ticket.Messages)
+            {
+                <div class="message @(message.IsCustomerMessage ? "customer" : "support")">
+                    <div class="message-metadata">
+                        <span class="timestamp">@message.CreatedAt.ToShortDateString()</span>
+                        <span class="filler">by</span>
+                        <span class="sender">@(message.IsCustomerMessage ? "You" : "Support")</span>
+                    </div>
+                    <div class="message-text">@message.MessageText</div>
+                </div>
+            }
+        </div>
+
+        <div class="actions">
+            @if (ticket.TicketStatus == TicketStatus.Closed)
+            {
+                <p>
+                    This support request is now <strong>closed</strong>. If you need any further help, please
+                    <a href="support/new">create a new support request</a>.
+                </p>
+            }
+            else
+            {
+                <h3>Send a further message</h3>
+                <EditForm Model="@this" FormName="ticket" OnValidSubmit="@SubmitAsync">
+                    <DataAnnotationsValidator />
+                    <InputTextArea @bind-Value="NewMessage" placeholder="Type your message..." />
+                    <ValidationMessage For="@(() => NewMessage)" />
+
+                    <p>If you're happy with the answer, or if you no longer need support, please close this request using the button below.</p>
+
+                    <p>
+                        <button type="submit" name="action" value="@CloseAction">Close</button>
+                        <button type="submit" name="action" value="@SendAction">Send</button>
+                    </p>
+                </EditForm>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    const string CloseAction = "close";
+    const string SendAction = "send";
+
+    [Parameter]
+    public int UntrustedTicketId { get; set; }
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    public string? Action { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? NewMessage { get; set; }
+
+    TicketDetailsResult? TicketDetails { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Alternatively, configure auth so that we pass through the user's token to the backend,
+        // and it can apply its own access controls
+        var ticket = await Backend.GetTicketDetailsAsync(UntrustedTicketId);
+        if (ticket.CustomerId != HttpContext.GetCustomerId())
+        {
+            Nav.NavigateTo("/support");
+        }
+
+        TicketDetails = ticket;
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (Action == SendAction && string.IsNullOrWhiteSpace(NewMessage))
+        {
+            yield return new ValidationResult("Please type a message", new[] { nameof(NewMessage) });
+        }
+    }
+
+    async Task SubmitAsync()
+    {
+        var ticketId = TicketDetails!.TicketId;
+        if (!string.IsNullOrWhiteSpace(NewMessage))
+        {
+            await Backend.SendTicketMessageAsync(ticketId, new(NewMessage!, true));
+        }
+
+        if (Action == CloseAction)
+        {
+            await Backend.CloseTicketAsync(ticketId);
+        }
+
+        NewMessage = null;
+        TicketDetails = await Backend.GetTicketDetailsAsync(ticketId);
+    }
+}

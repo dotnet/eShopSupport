@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Retry;
@@ -10,6 +11,8 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+
+    public DbSet<Customer> Customers { get; set; }
 
     public DbSet<Ticket> Tickets { get; set; }
 
@@ -50,6 +53,9 @@ public class AppDbContext : DbContext
     {
         try
         {
+            var customers = JsonSerializer.Deserialize<Customer[]>(
+                File.ReadAllText(Path.Combine(dirPath, "customers.json")))!;
+
             var categories = JsonSerializer.Deserialize<ProductCategory[]>(
                 File.ReadAllText(Path.Combine(dirPath, "categories.json")))!;
 
@@ -63,12 +69,24 @@ public class AppDbContext : DbContext
             foreach (var ticket in tickets)
             {
                 ticket.TicketId = 0;
+                ticket.Customer = customers.First(c => c.CustomerId == ticket.CustomerId);
+                ticket.CreatedAt = DateTime.UtcNow;
                 foreach (var message in ticket.Messages)
                 {
                     message.MessageId = 0;
+                    message.CreatedAt = DateTime.UtcNow;
                 }
             }
+            foreach (var customer in customers)
+            {
+                customer.CustomerId = 0;
+            }
 
+            // TODO: Once the customer web UI has a proper registration/auth system, it will
+            // be able to supply real customer IDs. Until then, add this hardcoded one as the first.
+            await dbContext.Customers.AddAsync(new Customer { FullName = "Alice" });
+
+            await dbContext.Customers.AddRangeAsync(customers);
             await dbContext.ProductCategories.AddRangeAsync(categories);
             await dbContext.Products.AddRangeAsync(products);
             await dbContext.Tickets.AddRangeAsync(tickets);

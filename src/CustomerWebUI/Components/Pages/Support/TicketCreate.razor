@@ -1,0 +1,85 @@
+﻿@page "/support/new"
+@implements IValidatableObject
+@inject BackendClient Backend
+@inject NavigationManager Nav
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
+@using SmartComponents
+@using System.Security.Claims
+@using eShopSupport.ServiceDefaults.Clients.Backend
+
+<PageTitle>Support | AdventureWorks</PageTitle>
+<SectionContent SectionName="page-header-title">New support request</SectionContent>
+
+<EditForm class="page-gutters" FormName="support" Model="@this" OnValidSubmit="@HandleSubmitAsync">
+    <DataAnnotationsValidator />
+
+    <p>Is this about a specific product?</p>
+    <div class="answer is-specific-product">
+        <InputRadioGroup @bind-Value="@IsSpecificProduct">
+            <p>
+                <label>
+                    <InputRadio Value="@true" />
+                    Yes
+                </label>
+            </p>
+            <p>
+                <label>
+                    <InputRadio Value="@false" />
+                    No
+                </label>
+            </p>
+        </InputRadioGroup>
+    </div>
+
+    <div class="choose-product">
+        <p>Which product is it?</p>
+        <div class="answer">
+            <SmartComboBox Url="api/product-search" @bind-Value="@ProductName" placeholder="Search for product..." />
+            <ValidationMessage For="@(() => ProductName)" />
+        </div>
+    </div>
+    
+    <div class="message">
+        <p>How can we help?</p>
+        <div class="answer">
+            <InputTextArea @bind-Value="Message" placeholder="Type your message..." />
+            <ValidationMessage For="@(() => Message)" />
+        </div>
+    </div>
+
+    <p class="submit">
+        <button type="submit">Submit</button>
+    </p>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm, Required(ErrorMessage = "Please answer this question")]
+    public bool? IsSpecificProduct { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? ProductName { get; set; }
+
+    [SupplyParameterFromForm, Required(ErrorMessage = "Please enter your support request here")]
+    public string? Message { get; set; }
+
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (IsSpecificProduct == true && string.IsNullOrWhiteSpace(ProductName))
+        {
+            yield return new ValidationResult("Please specify the product", new[] { nameof(ProductName) });
+        }
+    }
+
+    async Task HandleSubmitAsync()
+    {
+        if (HttpContext.GetCustomerId() is int customerId)
+        {
+            await Backend.CreateTicketAsync(new(customerId, ProductName, Message!));
+            Nav.NavigateTo("support");
+        }
+    }
+}

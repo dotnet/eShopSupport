@@ -1,0 +1,46 @@
+﻿h2 {
+    margin-top: 3rem;
+}
+
+.start-button, .action-button {
+    text-decoration: none;
+    background: black;
+    color: white;
+    display: inline-block;
+    border-radius: 0.4rem;
+    font-weight: 500;
+}
+
+.action-button {
+    padding: 0.3rem 1rem;
+}
+
+.start-button {
+    padding: 0.6rem 1.5rem;
+    margin-top: 0.75rem;
+}
+
+    .start-button:hover, .action-button:hover {
+        background: #666;
+    }
+
+    .start-button:active, .action-button:active {
+        background: #333;
+    }
+
+    table {
+        min-width: 50vw;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    th, td {
+        padding: 0.4rem;
+    }
+
+    tr:hover {
+        background: #f6f6f6;
+    }

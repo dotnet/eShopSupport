@@ -19,9 +19,10 @@ public static class Assistant
     {
         app.MapPost("/api/assistant/chat", async (HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest) =>
         {
-            // TODO: Get the product details as well, and include them in the system message
             var ticket = await dbContext.Tickets
+                .Include(t => t.Product)
                 .Include(t => t.Messages)
+                .Include(t => t.Customer)
                 .SingleAsync(t => t.TicketId == chatRequest.TicketId);
 
             var chatHistory = new ChatHistory($$"""
@@ -29,11 +30,12 @@ public static class Assistant
                 The customer service agent is currently handling the following ticket:
                 
                 <product_id>{{ticket.ProductId}}</product_id>
-                <customer_name>{{ticket.CustomerFullName}}</customer_name>
+                <product_name>{{ticket.Product?.Model ?? "None specified"}}</product_name>
+                <customer_name>{{ticket.Customer.FullName}}</customer_name>
                 <summary>{{ticket.LongSummary}}</summary>
 
                 The most recent message from the customer is this:
-                <customer_message>{{ticket.Messages.LastOrDefault(m => m.AuthorName != "Support")?.Text}}</customer_message>
+                <customer_message>{{ticket.Messages.LastOrDefault(m => m.IsCustomerMessage)?.Text}}</customer_message>
                 However, that is only provided for context. You are not answering that question directly. The real question is provided below.
 
                 The customer service agent may ask you for help either directly with the customer request, or other general information about this product or our other products. Respond to the AGENT'S question, not specifically to the customer ticket.

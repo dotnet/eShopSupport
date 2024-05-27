@@ -5,6 +5,9 @@ namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
 public class BackendClient(HttpClient http)
 {
+    public Task CreateTicketAsync(CreateTicketRequest request)
+        => http.PostAsJsonAsync("/tickets/create", request);
+
     public async Task<ListTicketsResult> ListTicketsAsync(ListTicketsRequest request)
     {
         var result = await http.PostAsJsonAsync("/tickets", request);
@@ -36,6 +39,11 @@ public class BackendClient(HttpClient http)
         await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
     }
 
+    public async Task CloseTicketAsync(int ticketId)
+    {
+        await http.PutAsync($"/api/ticket/{ticketId}/close", null);
+    }
+
     public async Task UpdateTicketDetailsAsync(int ticketId, int? productId, TicketType ticketType, TicketStatus ticketStatus)
     {
         await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(productId, ticketType, ticketStatus));
@@ -57,20 +65,20 @@ public class BackendClient(HttpClient http)
     }
 }
 
-public record ListTicketsRequest(TicketStatus? FilterByStatus, List<int>? FilterByCategoryIds, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
+public record ListTicketsRequest(TicketStatus? FilterByStatus, List<int>? FilterByCategoryIds, int? FilterByCustomerId, int StartIndex, int MaxResults, string? SortBy, bool? SortAscending);
 
 public record ListTicketsResult(ICollection<ListTicketsResultItem> Items, int TotalCount, int TotalOpenCount, int TotalClosedCount);
 
 public record ListTicketsResultItem(
-    int TicketId, TicketType TicketType, string CustomerFullName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
+    int TicketId, TicketType TicketType, TicketStatus TicketStatus, DateTime CreatedAt, string CustomerFullName, string? ProductName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
 
 public record TicketDetailsResult(
-    int TicketId, string CustomerFullName, string? ShortSummary, string? LongSummary,
+    int TicketId, DateTime CreatedAt, int CustomerId, string CustomerFullName, string? ShortSummary, string? LongSummary,
     int? ProductId, string? ProductBrand, string? ProductModel,
     TicketType TicketType, TicketStatus TicketStatus,
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
-public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
+public record TicketDetailsResultMessage(int MessageId, DateTime CreatedAt, bool IsCustomerMessage, string MessageText);
 
 public record UpdateTicketDetailsRequest(int? ProductId, TicketType TicketType, TicketStatus TicketStatus);
 
@@ -82,7 +90,7 @@ public class AssistantChatRequestMessage
     public required string Text { get; set; }
 }
 
-public record SendTicketMessageRequest(string Text);
+public record SendTicketMessageRequest(string Text, bool IsCustomerMessage);
 
 public record FindCategoriesResult(int CategoryId)
 {
@@ -104,3 +112,8 @@ public enum TicketType
     Complaint,
     Returns,
 }
+
+public record CreateTicketRequest(
+    int CustomerId, 
+    string? ProductName,
+    string Message);

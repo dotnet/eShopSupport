@@ -12,7 +12,7 @@
     <TicketsFilter @bind-Filter="@filter" @bind-Filter:after="@OnFilterChangedAsync" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
     <QuickGrid @ref="ticketsGrid" TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
         <ChildContent>
-            <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" />
+            <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" InitialSortDirection="@SortDirection.Descending" />
             <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
             <LinkTemplateColumn Href="@TicketHref" Title="Summary" Class="ticket-summary">
                 @TicketTypeIcon(context)
@@ -41,7 +41,7 @@
         {
             var sortColumn = request.GetSortByProperties().FirstOrDefault();
             var categoryIds = filter.Categories.Select(c => c.CategoryId).ToList();
-            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
+            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, null, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
 
             if (result.TotalOpenCount != totalOpenCount || result.TotalClosedCount != totalClosedCount)
             {
