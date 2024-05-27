@@ -1,5 +1,8 @@
-﻿using CustomerWebUI.Components;
+﻿using System.Security.Claims;
+using CustomerWebUI.Components;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,10 @@ builder.Services.AddRazorComponents();
 builder.Services.AddSmartComponents();
 builder.Services.AddHttpClient<BackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"));
+builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 
 var app = builder.Build();
 
@@ -21,6 +28,14 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// TODO: Integrate with an auth system
+app.Use((ctx, next) =>
+{
+    ctx.User = new ClaimsPrincipal(
+        new ClaimsIdentity([new Claim(ClaimTypes.Name, "alice"), new Claim("sub", "1")], "fake"));
+    return next();
+});
 
 app.UseStaticFiles();
 app.UseAntiforgery();

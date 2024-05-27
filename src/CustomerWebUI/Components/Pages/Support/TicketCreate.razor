@@ -2,8 +2,11 @@
 @implements IValidatableObject
 @inject BackendClient Backend
 @inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthState
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Authorization
 @using SmartComponents
+@using System.Security.Claims
 @using eShopSupport.ServiceDefaults.Clients.Backend
 
 <PageTitle>Support | AdventureWorks</PageTitle>
@@ -71,7 +74,13 @@
 
     async Task HandleSubmitAsync()
     {
-        await Backend.CreateTicketAsync(new (1, ProductName, Message!)); // TODO: Get customer ID from user identity
-        Nav.NavigateTo("support");
+        var authenticationState = await AuthState.GetAuthenticationStateAsync();
+        if (authenticationState.User.Identity is { IsAuthenticated: true } and ClaimsIdentity authenticatedUser
+            && authenticatedUser.FindFirst("sub") is { Value: string subValue })
+        {
+            var customerId = int.Parse(subValue);
+            await Backend.CreateTicketAsync(new(customerId, ProductName, Message!));
+            Nav.NavigateTo("support");
+        }
     }
 }

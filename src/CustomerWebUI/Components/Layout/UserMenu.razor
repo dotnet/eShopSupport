@@ -1,14 +1,23 @@
-﻿@inject NavigationManager Nav
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
 
-@* TODO: Actual authentication *@
-<h3>alice</h3>
-<div class="dropdown-menu">
-    <span class="dropdown-button"><img role="presentation" src="icons/user.svg" /></span>
-    <div class="dropdown-content">
-        <a class="dropdown-item" href="user/orders">My orders</a>
-        <form class="dropdown-item" method="post" action="user/logout" @formname="logout">
-            <AntiforgeryToken />
-            <button type="submit">Log out</button>
-        </form>
-    </div>
-</div>
+<AuthorizeView>
+    <Authorized>
+        <h3>@context.User.Identity?.Name</h3>
+        <div class="dropdown-menu">
+            <span class="dropdown-button"><img role="presentation" src="icons/user.svg" /></span>
+            <div class="dropdown-content">
+                <a class="dropdown-item" href="support">My support</a>
+                <form class="dropdown-item" method="post" action="user/logout" @formname="logout">
+                    <AntiforgeryToken />
+                    <button type="submit">Log out</button>
+                </form>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+}
