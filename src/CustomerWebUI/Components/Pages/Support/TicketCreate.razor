@@ -2,7 +2,6 @@
 @implements IValidatableObject
 @inject BackendClient Backend
 @inject NavigationManager Nav
-@inject AuthenticationStateProvider AuthState
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Authorization
 @using SmartComponents
@@ -64,6 +63,9 @@
     [SupplyParameterFromForm, Required(ErrorMessage = "Please enter your support request here")]
     public string? Message { get; set; }
 
+    [CascadingParameter]
+    public HttpContext HttpContext { get; set; } = default!;
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (IsSpecificProduct == true && string.IsNullOrWhiteSpace(ProductName))
@@ -74,11 +76,8 @@
 
     async Task HandleSubmitAsync()
     {
-        var authenticationState = await AuthState.GetAuthenticationStateAsync();
-        if (authenticationState.User.Identity is { IsAuthenticated: true } and ClaimsIdentity authenticatedUser
-            && authenticatedUser.FindFirst("sub") is { Value: string subValue })
+        if (HttpContext.GetCustomerId() is int customerId)
         {
-            var customerId = int.Parse(subValue);
             await Backend.CreateTicketAsync(new(customerId, ProductName, Message!));
             Nav.NavigateTo("support");
         }

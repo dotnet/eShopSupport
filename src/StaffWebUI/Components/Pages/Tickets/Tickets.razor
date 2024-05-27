@@ -41,7 +41,7 @@
         {
             var sortColumn = request.GetSortByProperties().FirstOrDefault();
             var categoryIds = filter.Categories.Select(c => c.CategoryId).ToList();
-            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
+            var result = await Backend.ListTicketsAsync(new(filter.Status, categoryIds, null, request.StartIndex, request.Count ?? 100, sortColumn.PropertyName, sortColumn.Direction == SortDirection.Ascending));
 
             if (result.TotalOpenCount != totalOpenCount || result.TotalClosedCount != totalClosedCount)
             {

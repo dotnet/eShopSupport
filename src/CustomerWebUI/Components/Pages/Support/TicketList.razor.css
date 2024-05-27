@@ -20,3 +20,15 @@
     .start-button:active {
         background: #333;
     }
+
+    table {
+        min-width: 50vw;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    th, td {
+        padding: 0.3rem;
+    }

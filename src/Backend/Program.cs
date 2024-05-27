@@ -113,13 +113,19 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
         return Results.BadRequest("maxResults must be 100 or less");
     }
 
-    IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets;
+    IQueryable<Ticket> itemsMatchingFilter = dbContext.Tickets
+        .Include(t => t.Product);
 
     if (request.FilterByCategoryIds is { Count: > 0 })
     {
         itemsMatchingFilter = itemsMatchingFilter
             .Where(t => t.Product != null)
             .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
+    }
+
+    if (request.FilterByCustomerId is int customerId)
+    {
+        itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == customerId);
     }
 
     // Count open/closed
@@ -167,7 +173,7 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
     var resultItems = itemsMatchingFilter
         .Skip(request.StartIndex)
         .Take(request.MaxResults)
-        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.Customer.FullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
+        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.TicketStatus, t.Customer.FullName, t.Product == null ? null : t.Product.Model, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
 
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });
