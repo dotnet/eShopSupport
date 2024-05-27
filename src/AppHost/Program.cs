@@ -31,11 +31,15 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
+var pythonInference = builder.AddPythonUvicornApp("python-inference",
+    Path.Combine("..", "PythonInference"), port: 62394);
+
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(chatCompletion)
     .WithReference(blobStorage)
     .WithReference(vectorDb.GetEndpoint("http"))
+    .WithReference(pythonInference)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 
 builder.AddProject<StaffWebUI>("staffwebui")
