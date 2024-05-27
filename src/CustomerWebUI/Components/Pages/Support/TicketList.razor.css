@@ -4,7 +4,7 @@
 
 .start-button {
     text-decoration: none;
-    background: #6c6c6c;
+    background: black;
     color: white;
     padding: 0.6rem 1.5rem;
     margin-top: 0.75rem;
@@ -14,9 +14,9 @@
 }
 
     .start-button:hover {
-        background: #888;
+        background: #666;
     }
 
     .start-button:active {
-        background: black;
+        background: #333;
     }

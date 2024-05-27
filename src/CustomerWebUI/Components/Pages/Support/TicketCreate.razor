@@ -1,0 +1,55 @@
+﻿@page "/support/new"
+
+<PageTitle>Support | AdventureWorks</PageTitle>
+<SectionContent SectionName="page-header-title">New support request</SectionContent>
+
+<form class="page-gutters" method="post" @formname="support">
+    <AntiforgeryToken />
+
+    <p>Is this about a specific product?</p>
+    <div class="answer is-specific-product">
+        <InputRadioGroup @bind-Value="@IsSpecificProduct">
+            <p>
+                <label>
+                    <InputRadio Value="@true" />
+                    Yes
+                </label>
+            </p>
+            <p>
+                <label>
+                    <InputRadio Value="@false" />
+                    No
+                </label>
+            </p>
+        </InputRadioGroup>
+    </div>
+
+    <div class="choose-product">
+        <p>Which product is it?</p>
+        <div class="answer">
+            <InputText type="text" @bind-Value="ProductName" placeholder="Search for product..." />
+        </div>
+    </div>
+    
+    <div class="message">
+        <p>How can we help?</p>
+        <div class="answer">
+            <InputTextArea @bind-Value="Message" placeholder="Type your message..." />
+        </div>
+    </div>
+
+    <p class="submit">
+        <button type="submit">Submit</button>
+    </p>
+</form>
+
+@code {
+    [SupplyParameterFromForm]
+    bool? IsSpecificProduct { get; set; }
+
+    [SupplyParameterFromForm]
+    string? ProductName { get; set; }
+
+    [SupplyParameterFromForm]
+    string? Message { get; set; }
+}
