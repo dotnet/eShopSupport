@@ -101,7 +101,12 @@
 
     async Task SubmitAsync()
     {
-        var ticketId = TicketDetails!.TicketId;
+        if (TicketDetails!.TicketStatus != TicketStatus.Open)
+        {
+            Nav.NavigateTo("/support");
+        }
+
+        var ticketId = TicketDetails.TicketId;
         if (!string.IsNullOrWhiteSpace(NewMessage))
         {
             await Backend.SendTicketMessageAsync(ticketId, new(NewMessage!, true));
