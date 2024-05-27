@@ -16,3 +16,9 @@
         right: 0.75rem;
         top: 0.5rem;
     }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-items: stretch;
+}

@@ -1,8 +1,9 @@
-using CustomerWebUI.Components;
+﻿using CustomerWebUI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.AddServiceDefaults();
 builder.Services.AddRazorComponents();
 
 var app = builder.Build();
