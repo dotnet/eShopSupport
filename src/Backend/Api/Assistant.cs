@@ -19,9 +19,10 @@ public static class Assistant
     {
         app.MapPost("/api/assistant/chat", async (HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest) =>
         {
-            // TODO: Get the product details as well, and include them in the system message
             var ticket = await dbContext.Tickets
+                .Include(t => t.Product)
                 .Include(t => t.Messages)
+                .Include(t => t.Customer)
                 .SingleAsync(t => t.TicketId == chatRequest.TicketId);
 
             var chatHistory = new ChatHistory($$"""
@@ -29,6 +30,7 @@ public static class Assistant
                 The customer service agent is currently handling the following ticket:
                 
                 <product_id>{{ticket.ProductId}}</product_id>
+                <product_name>{{ticket.Product?.Model ?? "None specified"}}</product_name>
                 <customer_name>{{ticket.Customer.FullName}}</customer_name>
                 <summary>{{ticket.LongSummary}}</summary>
 
