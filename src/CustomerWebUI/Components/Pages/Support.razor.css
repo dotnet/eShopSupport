@@ -1,3 +1,22 @@
 ﻿h2 {
     margin-top: 3rem;
 }
+
+.start-button {
+    text-decoration: none;
+    background: #6c6c6c;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    margin-top: 0.75rem;
+    display: inline-block;
+    border-radius: 0.4rem;
+    font-weight: 500;
+}
+
+    .start-button:hover {
+        background: #888;
+    }
+
+    .start-button:active {
+        background: black;
+    }
