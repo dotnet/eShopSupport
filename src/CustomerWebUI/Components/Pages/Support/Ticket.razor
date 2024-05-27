@@ -43,7 +43,7 @@
             else
             {
                 <h3>Send a further message</h3>
-                <EditForm Model="@this" FormName="ticket" OnValidSubmit="@SubmitAsync">
+                <EditForm Model="@this" FormName="ticket" OnValidSubmit="@SubmitAsync" Enhance>
                     <DataAnnotationsValidator />
                     <InputTextArea @bind-Value="NewMessage" placeholder="Type your message..." />
                     <ValidationMessage For="@(() => NewMessage)" />
@@ -51,8 +51,8 @@
                     <p>If you're happy with the answer, or if you no longer need support, please close this request using the button below.</p>
 
                     <p>
-                        <button type="submit" name="action" value="@CloseAction">Close</button>
-                        <button type="submit" name="action" value="@SendAction">Send</button>
+                        <button type="submit" name="submitter" value="@CloseAction">Close</button>
+                        <button type="submit" name="submitter" value="@SendAction">Send</button>
                     </p>
                 </EditForm>
             }
@@ -71,7 +71,7 @@
     public HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
-    public string? Action { get; set; }
+    public string? Submitter { get; set; }
 
     [SupplyParameterFromForm]
     public string? NewMessage { get; set; }
@@ -93,7 +93,7 @@
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (Action == SendAction && string.IsNullOrWhiteSpace(NewMessage))
+        if (Submitter == SendAction && string.IsNullOrWhiteSpace(NewMessage))
         {
             yield return new ValidationResult("Please type a message", new[] { nameof(NewMessage) });
         }
@@ -107,12 +107,12 @@
             await Backend.SendTicketMessageAsync(ticketId, new(NewMessage!, true));
         }
 
-        if (Action == CloseAction)
+        if (Submitter == CloseAction)
         {
             await Backend.CloseTicketAsync(ticketId);
         }
 
-        NewMessage = null;
-        TicketDetails = await Backend.GetTicketDetailsAsync(ticketId);
+        // Reload the ticket data to update the UI
+        Nav.Refresh();
     }
 }
