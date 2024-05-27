@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{B3CDC49A-D71
 		seeddata\dev\tickets.json = seeddata\dev\tickets.json
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerWebUI", "src\CustomerWebUI\CustomerWebUI.csproj", "{AAA2257C-D227-404A-8EDF-7BF6C5592D51}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{E0886BA7-F33C-4FB4-80D1-93FCC1C4A513}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0886BA7-F33C-4FB4-80D1-93FCC1C4A513}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0886BA7-F33C-4FB4-80D1-93FCC1C4A513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAA2257C-D227-404A-8EDF-7BF6C5592D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAA2257C-D227-404A-8EDF-7BF6C5592D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAA2257C-D227-404A-8EDF-7BF6C5592D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAA2257C-D227-404A-8EDF-7BF6C5592D51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{D69799F9-BE09-4303-A67D-323A60AA8C0A} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
 		{E0886BA7-F33C-4FB4-80D1-93FCC1C4A513} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
 		{B3CDC49A-D71A-4C0D-945F-8DD69FC1B066} = {2B17496A-5870-4676-927B-6B45871C7BBA}
+		{AAA2257C-D227-404A-8EDF-7BF6C5592D51} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2E71FD9-E3D5-450C-A9E0-318DAA986F31}
