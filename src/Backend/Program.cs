@@ -5,6 +5,7 @@ using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using eShopSupport.ServiceDefaults.Clients.PythonInference;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
@@ -28,6 +29,7 @@ builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGe
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 builder.Services.AddScoped<ProductSemanticSearch>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
+builder.Services.AddHttpClient<PythonInferenceClient>(c => c.BaseAddress = new Uri("http://python-inference"));
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddChatCompletionService("chatcompletion");
@@ -91,15 +93,19 @@ app.MapPut("/api/ticket/{ticketId:int}/close", async (AppDbContext dbContext, in
     return Results.Ok();
 });
 
-app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketRequest request) =>
+app.MapPost("/tickets/create", async (AppDbContext dbContext, PythonInferenceClient pythonInference, CreateTicketRequest request) =>
 {
+    // Classify the new ticket
+    var ticketTypes = Enum.GetValues<TicketType>();
+    var inferredTicketType = await pythonInference.ClassifyTextAsync(request.Message, ticketTypes.Select(type => type.ToString()));
+
     var ticket = new Ticket
     {
         CreatedAt = DateTime.UtcNow,
         CustomerId = request.CustomerId,
         Customer = default!, // Will be populated by DB reference
         TicketStatus = TicketStatus.Open,
-        TicketType = TicketType.Question, // TODO
+        TicketType = Enum.TryParse<TicketType>(inferredTicketType, out var type) ? type : TicketType.Question,
     };
 
     // TODO: Better lookup using ID
