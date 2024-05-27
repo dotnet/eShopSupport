@@ -73,7 +73,7 @@ public record TicketDetailsResult(
     TicketType TicketType, TicketStatus TicketStatus,
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);
 
-public record TicketDetailsResultMessage(int MessageId, string AuthorName, string MessageText);
+public record TicketDetailsResultMessage(int MessageId, bool IsCustomerMessage, string MessageText);
 
 public record UpdateTicketDetailsRequest(int? ProductId, TicketType TicketType, TicketStatus TicketStatus);
 
@@ -85,7 +85,7 @@ public class AssistantChatRequestMessage
     public required string Text { get; set; }
 }
 
-public record SendTicketMessageRequest(string Text);
+public record SendTicketMessageRequest(string Text, bool IsCustomerMessage);
 
 public record FindCategoriesResult(int CategoryId)
 {
@@ -109,6 +109,6 @@ public enum TicketType
 }
 
 public record CreateTicketRequest(
-    string CustomerFullName, 
+    int CustomerId, 
     string? ProductName,
     string Message);

@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
     {
     }
 
+    public DbSet<Customer> Customers { get; set; }
+
     public DbSet<Ticket> Tickets { get; set; }
 
     public DbSet<Message> Messages { get; set; }
@@ -50,6 +52,9 @@ public class AppDbContext : DbContext
     {
         try
         {
+            var customers = JsonSerializer.Deserialize<Customer[]>(
+                File.ReadAllText(Path.Combine(dirPath, "customers.json")))!;
+
             var categories = JsonSerializer.Deserialize<ProductCategory[]>(
                 File.ReadAllText(Path.Combine(dirPath, "categories.json")))!;
 
@@ -63,12 +68,18 @@ public class AppDbContext : DbContext
             foreach (var ticket in tickets)
             {
                 ticket.TicketId = 0;
+                ticket.Customer = customers.First(c => c.CustomerId == ticket.CustomerId);
                 foreach (var message in ticket.Messages)
                 {
                     message.MessageId = 0;
                 }
             }
+            foreach (var customer in customers)
+            {
+                customer.CustomerId = 0;
+            }
 
+            await dbContext.Customers.AddRangeAsync(customers);
             await dbContext.ProductCategories.AddRangeAsync(categories);
             await dbContext.Products.AddRangeAsync(products);
             await dbContext.Tickets.AddRangeAsync(tickets);

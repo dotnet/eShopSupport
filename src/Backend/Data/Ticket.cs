@@ -9,9 +9,13 @@ public class Ticket
     
     public int? ProductId { get; set; }
 
+    [JsonIgnore]
     public Product? Product { get; set; }
 
-    public required string CustomerFullName { get; set; }
+    public int CustomerId { get; set; }
+
+    [JsonIgnore]
+    public Customer Customer { get; set; } = default!;
 
     public string? ShortSummary { get; set; }
     

@@ -71,7 +71,7 @@
 
     async Task HandleSubmitAsync()
     {
-        await Backend.CreateTicketAsync(new ("Alice", ProductName, Message!));
+        await Backend.CreateTicketAsync(new (1, ProductName, Message!)); // TODO: Get customer ID from user identity
         Nav.NavigateTo("support");
     }
 }

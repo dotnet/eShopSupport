@@ -75,7 +75,7 @@
         }
 
         isSending = true;
-        var sendTask = Backend.SendTicketMessageAsync(TicketId, new(replyText));
+        var sendTask = Backend.SendTicketMessageAsync(TicketId, new(replyText, IsCustomerMessage: false));
         await Task.WhenAll(sendTask, Task.Delay(500));
 
         replyText = null;

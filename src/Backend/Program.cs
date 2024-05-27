@@ -44,10 +44,11 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
     var ticket = await dbContext.Tickets
         .Include(t => t.Messages)
         .Include(t => t.Product)
+        .Include(t => t.Customer)
         .FirstOrDefaultAsync(t => t.TicketId == ticketId);
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
-        ticket.CustomerFullName,
+        ticket.Customer.FullName,
         ticket.ShortSummary,
         ticket.LongSummary,
         ticket.ProductId,
@@ -56,7 +57,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
         ticket.TicketType,
         ticket.TicketStatus,
         ticket.CustomerSatisfaction,
-        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.AuthorName, m.Text)).ToList()
+        ticket.Messages.OrderBy(m => m.MessageId).Select(m => new TicketDetailsResultMessage(m.MessageId, m.IsCustomerMessage, m.Text)).ToList()
     ));
 });
 
@@ -79,7 +80,8 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketReques
 {
     var ticket = new Ticket
     {
-        CustomerFullName = request.CustomerFullName,
+        CustomerId = request.CustomerId,
+        Customer = default!, // Will be populated by DB reference
         TicketStatus = TicketStatus.Open,
         TicketType = TicketType.Question, // TODO
     };
@@ -96,7 +98,7 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, CreateTicketReques
 
     ticket.Messages.Add(new Message
     {
-        AuthorName = request.CustomerFullName,
+        IsCustomerMessage = true,
         Text = request.Message
     });
 
@@ -144,8 +146,8 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
                 break;
             case nameof(ListTicketsResultItem.CustomerFullName):
                 itemsMatchingFilter = request.SortAscending == true
-                    ? itemsMatchingFilter.OrderBy(t => t.CustomerFullName).ThenBy(t => t.TicketId)
-                    : itemsMatchingFilter.OrderByDescending(t => t.CustomerFullName).ThenBy(t => t.TicketId);
+                    ? itemsMatchingFilter.OrderBy(t => t.Customer.FullName).ThenBy(t => t.TicketId)
+                    : itemsMatchingFilter.OrderByDescending(t => t.Customer.FullName).ThenBy(t => t.TicketId);
                 break;
             case nameof(ListTicketsResultItem.NumMessages):
                 itemsMatchingFilter = request.SortAscending == true
@@ -165,7 +167,7 @@ app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest reques
     var resultItems = itemsMatchingFilter
         .Skip(request.StartIndex)
         .Take(request.MaxResults)
-        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.CustomerFullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
+        .Select(t => new ListTicketsResultItem(t.TicketId, t.TicketType, t.Customer.FullName, t.ShortSummary, t.CustomerSatisfaction, t.Messages.Count));
 
     return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
 });
