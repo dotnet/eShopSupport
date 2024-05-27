@@ -1,4 +1,5 @@
 ﻿using CustomerWebUI.Components;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddRazorComponents();
 builder.Services.AddSmartComponents();
+builder.Services.AddHttpClient<BackendClient>(client =>
+    client.BaseAddress = new Uri("http://backend/"));
 
 var app = builder.Build();
 
@@ -24,9 +27,11 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>();
 
-var candidates = new[] { "Transport", "Rent", "Payroll", "Party" };
-
-app.MapSmartComboBox("api/product-search",
-    request => candidates);
+app.MapSmartComboBox("api/product-search", async request =>
+{
+    var backend = request.HttpContext.RequestServices.GetRequiredService<BackendClient>();
+    var results = await backend.FindProductsAsync(request.Query.SearchText);
+    return results.Select(r => $"{r.Model} ({r.Brand})");
+});
 
 app.Run();
