@@ -1,10 +1,12 @@
 ﻿@page "/support/new"
+@implements IValidatableObject
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>Support | AdventureWorks</PageTitle>
 <SectionContent SectionName="page-header-title">New support request</SectionContent>
 
-<form class="page-gutters" method="post" @formname="support">
-    <AntiforgeryToken />
+<EditForm class="page-gutters" FormName="support" Model="@this" OnValidSubmit="@HandleSubmitAsync">
+    <DataAnnotationsValidator />
 
     <p>Is this about a specific product?</p>
     <div class="answer is-specific-product">
@@ -28,6 +30,7 @@
         <p>Which product is it?</p>
         <div class="answer">
             <InputText type="text" @bind-Value="ProductName" placeholder="Search for product..." />
+            <ValidationMessage For="@(() => ProductName)" />
         </div>
     </div>
     
@@ -35,21 +38,35 @@
         <p>How can we help?</p>
         <div class="answer">
             <InputTextArea @bind-Value="Message" placeholder="Type your message..." />
+            <ValidationMessage For="@(() => Message)" />
         </div>
     </div>
 
     <p class="submit">
         <button type="submit">Submit</button>
     </p>
-</form>
+</EditForm>
 
 @code {
-    [SupplyParameterFromForm]
-    bool? IsSpecificProduct { get; set; }
+    [SupplyParameterFromForm, Required(ErrorMessage = "Please answer this question")]
+    public bool? IsSpecificProduct { get; set; }
 
     [SupplyParameterFromForm]
-    string? ProductName { get; set; }
+    public string? ProductName { get; set; }
 
-    [SupplyParameterFromForm]
-    string? Message { get; set; }
+    [SupplyParameterFromForm, Required(ErrorMessage = "Please enter your support request here")]
+    public string? Message { get; set; }
+
+    async Task HandleSubmitAsync()
+    {
+        await Task.Delay(1000);
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (IsSpecificProduct == true && string.IsNullOrWhiteSpace(ProductName))
+        {
+            yield return new ValidationResult("Please specify the product", new[] { nameof(ProductName) });
+        }
+    }
 }

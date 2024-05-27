@@ -70,3 +70,7 @@ button {
     button:active {
         background: #333;
     }
+
+::deep .validation-message {
+    margin-top: 0.5rem;
+}
