@@ -1,11 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Endpoints
 
-<div class="eshop-header @(IsCatalog? "home" : "")">
+<div class="eshop-header">
     <div class="eshop-header-hero">
-        @{
-            var headerImage = IsCatalog ? "images/header-home.webp" : "images/header.webp";
-        }
-        <img role="presentation" src="@headerImage" />
+        <img role="presentation" src="images/header.webp" />
     </div>
     <div class="eshop-header-container">
         <nav class="eshop-header-navbar">
@@ -21,12 +18,3 @@
         </div>
     </div>
 </div>
-
-@code {
-    [CascadingParameter]
-    public HttpContext? HttpContext { get; set; }
-
-    // We can use Endpoint Metadata to determine the page currently being visited
-    private Type? PageComponentType => HttpContext?.GetEndpoint()?.Metadata.OfType<ComponentTypeMetadata>().FirstOrDefault()?.Type;
-    private bool IsCatalog => false;
-}
