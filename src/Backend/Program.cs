@@ -49,6 +49,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
     return ticket == null ? Results.NotFound() : Results.Ok(new TicketDetailsResult(
         ticket.TicketId,
         ticket.CreatedAt,
+        ticket.CustomerId,
         ticket.Customer.FullName,
         ticket.ShortSummary,
         ticket.LongSummary,
@@ -73,6 +74,19 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     ticket.ProductId = request.ProductId;
     ticket.TicketType = request.TicketType;
     ticket.TicketStatus = request.TicketStatus;
+    await dbContext.SaveChangesAsync();
+    return Results.Ok();
+});
+
+app.MapPut("/api/ticket/{ticketId:int}/close", async (AppDbContext dbContext, int ticketId) =>
+{
+    var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+    if (ticket == null)
+    {
+        return Results.NotFound();
+    }
+
+    ticket.TicketStatus = TicketStatus.Closed;
     await dbContext.SaveChangesAsync();
     return Results.Ok();
 });

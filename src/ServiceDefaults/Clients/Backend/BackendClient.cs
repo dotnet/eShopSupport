@@ -39,6 +39,11 @@ public class BackendClient(HttpClient http)
         await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
     }
 
+    public async Task CloseTicketAsync(int ticketId)
+    {
+        await http.PutAsync($"/api/ticket/{ticketId}/close", null);
+    }
+
     public async Task UpdateTicketDetailsAsync(int ticketId, int? productId, TicketType ticketType, TicketStatus ticketStatus)
     {
         await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(productId, ticketType, ticketStatus));
@@ -68,7 +73,7 @@ public record ListTicketsResultItem(
     int TicketId, TicketType TicketType, TicketStatus TicketStatus, DateTime CreatedAt, string CustomerFullName, string? ProductName, string? ShortSummary, int? CustomerSatisfaction, int NumMessages);
 
 public record TicketDetailsResult(
-    int TicketId, DateTime CreatedAt, string CustomerFullName, string? ShortSummary, string? LongSummary,
+    int TicketId, DateTime CreatedAt, int CustomerId, string CustomerFullName, string? ShortSummary, string? LongSummary,
     int? ProductId, string? ProductBrand, string? ProductModel,
     TicketType TicketType, TicketStatus TicketStatus,
     int? CustomerSatisfaction, ICollection<TicketDetailsResultMessage> Messages);

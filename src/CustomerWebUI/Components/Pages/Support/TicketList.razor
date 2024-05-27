@@ -11,8 +11,8 @@
 <div class="page-gutters">
     <h1>We're here to support your adventure</h1>
     <p>
-        If you have questions about our products, or are experiencing
-        troubles with anything you bought from us, just send us a message.
+        If you have questions about our products, or are having
+        trouble with anything you bought from us, just send us a message.
     </p>
 
     @if (tickets is null)
@@ -25,12 +25,12 @@
     }
     else
     {
-        <h2>Your support tickets</h2>
+        <h2>Your support requests</h2>
         
         <table>
             <thead>
                 <tr>
-                    <th>Ticket ID</th>
+                    <th>ID</th>
                     <th>Created</th>
                     <th>Product</th>
                     <th>Status</th>
@@ -53,7 +53,7 @@
             </tbody>
         </table>
 
-        <a class="start-button" href="support/new">Start a new ticket</a>
+        <a class="start-button" href="support/new">Start a new support request</a>
     }
 </div>
 
