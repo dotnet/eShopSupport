@@ -1,6 +1,7 @@
 ﻿@page "/support/new"
 @implements IValidatableObject
 @using System.ComponentModel.DataAnnotations
+@using SmartComponents
 
 <PageTitle>Support | AdventureWorks</PageTitle>
 <SectionContent SectionName="page-header-title">New support request</SectionContent>
@@ -29,7 +30,7 @@
     <div class="choose-product">
         <p>Which product is it?</p>
         <div class="answer">
-            <InputText type="text" @bind-Value="ProductName" placeholder="Search for product..." />
+            <SmartComboBox Url="api/product-search" @bind-Value="@ProductName" placeholder="Search for product..." />
             <ValidationMessage For="@(() => ProductName)" />
         </div>
     </div>

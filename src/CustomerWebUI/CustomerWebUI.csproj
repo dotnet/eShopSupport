@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SmartComponents.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Backend\Backend.csproj" />
     <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
   </ItemGroup>

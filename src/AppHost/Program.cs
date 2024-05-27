@@ -42,4 +42,6 @@ builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
     .WithReference(backend);
 
+builder.AddProject<CustomerWebUI>("customerwebui");
+
 builder.Build().Run();

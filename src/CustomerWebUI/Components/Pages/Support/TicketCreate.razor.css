@@ -39,7 +39,7 @@ form:has(.is-specific-product input:checked) .message, form:has(.is-specific-pro
     display: block;
 }
 
-::deep input[type=text], ::deep textarea {
+::deep input[type=text], ::deep textarea, ::deep input[role=combobox] {
     min-width: 50vw;
     padding: 0.5rem 1rem;
     border-radius: 0.4rem;

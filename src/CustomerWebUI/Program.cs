@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.AddServiceDefaults();
 builder.Services.AddRazorComponents();
+builder.Services.AddSmartComponents();
 
 var app = builder.Build();
 
@@ -22,5 +23,10 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>();
+
+var candidates = new[] { "Transport", "Rent", "Payroll", "Party" };
+
+app.MapSmartComboBox("api/product-search",
+    request => candidates);
 
 app.Run();
