@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
+using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;

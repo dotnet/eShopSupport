@@ -1,8 +1,9 @@
 ﻿using System.Text.Json;
+using eShopSupport.Backend.Data;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.SemanticKernel.Memory;
 
-namespace eShopSupport.Backend.Data;
+namespace eShopSupport.Backend.Services;
 
 public class ProductSemanticSearch(ISemanticTextMemory semanticTextMemory)
 {

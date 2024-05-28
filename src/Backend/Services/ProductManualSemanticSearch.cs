@@ -2,10 +2,11 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Azure.Storage.Blobs;
+using eShopSupport.Backend.Data;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 
-namespace eShopSupport.Backend.Data;
+namespace eShopSupport.Backend.Services;
 
 public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, HttpClient httpClient)
 {
@@ -29,7 +30,7 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
                 vector = embedding,
                 with_payload = new[] { "id", "text", "external_source_name", "additional_metadata" },
                 limit = 3,
-                filter = filter,
+                filter,
             }));
 
         var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();

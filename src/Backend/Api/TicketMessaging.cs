@@ -1,4 +1,5 @@
 ﻿using eShopSupport.Backend.Data;
+using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using StackExchange.Redis;
 
@@ -8,7 +9,7 @@ public static class TicketMessaging
 {
     public static void MapTicketMessagingEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/ticket/{ticketId}/message", async (int ticketId, AppDbContext dbContext, IConnectionMultiplexer redisConnection, ILoggerFactory loggerFactory, CancellationToken cancellationToken, SendTicketMessageRequest sendRequest) =>
+        app.MapPost("/api/ticket/{ticketId}/message", async (int ticketId, AppDbContext dbContext, TicketSummarizer summarizer, ILoggerFactory loggerFactory, CancellationToken cancellationToken, SendTicketMessageRequest sendRequest) =>
         {
             dbContext.Messages.Add(new Message
             {
@@ -19,8 +20,7 @@ public static class TicketMessaging
             });
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            await redisConnection.GetSubscriber().PublishAsync(
-                RedisChannel.Literal($"ticket:{ticketId}"), "Updated");
+            summarizer.UpdateSummary(ticketId);
 
             return Results.Ok();
         });

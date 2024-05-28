@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Azure.Storage.Blobs;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
+using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.ServiceDefaults.Clients.PythonInference;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGe
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
 builder.Services.AddScoped<ProductSemanticSearch>();
 builder.Services.AddScoped<ProductManualSemanticSearch>();
+builder.Services.AddScoped<TicketSummarizer>();
 builder.Services.AddHttpClient<PythonInferenceClient>(c => c.BaseAddress = new Uri("http://python-inference"));
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
@@ -99,7 +101,7 @@ app.MapPut("/api/ticket/{ticketId:int}/close", async (AppDbContext dbContext, in
     return Results.Ok();
 });
 
-app.MapPost("/tickets/create", async (AppDbContext dbContext, IConnectionMultiplexer redisConnection, PythonInferenceClient pythonInference, CreateTicketRequest request) =>
+app.MapPost("/tickets/create", async (AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request) =>
 {
     // Classify the new ticket
     var ticketTypes = Enum.GetValues<TicketType>();
@@ -134,8 +136,7 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, IConnectionMultipl
     dbContext.Tickets.Add(ticket);
     await dbContext.SaveChangesAsync();
 
-    await redisConnection.GetSubscriber().PublishAsync(
-        RedisChannel.Literal($"ticket:{ticket.TicketId}"), "Updated");
+    summarizer.UpdateSummary(ticket.TicketId);
 });
 
 app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>
