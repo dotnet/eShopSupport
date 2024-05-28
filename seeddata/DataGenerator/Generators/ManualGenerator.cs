@@ -3,8 +3,8 @@ using System.Text;
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class ManualGenerator(IReadOnlyList<Category> categories, IReadOnlyList<Product> products, IReadOnlyList<ManualToc> manualTocs)
-    : GeneratorBase<Manual>
+public class ManualGenerator(IReadOnlyList<Category> categories, IReadOnlyList<Product> products, IReadOnlyList<ManualToc> manualTocs, IServiceProvider services)
+    : GeneratorBase<Manual>(services)
 {
     protected override string DirectoryName => $"manuals{Path.DirectorySeparatorChar}full";
 

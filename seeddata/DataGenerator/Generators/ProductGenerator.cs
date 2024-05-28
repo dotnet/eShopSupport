@@ -2,7 +2,7 @@
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class ProductGenerator(IReadOnlyList<Category> categories) : GeneratorBase<Product>
+public class ProductGenerator(IReadOnlyList<Category> categories, IServiceProvider services) : GeneratorBase<Product>(services)
 {
     protected override string DirectoryName => "products";
 

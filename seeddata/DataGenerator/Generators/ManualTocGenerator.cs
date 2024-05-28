@@ -2,7 +2,7 @@
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class ManualTocGenerator(IReadOnlyList<Category> categories, IReadOnlyList<Product> products) : GeneratorBase<ManualToc>
+public class ManualTocGenerator(IReadOnlyList<Category> categories, IReadOnlyList<Product> products, IServiceProvider services) : GeneratorBase<ManualToc>(services)
 {
     protected override string DirectoryName => $"manuals{Path.DirectorySeparatorChar}toc";
 

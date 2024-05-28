@@ -9,7 +9,7 @@ using System.Numerics.Tensors;
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<Product> products, IReadOnlyList<Manual> manuals) : GeneratorBase<TicketThread>
+public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<Product> products, IReadOnlyList<Manual> manuals, IServiceProvider services) : GeneratorBase<TicketThread>(services)
 {
     private readonly ITextEmbeddingGenerationService embedder = new LocalTextEmbeddingGenerationService();
 

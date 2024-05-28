@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class TicketSummaryGenerator(IReadOnlyList<Product> products, IReadOnlyList<TicketThread> threads) : GeneratorBase<TicketThread>
+public class TicketSummaryGenerator(IReadOnlyList<Product> products, IReadOnlyList<TicketThread> threads, IServiceProvider services) : GeneratorBase<TicketThread>(services)
 {
     protected override object GetId(TicketThread item) => item.TicketId;
 

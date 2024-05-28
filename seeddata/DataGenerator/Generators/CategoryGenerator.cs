@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class CategoryGenerator : GeneratorBase<Category>
+public class CategoryGenerator(IServiceProvider services) : GeneratorBase<Category>(services)
 {
     protected override string DirectoryName => "categories";
 

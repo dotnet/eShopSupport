@@ -2,7 +2,7 @@
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Category> categories) : GeneratorBase<Ticket>
+public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Category> categories, IServiceProvider services) : GeneratorBase<Ticket>(services)
 {
     protected override string DirectoryName => "tickets/enquiries";
 
