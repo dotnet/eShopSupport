@@ -1,5 +1,7 @@
 ﻿@page "/"
+@inherits RedisSubscribingComponent
 @using Microsoft.AspNetCore.Components.QuickGrid
+@using StackExchange.Redis
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @using eShopSupport.StaffWebUI.Components.Pages.Tickets.Columns
 @inject BackendClient Backend
@@ -56,6 +58,11 @@
         };
     }
 
+    protected override void OnInitialized()
+    {
+        SubscriptionChannel = RedisChannel.Pattern("ticket:*");
+    }
+
     async Task OnFilterChangedAsync()
     {
         await JS.InvokeVoidAsync("scrollToTop");
@@ -76,4 +83,7 @@
     };
 
     public record Filter(TicketStatus Status, IEnumerable<FindCategoriesResult> Categories);
+
+    protected override Task OnRedisNotificationAsync(RedisValue value)
+        => ticketsGrid?.RefreshDataAsync() ?? Task.CompletedTask;
 }

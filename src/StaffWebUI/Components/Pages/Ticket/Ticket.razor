@@ -1,5 +1,7 @@
 ﻿@page "/ticket/{ticketId:int}"
+@inherits RedisSubscribingComponent
 @using Microsoft.FluentUI.AspNetCore.Components
+@using StackExchange.Redis
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject BackendClient Backend
 
@@ -58,6 +60,8 @@
     {
         ticket = null;
         ticket = await Backend.GetTicketDetailsAsync(TicketId);
+
+        SubscriptionChannel = RedisChannel.Literal($"ticket:{TicketId}");
     }
 
     private void AcceptSuggestedReply(string suggestion)
@@ -88,4 +92,7 @@
         await Task.Delay(1000);
         isSending = false;
     }
+
+    protected override async Task OnRedisNotificationAsync(RedisValue value)
+        => ticket = await Backend.GetTicketDetailsAsync(TicketId);
 }

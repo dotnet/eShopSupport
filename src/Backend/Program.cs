@@ -11,6 +11,7 @@ using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.AddHttpClient<PythonInferenceClient>(c => c.BaseAddress = new U
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddChatCompletionService("chatcompletion");
+builder.AddRedisClient("redis");
 
 var app = builder.Build();
 await AppDbContext.EnsureDbCreatedAsync(app.Services);
@@ -65,7 +67,7 @@ app.MapGet("/tickets/{ticketId:int}", async (AppDbContext dbContext, int ticketI
     ));
 });
 
-app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int ticketId, UpdateTicketDetailsRequest request) =>
+app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, IConnectionMultiplexer redisConnection, int ticketId, UpdateTicketDetailsRequest request) =>
 {
     var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
     if (ticket == null)
@@ -77,6 +79,10 @@ app.MapPut("/api/ticket/{ticketId:int}", async (AppDbContext dbContext, int tick
     ticket.TicketType = request.TicketType;
     ticket.TicketStatus = request.TicketStatus;
     await dbContext.SaveChangesAsync();
+
+    await redisConnection.GetSubscriber().PublishAsync(
+        RedisChannel.Literal($"ticket:{ticketId}"), "Updated");
+
     return Results.Ok();
 });
 
@@ -93,7 +99,7 @@ app.MapPut("/api/ticket/{ticketId:int}/close", async (AppDbContext dbContext, in
     return Results.Ok();
 });
 
-app.MapPost("/tickets/create", async (AppDbContext dbContext, PythonInferenceClient pythonInference, CreateTicketRequest request) =>
+app.MapPost("/tickets/create", async (AppDbContext dbContext, IConnectionMultiplexer redisConnection, PythonInferenceClient pythonInference, CreateTicketRequest request) =>
 {
     // Classify the new ticket
     var ticketTypes = Enum.GetValues<TicketType>();
@@ -127,6 +133,9 @@ app.MapPost("/tickets/create", async (AppDbContext dbContext, PythonInferenceCli
 
     dbContext.Tickets.Add(ticket);
     await dbContext.SaveChangesAsync();
+
+    await redisConnection.GetSubscriber().PublishAsync(
+        RedisChannel.Literal($"ticket:{ticket.TicketId}"), "Updated");
 });
 
 app.MapPost("/tickets", async (AppDbContext dbContext, ListTicketsRequest request) =>

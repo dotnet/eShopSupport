@@ -34,17 +34,21 @@ var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 var pythonInference = builder.AddPythonUvicornApp("python-inference",
     Path.Combine("..", "PythonInference"), port: 62394);
 
+var redis = builder.AddRedis("redis");
+
 var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(chatCompletion)
     .WithReference(blobStorage)
     .WithReference(vectorDb.GetEndpoint("http"))
     .WithReference(pythonInference)
+    .WithReference(redis)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", "dev"));
 
 builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
-    .WithReference(backend);
+    .WithReference(backend)
+    .WithReference(redis);
 
 builder.AddProject<CustomerWebUI>("customerwebui")
     .WithReference(backend);

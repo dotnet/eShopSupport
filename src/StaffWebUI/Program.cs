@@ -16,6 +16,8 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddHttpClient<BackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"));
 
+builder.AddRedisClient("redis");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
