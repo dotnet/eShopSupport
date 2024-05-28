@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -25,13 +24,9 @@ public abstract class GeneratorBase<T>
         WriteIndented = true
     };
 
-    public GeneratorBase()
+    public GeneratorBase(IServiceProvider services)
     {
-        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-        ChatCompletionService = new AzureOpenAIChatCompletionService(
-            config["DeploymentName"]!,
-            config["Endpoint"]!,
-            config["ApiKey"]!);
+        ChatCompletionService = services.GetRequiredService<IChatCompletionService>();
     }
 
     public async Task<IReadOnlyList<T>> GenerateAsync()
@@ -60,7 +55,7 @@ public abstract class GeneratorBase<T>
 
     protected abstract IAsyncEnumerable<T> GenerateCoreAsync();
 
-    protected AzureOpenAIChatCompletionService ChatCompletionService { get; }
+    protected IChatCompletionService ChatCompletionService { get; }
 
     protected async Task<string> GetChatCompletion(string prompt)
     {
