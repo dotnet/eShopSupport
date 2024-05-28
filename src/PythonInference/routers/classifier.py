@@ -4,6 +4,7 @@ from transformers import pipeline
 
 router = APIRouter()
 classifier = pipeline('zero-shot-classification', model='cross-encoder/nli-MiniLM2-L6-H768', device='cuda')
+classifier('warm up', ['a', 'b', 'c'])
 
 class ClassifyRequest(BaseModel):
     text: str
