@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.DataIngestor</RootNamespace>
-    <StartArguments>..\..\..\..\SteveSandersonMS\AspirePython\data-generator\AspirePython.DataGenerator\output</StartArguments>
+    <StartArguments>$(SolutionDir)\seeddata\DataGenerator\output</StartArguments>
     <NoWarn>$(NoWarn);SKEXP0001;SKEXP0020;SKEXP0050</NoWarn>
     <IsAspireHost>true</IsAspireHost>
   </PropertyGroup>

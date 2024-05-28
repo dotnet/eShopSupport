@@ -20,7 +20,6 @@
 // In real-world cases that's likely useful too, since you can't normally write directly to
 // production DBs.
 
-// TODO: Once the data generator is moved into this solution, we can use a relative path to its output
 var generatedDataPath = args.Length > 0 ? args[0] : null;
 if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPath))
 {
