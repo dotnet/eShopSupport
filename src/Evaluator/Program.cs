@@ -1,17 +1,183 @@
-﻿using System.Text.Json;
+﻿using System.Data.Common;
+using System.Reflection;
+using System.Text.Json;
 using eShopSupport.Backend.Api;
+using eShopSupport.Evaluator;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.Extensions.Configuration;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-var backend = new BackendClient(new HttpClient {  BaseAddress = new Uri("https://localhost:7223/") });
-var ticketId = 1; // TODO
-var message = "Who manufactures this?";
-var answer = await backend.AssistantChatAsync(new AssistantChatRequest(
-    ticketId,
-    [new() { IsAssistant = true, Text = message }]),
-    CancellationToken.None);
-var reader = new StreamReader(answer);
-var responseJson = await reader.ReadToEndAsync();
-var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-var responseParsed = JsonSerializer.Deserialize<AssistantApi.AssistantReply[]>(responseJson, jsonOptions)!;
-var finalAnswer = responseParsed.LastOrDefault(a => !string.IsNullOrEmpty(a.Answer))?.Answer;
-Console.WriteLine(finalAnswer ?? "No answer given");
+// GPT 3.5 Turbo: After 100 questions: average score = 0.663, average duration = 3074.127ms
+
+var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
+var backend = new BackendClient(new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
+var chatCompletion = GetChatCompletionService("chatcompletion");
+var questions = LoadEvaluationQuestions().OrderBy(q => q.QuestionId);
+using var logFile = File.Open("log.txt", FileMode.Create, FileAccess.Write, FileShare.Read);
+using var log = new StreamWriter(logFile);
+
+var questionBatches = questions.Chunk(5);
+var scoringParallelism = 4;
+var allScores = new List<double>();
+var allDurations = new List<TimeSpan>();
+await Parallel.ForEachAsync(questionBatches, new ParallelOptions { MaxDegreeOfParallelism = scoringParallelism }, async (batch, cancellationToken) =>
+{
+    var assistantAnswers = await Task.WhenAll(batch.Select(GetAssistantAnswerAsync));
+    var scores = await ScoreAnswersAsync(batch.Zip(assistantAnswers.Select(a => a.Answer)).ToList());
+    foreach (var (question, assistantAnswer, score) in batch.Zip(assistantAnswers, scores))
+    {
+        lock (log)
+        {
+            log.WriteLine($"Question ID: {question.QuestionId}");
+            log.WriteLine($"Question: {question.Question}");
+            log.WriteLine($"True answer: {question.Answer}");
+            log.WriteLine($"Assistant answer: {assistantAnswer.Answer}");
+            log.WriteLine($"Assistant duration: {assistantAnswer.Duration}");
+            log.WriteLine($"Score: {score}");
+            log.WriteLine();
+            if (score.HasValue)
+            {
+                allScores.Add(score.Value);
+                allDurations.Add(assistantAnswer.Duration);
+            }
+        }
+    }
+
+    Console.WriteLine($"After {allScores.Count} questions: average score = {allScores.Average():F3}, average duration = {allDurations.Select(d => d.TotalMilliseconds).Average():F3}ms");
+});
+
+async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Question, string AssistantAnswer)> questionAnswerPairs)
+{
+    var rangeText = $"questions {questionAnswerPairs.Min(p => p.Question.QuestionId)} to {questionAnswerPairs.Max(p => p.Question.QuestionId)}";
+    Console.WriteLine($"Scoring answers to {rangeText}...");
+    var formattedQuestionAnswerPairs = questionAnswerPairs.Select((pair, index) => 
+        $$"""
+            <question index="{{index}}">
+                <text>{{pair.Question.Question}}</text>
+                <correctAnswer>{{pair.Question.Answer}}</correctAnswer>
+                <assistantAnswer>{{pair.AssistantAnswer}}</assistantAnswer>
+            </question>
+        """);
+
+    List<string> scoreWords = ["DangerouslyBad", "Bad", "Weak", "Acceptable", "Good", "Great", "Perfect"];
+
+    var prompt = $$"""
+        There is an AI assistant that answers questions about products sold by an online retailer. The questions
+        may be asked by customers or by customer support agents.
+
+        You are evaluating the quality of an AI assistant's response to several questions. Here are the
+        questions, the desired true answers, and the answers given by the AI system:
+
+        <questions>
+            {{string.Join("\n", formattedQuestionAnswerPairs)}}
+        </questions>
+
+        Evaluate all the assistant's answers by replying in this JSON format:
+
+        {
+            "scores": [
+                { "index": 0, "descriptionOfQuality": string, "scoreLabel": string },
+                { "index": 1, "descriptionOfQuality": string, "scoreLabel": string },
+                ... etc ...
+            ]
+        ]
+        
+        Rate based on whether the answer contains the correct fact(s). It's fine for the assistant to give extra info
+        or pleasantries and there is no penalty for that.
+
+        The descriptionOfQuality should be up to 5 words stating to what extent the assistant answer
+        is correct and sufficient. Examples: "contains the true facts", "along the right lines",
+        "very misleading", "lacks main information", "off-topic". You can make up any other descriptionOfQuality
+        up to 5 words to describe its qualities or failings.
+
+        The scoreLabel must be one of the following labels, from worst to best: {{ string.Join(", ", scoreWords) }}
+        Do not use any other words for scoreLabel. You may only pick one of those labels.
+        """;
+
+    var chatHistory = new ChatHistory();
+    chatHistory.AddUserMessage(prompt);
+    var promptExecutionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object"};
+    var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, promptExecutionSettings);
+    var responseJson = response.ToString();
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    var parsedResponse = JsonSerializer.Deserialize<ScoringResponse>(responseJson, jsonOptions)!;
+    return parsedResponse.Scores.Select(s =>
+    {
+        var labelIndex = scoreWords.FindIndex(w => w.Equals(s.ScoreLabel, StringComparison.OrdinalIgnoreCase));
+        return labelIndex < 0 ? (double?)null : ((double)labelIndex) / (scoreWords.Count - 1);
+    }).ToArray();
+}
+
+static EvalQuestion[] LoadEvaluationQuestions()
+{
+    var questionDataPath = Assembly.GetExecutingAssembly()
+        .GetCustomAttributes<AssemblyMetadataAttribute>()
+        .Single(a => a.Key == "EvalQuestionsJsonPath").Value!;
+    if (!File.Exists(questionDataPath))
+    {
+        throw new FileNotFoundException("Questions not found. Ensure the data ingestor has run.", questionDataPath);
+    }
+    var questionsJson = File.ReadAllText(questionDataPath);
+    return JsonSerializer.Deserialize<EvalQuestion[]>(questionsJson)!;
+}
+
+async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuestion question)
+{
+    await assistantAnsweringSemaphore.WaitAsync();
+    var startTime = DateTime.Now;
+
+    try
+    {
+        Console.WriteLine($"Asking question {question.QuestionId}...");
+        var responseStream = await backend.AssistantChatAsync(new AssistantChatRequest(
+            question.ProductId,
+            null,
+            null,
+            null,
+            [new() { IsAssistant = true, Text = question.Question }]),
+            CancellationToken.None);
+        var reader = new StreamReader(responseStream);
+        var responseJson = await reader.ReadToEndAsync();
+        var duration = DateTime.Now - startTime;
+        var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        var responseParsed = JsonSerializer.Deserialize<AssistantApi.AssistantReply[]>(responseJson, jsonOptions)!;
+        var finalAnswer = responseParsed.LastOrDefault(a => !string.IsNullOrEmpty(a.Answer))?.Answer;
+        Console.WriteLine($"Received answer to question {question.QuestionId}");
+        return (finalAnswer ?? "No answer provided", duration);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error on question {question.QuestionId}: {ex.Message}");
+        return ("SYSTEM ERROR", DateTime.Now - startTime);
+    }
+    finally
+    {
+        assistantAnsweringSemaphore.Release();
+    }
+}
+
+static IChatCompletionService GetChatCompletionService(string connectionStringName)
+{
+    var config = new ConfigurationManager();
+    config.AddJsonFile("appsettings.json");
+    config.AddJsonFile("appsettings.Local.json", optional: true);
+
+    var connectionStringBuilder = new DbConnectionStringBuilder();
+    var connectionString = config.GetConnectionString(connectionStringName);
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException($"Missing connection string {connectionStringName}");
+    }
+
+    connectionStringBuilder.ConnectionString = connectionString;
+
+    var deployment = connectionStringBuilder.TryGetValue("Deployment", out var deploymentValue) ? (string)deploymentValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Deployment'");
+    var endpoint = connectionStringBuilder.TryGetValue("Endpoint", out var endpointValue) ? (string)endpointValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Endpoint'");
+    var key = connectionStringBuilder.TryGetValue("Key", out var keyValue) ? (string)keyValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Key'");
+
+    return new AzureOpenAIChatCompletionService(deployment, endpoint, key);
+}
+
+record ScoringResponse(AnswerScore[] Scores);
+record AnswerScore(int Index, string ScoreLabel);
