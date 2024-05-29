@@ -8,7 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-// GPT 3.5 Turbo: After 100 questions: average score = (was 0.663 but have changed eval criteria now), average duration = 3074.127ms
+// GPT 3.5 Turbo: After 200 questions: average score = 0.733, average duration = 3450.547ms
+// Mistral 7B (Ollama): After 100 questions: average score = 0.547, average duration = 25603.365ms
 
 var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
 var backend = new BackendClient(new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
