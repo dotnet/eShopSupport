@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -21,25 +20,23 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken, AssistantChatRequest chatRequest)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
-        var ticket = await dbContext.Tickets
-            .Include(t => t.Product)
-            .Include(t => t.Messages)
-            .Include(t => t.Customer)
-            .SingleAsync(t => t.TicketId == chatRequest.TicketId);
+        var product = request.ProductId.HasValue
+            ? await dbContext.Products.FindAsync(request.ProductId.Value)
+            : null;
 
         var chatHistory = new ChatHistory($$"""
             You are a helpful AI assistant called 'Assistant' who helps customer service agents working for Northern Mountains, an online retailer.
             The customer service agent is currently handling the following ticket:
                 
-            <product_id>{{ticket.ProductId}}</product_id>
-            <product_name>{{ticket.Product?.Model ?? "None specified"}}</product_name>
-            <customer_name>{{ticket.Customer.FullName}}</customer_name>
-            <summary>{{ticket.LongSummary}}</summary>
+            <product_id>{{request.ProductId}}</product_id>
+            <product_name>{{product?.Model ?? "None specified"}}</product_name>
+            <customer_name>{{request.CustomerName}}</customer_name>
+            <summary>{{request.TicketSummary}}</summary>
 
             The most recent message from the customer is this:
-            <customer_message>{{ticket.Messages.LastOrDefault(m => m.IsCustomerMessage)?.Text}}</customer_message>
+            <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
             However, that is only provided for context. You are not answering that question directly. The real question is provided below.
 
             The customer service agent may ask you for help either directly with the customer request, or other general information about this product or our other products. Respond to the AGENT'S question, not specifically to the customer ticket.
@@ -66,7 +63,7 @@ public static class AssistantApi
             Here is the real support agent's question for you to answer:
             """);
 
-        chatHistory.AddRange(chatRequest.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
+        chatHistory.AddRange(request.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
 
         var executionSettings = new OpenAIPromptExecutionSettings
         {

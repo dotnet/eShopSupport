@@ -82,7 +82,12 @@ public record TicketDetailsResultMessage(int MessageId, DateTime CreatedAt, bool
 
 public record UpdateTicketDetailsRequest(int? ProductId, TicketType TicketType, TicketStatus TicketStatus);
 
-public record AssistantChatRequest(int TicketId, IReadOnlyList<AssistantChatRequestMessage> Messages);
+public record AssistantChatRequest(
+    int? ProductId,
+    string? CustomerName,
+    string? TicketSummary,
+    string? TicketLastCustomerMessage,
+    IReadOnlyList<AssistantChatRequestMessage> Messages);
 
 public class AssistantChatRequestMessage
 {
