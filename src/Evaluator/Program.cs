@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
-// GPT 3.5 Turbo: After 100 questions: average score = 0.663, average duration = 3074.127ms
+// GPT 3.5 Turbo: After 100 questions: average score = (was 0.663 but have changed eval criteria now), average duration = 3074.127ms
 
 var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
 var backend = new BackendClient(new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
@@ -34,11 +34,13 @@ await Parallel.ForEachAsync(questionBatches, new ParallelOptions { MaxDegreeOfPa
             log.WriteLine($"True answer: {question.Answer}");
             log.WriteLine($"Assistant answer: {assistantAnswer.Answer}");
             log.WriteLine($"Assistant duration: {assistantAnswer.Duration}");
-            log.WriteLine($"Score: {score}");
+            log.WriteLine($"Score: {score.Score}");
+            log.WriteLine($"Justification: {score.Justification}");
             log.WriteLine();
-            if (score.HasValue)
+            log.Flush();
+            if (score.Score.HasValue)
             {
-                allScores.Add(score.Value);
+                allScores.Add(score.Score.Value);
                 allDurations.Add(assistantAnswer.Duration);
             }
         }
@@ -47,7 +49,7 @@ await Parallel.ForEachAsync(questionBatches, new ParallelOptions { MaxDegreeOfPa
     Console.WriteLine($"After {allScores.Count} questions: average score = {allScores.Average():F3}, average duration = {allDurations.Select(d => d.TotalMilliseconds).Average():F3}ms");
 });
 
-async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Question, string AssistantAnswer)> questionAnswerPairs)
+async Task<(double? Score, string Justification)[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Question, string AssistantAnswer)> questionAnswerPairs)
 {
     var rangeText = $"questions {questionAnswerPairs.Min(p => p.Question.QuestionId)} to {questionAnswerPairs.Max(p => p.Question.QuestionId)}";
     Console.WriteLine($"Scoring answers to {rangeText}...");
@@ -55,12 +57,12 @@ async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Questi
         $$"""
             <question index="{{index}}">
                 <text>{{pair.Question.Question}}</text>
-                <correctAnswer>{{pair.Question.Answer}}</correctAnswer>
+                <truth>{{pair.Question.Answer}}</truth>
                 <assistantAnswer>{{pair.AssistantAnswer}}</assistantAnswer>
             </question>
         """);
 
-    List<string> scoreWords = ["DangerouslyBad", "Bad", "Weak", "Acceptable", "Good", "Great", "Perfect"];
+    List<string> scoreWords = ["Awful", "Poor", "Good", "Perfect"];
 
     var prompt = $$"""
         There is an AI assistant that answers questions about products sold by an online retailer. The questions
@@ -73,7 +75,7 @@ async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Questi
             {{string.Join("\n", formattedQuestionAnswerPairs)}}
         </questions>
 
-        Evaluate all the assistant's answers by replying in this JSON format:
+        Evaluate each of the assistant's answers separately by replying in this JSON format:
 
         {
             "scores": [
@@ -82,16 +84,16 @@ async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Questi
                 ... etc ...
             ]
         ]
-        
-        Rate based on whether the answer contains the correct fact(s). It's fine for the assistant to give extra info
-        or pleasantries and there is no penalty for that.
 
-        The descriptionOfQuality should be up to 5 words stating to what extent the assistant answer
-        is correct and sufficient. Examples: "contains the true facts", "along the right lines",
-        "very misleading", "lacks main information", "off-topic". You can make up any other descriptionOfQuality
-        up to 5 words to describe its qualities or failings.
+        Score only based on whether the assistant's answer is true and answers the question. As long as the
+        answer covers the question and is consistent with the truth, it should score as perfect. There is
+        no penalty for giving extra on-topic information or advice. Only penalize for missing necessary facts
+        or being misleading.
 
-        The scoreLabel must be one of the following labels, from worst to best: {{ string.Join(", ", scoreWords) }}
+        The descriptionOfQuality should be up to 5 words summarizing to what extent the assistant answer
+        is correct and sufficient.
+
+        Based on descriptionOfQuality, the scoreLabel must be one of the following labels, from worst to best: {{string.Join(", ", scoreWords)}}
         Do not use any other words for scoreLabel. You may only pick one of those labels.
         """;
 
@@ -105,7 +107,7 @@ async Task<double?[]> ScoreAnswersAsync(IReadOnlyCollection<(EvalQuestion Questi
     return parsedResponse.Scores.Select(s =>
     {
         var labelIndex = scoreWords.FindIndex(w => w.Equals(s.ScoreLabel, StringComparison.OrdinalIgnoreCase));
-        return labelIndex < 0 ? (double?)null : ((double)labelIndex) / (scoreWords.Count - 1);
+        return (labelIndex < 0 ? (double?)null : ((double)labelIndex) / (scoreWords.Count - 1), s.DescriptionOfQuality);
     }).ToArray();
 }
 
@@ -180,4 +182,4 @@ static IChatCompletionService GetChatCompletionService(string connectionStringNa
 }
 
 record ScoringResponse(AnswerScore[] Scores);
-record AnswerScore(int Index, string ScoreLabel);
+record AnswerScore(int Index, string ScoreLabel, string DescriptionOfQuality);
