@@ -169,7 +169,7 @@ public static class AssistantApi
         }
     }
 
-    class AssistantReply
+    public class AssistantReply
     {
         public string? Answer { get; set; }
         public int? SearchProductId { get; set; }

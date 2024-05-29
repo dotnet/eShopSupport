@@ -8,4 +8,9 @@
     <RootNamespace>eShopSupport.Evaluator</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Backend\Backend.csproj" />
+    <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+  </ItemGroup>
+
 </Project>
