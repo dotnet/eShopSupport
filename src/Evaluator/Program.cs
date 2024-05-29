@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
+// GPT 4o: After 100 questions: average score = 0.800, average duration = 9005.543ms
 // GPT 3.5 Turbo: After 200 questions: average score = 0.733, average duration = 3450.547ms
 // Mistral 7B (Ollama): After 100 questions: average score = 0.547, average duration = 25603.365ms
 
