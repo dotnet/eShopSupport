@@ -34,5 +34,5 @@ Console.WriteLine($"Got {ticketThreads.Count} threads");
 var summarizedThreads = await new TicketSummaryGenerator(products, ticketThreads, services).GenerateAsync();
 Console.WriteLine($"Got {summarizedThreads.Count} thread summaries");
 
-var evalQuestions = await new EvalQuestionGenerator(products, manuals, services).GenerateAsync();
+var evalQuestions = await new EvalQuestionGenerator(products, categories, manuals, services).GenerateAsync();
 Console.WriteLine($"Got {evalQuestions.Count} evaluation questions");

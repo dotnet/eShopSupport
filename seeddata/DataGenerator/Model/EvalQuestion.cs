@@ -9,4 +9,6 @@ public class EvalQuestion
     public required string Question { get; set; }
 
     public required string Answer { get; set; }
+
+    public required string VerbatimQuoteFromManual { get; set; }
 }
