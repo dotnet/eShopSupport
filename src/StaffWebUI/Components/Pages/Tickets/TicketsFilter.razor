@@ -4,7 +4,7 @@
 @inject NavigationManager Nav
 
 <div class="filter">
-    <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@Filter.Status.ToString()" @bind-ActiveTabId:set="SetActiveTabId">
+    <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@(Filter.Status == TicketStatus.Open ? OpenTabId : ClosedTabId)" @bind-ActiveTabId:set="SetActiveTabId">
         <FluentTab Id="@OpenTabId" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
         <FluentTab Id="@ClosedTabId" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
