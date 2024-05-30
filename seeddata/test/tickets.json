@@ -1,0 +1,132 @@
+[
+  {
+    "TicketId": 1,
+    "ProductId": 1,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 1,
+    "ShortSummary": "LED safety light issue, warranty claim initiated",
+    "LongSummary": "Customer seeks assistance with non-functional LED safety light, has followed troubleshooting steps, and initiated warranty claim process. Next agent should provide guidance on potential return or repair process.",
+    "CustomerSatisfaction": 6,
+    "TicketStatus": "Open",
+    "TicketType": "Question",
+    "Messages": [
+      {
+        "MessageId": 1,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Dear Customer Support, \n\nI recently purchased the Rugged Riders Trailblazer Bike Helmet and I must say, I am quite impressed with its features and design. However, I seem to be having trouble with the built-in LED safety light. It does not seem to be working as expected, despite following the instructions carefully. I have tried troubleshooting on my own, but I am still unable to make it work. \n\nI would greatly appreciate it if you could provide assistance on how to resolve this issue. If the LED safety light is defective, I would like to request a replacement or a repair. I believe that the safety features of the helmet are crucial, and I want to ensure that it is functioning properly. Alternatively, if it cannot be resolved, I may need to request a refund. I hope we can find a solution to this matter quickly. Thank you for your attention to this issue. \n\nSincerely, \nEmily Johnson"
+      },
+      {
+        "MessageId": 2,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "Dear Emily Johnson, \n\nThank you for reaching out to us regarding the issue with the LED safety light on your Rugged Riders Trailblazer Bike Helmet. According to the user manual, the first troubleshooting step is to check the battery and ensure that it is properly installed and functional. If necessary, you can replace the battery with a CR2032 3V battery. If you require further assistance, you may also contact Rugged Riders customer support for warranty-related issues, as there is a limited warranty that covers manufacturing defects for a period of 1 year from the date of purchase. We hope this information helps resolve the issue. If you have any further questions or need assistance with the warranty claim process, please feel free to let us know.\n\nSincerely, \nNorthern Mountains Support"
+      },
+      {
+        "MessageId": 3,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Dear Northern Mountains Support, \n\nThank you for your prompt response and the troubleshooting steps provided. I have checked the battery as suggested, and it appears to be properly installed and functional. I even tried replacing it with a new CR2032 3V battery, but unfortunately, the LED safety light is still not working. I would like to proceed with the warranty claim process to address this issue, as it seems to be a manufacturing defect. Please guide me on how to initiate the warranty claim and what steps are involved. I appreciate your assistance in resolving this matter. \n\nSincerely, \nEmily Johnson"
+      },
+      {
+        "MessageId": 4,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "Dear Emily Johnson, \n\nThank you for your patience. You can initiate the warranty claim process by contacting Rugged Riders customer service at warranty@ruggedriders.com. Please provide the original proof of purchase and a detailed description of the issue. Rugged Riders will assess the claim and provide further instructions for return or repair. In the meantime, please ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, as outlined in the user manual. If the light still does not work, Rugged Riders customer support can assist further. Sincerely, Northern Mountains Support"
+      },
+      {
+        "MessageId": 5,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Dear Northern Mountains Support, \n\nI have contacted Rugged Riders customer service at warranty@ruggedriders.com and provided the original proof of purchase along with a detailed description of the issue. I have followed the instructions in the user manual to ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, but unfortunately, the light is still not working. I hope Rugged Riders can assess the claim and provide further instructions for return or repair soon. Thank you for your assistance in this matter.\n\nSincerely, Emily Johnson"
+      }
+    ]
+  },
+  {
+    "TicketId": 2,
+    "ProductId": 1,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 2,
+    "ShortSummary": "Product Performance Reassurance",
+    "LongSummary": "Customer seeking reassurance about the performance of Trailblazer Bike Helmet. Fit seems good. No further assistance needed at this time.",
+    "CustomerSatisfaction": 6,
+    "TicketStatus": "Closed",
+    "TicketType": "Question",
+    "Messages": [
+      {
+        "MessageId": 6,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Hello, I recently purchased the Trailblazer Bike Helmet from Rugged Riders and I just want to make sure it\u0027s performing as expected. I\u0027ve been using it for a few rides now and it seems to be working well, but I just wanted to double-check. I appreciate any reassurance you can provide. Thank you for your time."
+      },
+      {
+        "MessageId": 7,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "According to the manual, the Trailblazer Bike Helmet is designed and intended for use as protective headgear during cycling activities. It should not be used for any other purposes. The warranty covers manufacturing defects for a period of 1 year from the date of purchase, and Rugged Riders provides a limited warranty for the helmet. If you have any issues with the fit, please contact Rugged Riders customer support for further assistance."
+      },
+      {
+        "MessageId": 8,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Thank you for the information. I\u0027ve checked the fit of the helmet and it seems to be good. I appreciate your assistance."
+      }
+    ]
+  },
+  {
+    "TicketId": 3,
+    "ProductId": 2,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 3,
+    "ShortSummary": "Inquiry about Arctic Explorer Sleeping Bag\u0027s Temperature Rating",
+    "LongSummary": "Customer seeks specific details about the Arctic Explorer Sleeping Bag\u0027s temperature rating and performance in sub-zero conditions. They plan to contact customer service for further assistance. Next support agent should provide detailed temperature rating and performance information.",
+    "CustomerSatisfaction": 2,
+    "TicketStatus": "Open",
+    "TicketType": "Question",
+    "Messages": [
+      {
+        "MessageId": 9,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "I need to know if the Arctic Explorer Sleeping Bag is guaranteed to keep me warm in temperatures below freezing. I expect a detailed response before I even consider making a purchase. If it doesn\u0027t meet my expectations, I demand a full refund. I won\u0027t settle for anything less than perfect performance from this sleeping bag."
+      },
+      {
+        "MessageId": 10,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "The Arctic Explorer Sleeping Bag is equipped with state-of-the-art lightweight insulation that ensures maximum heat retention while keeping the overall weight of the sleeping bag to a minimum. The water-resistant shell provides a protective barrier against moisture and drafts, keeping you dry and warm throughout the night. If you have any questions about the warranty for your Arctic Explorer Sleeping Bag, please refer to the warranty card included with your purchase. For additional support, feel free to contact our customer service team."
+      },
+      {
+        "MessageId": 11,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "I appreciate the information you provided about the insulation and water-resistant shell of the Arctic Explorer Sleeping Bag. However, I need more details about the specific temperature rating and performance in sub-zero conditions. I expect a comprehensive response to my queries before I make any decisions. Also, I will be contacting your customer service team for further assistance."
+      },
+      {
+        "MessageId": 12,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "The Arctic Explorer Sleeping Bag is equipped with state-of-the-art lightweight insulation that ensures maximum heat retention, and the water-resistant shell provides a protective barrier against moisture and drafts. When using the sleeping bag, make sure to fully close the zipper to retain maximum warmth. Gently pull the zipper tab downwards to close the sleeping bag securely. For warranty information, please refer to the warranty card included with your purchase. If you have further questions, feel free to contact our customer service team. I hope this information is helpful to you."
+      },
+      {
+        "MessageId": 13,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "I appreciate the information you provided, but I still need specific details about the temperature rating and performance of the Arctic Explorer Sleeping Bag in sub-zero conditions. I expect a comprehensive response before I make any decisions. Also, I will be contacting your customer service team for further assistance."
+      }
+    ]
+  }
+]

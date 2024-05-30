@@ -19,9 +19,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "seeddata", "seeddata", "{2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{B3CDC49A-D71A-4C0D-945F-8DD69FC1B066}"
 	ProjectSection(SolutionItems) = preProject
+		seeddata\dev\categories.json = seeddata\dev\categories.json
+		seeddata\dev\customers.json = seeddata\dev\customers.json
 		seeddata\dev\evalquestions.json = seeddata\dev\evalquestions.json
 		seeddata\dev\manual-chunks.json = seeddata\dev\manual-chunks.json
 		seeddata\dev\manuals.zip = seeddata\dev\manuals.zip
+		seeddata\dev\products.json = seeddata\dev\products.json
 		seeddata\dev\tickets.json = seeddata\dev\tickets.json
 	EndProjectSection
 EndProject
@@ -36,7 +39,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataGenerator", "seeddata\DataGenerator\DataGenerator.csproj", "{E2871C52-FBBF-44A4-A3CD-185E5F6AA7EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evaluator", "src\Evaluator\Evaluator.csproj", "{A634C7D8-FD7D-49F5-A98E-626F0AEE145F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evaluator", "src\Evaluator\Evaluator.csproj", "{A634C7D8-FD7D-49F5-A98E-626F0AEE145F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9E677D76-414B-492C-AF74-1B091F940D00}"
+	ProjectSection(SolutionItems) = preProject
+		seeddata\test\categories.json = seeddata\test\categories.json
+		seeddata\test\customers.json = seeddata\test\customers.json
+		seeddata\test\evalquestions.json = seeddata\test\evalquestions.json
+		seeddata\test\manual-chunks.json = seeddata\test\manual-chunks.json
+		seeddata\test\manuals.zip = seeddata\test\manuals.zip
+		seeddata\test\products.json = seeddata\test\products.json
+		seeddata\test\tickets.json = seeddata\test\tickets.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +107,7 @@ Global
 		{BAA14585-1716-40FB-A04E-F986F1038638} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
 		{E2871C52-FBBF-44A4-A3CD-185E5F6AA7EB} = {2B17496A-5870-4676-927B-6B45871C7BBA}
 		{A634C7D8-FD7D-49F5-A98E-626F0AEE145F} = {7306A281-C46A-4EE3-948D-513D56B1BD34}
+		{9E677D76-414B-492C-AF74-1B091F940D00} = {2B17496A-5870-4676-927B-6B45871C7BBA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2E71FD9-E3D5-450C-A9E0-318DAA986F31}
