@@ -5,8 +5,8 @@
 
 <div class="filter">
     <FluentTabs Style="flex-grow: 1" @bind-ActiveTabId:get="@Filter.Status.ToString()" @bind-ActiveTabId:set="SetActiveTabId">
-        <FluentTab Id="@TicketStatus.Open.ToString()" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
-        <FluentTab Id="@TicketStatus.Closed.ToString()" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
+        <FluentTab Id="@OpenTabId" Label="@OpenLabel" Icon="@(new Icons.Regular.Size20.Mail())" />
+        <FluentTab Id="@ClosedTabId" Label="@ClosedLabel" Icon="@(new Icons.Regular.Size20.Checkmark())" />
     </FluentTabs>
 
     <FluentAutocomplete Width="" TOption="FindCategoriesResult"
@@ -17,6 +17,8 @@
 
 @code {
     private IEnumerable<FindCategoriesResult> selectedCategories = Array.Empty<FindCategoriesResult>();
+    private const string OpenTabId = "filter-open";
+    private const string ClosedTabId = "filter-closed";
 
     [Parameter, EditorRequired]
     public Tickets.Filter Filter { get; set; } = default!;
@@ -73,7 +75,7 @@
 
     Task SetActiveTabId(string id)
     {
-        var newFilter = Filter with { Status = Enum.Parse<TicketStatus>(id) };
+        var newFilter = Filter with { Status = (id == OpenTabId ? TicketStatus.Open : TicketStatus.Closed) };
         UpdateUrl(newFilter);
         return FilterChanged.InvokeAsync(newFilter);
     }

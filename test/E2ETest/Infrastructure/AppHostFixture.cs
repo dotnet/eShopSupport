@@ -1,4 +1,5 @@
 ﻿using Aspire.Hosting.Testing;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 
 namespace E2ETest.Infrastructure;
 
@@ -16,9 +17,18 @@ public class AppHostFixture : IAsyncDisposable
 
     private async Task<DistributedApplication> InitializeAsync()
     {
+        Environment.CurrentDirectory = Projects.AppHost.ProjectPath;
+        Environment.SetEnvironmentVariable("E2E_TEST", "true");
         var builder = await DistributedApplicationTestingBuilder.CreateAsync<Projects.AppHost>();
         var app = await builder.BuildAsync();
         await app.StartAsync();
+
+        // Don't consider it initialized until we confirm it's finished data seeding
+        var backendHttpClient = app.CreateHttpClient("backend");
+        var backendClient = new BackendClient(backendHttpClient);
+        var tickets = await backendClient.ListTicketsAsync(new ListTicketsRequest(null, null, null, 0, 1, null, null));
+        Assert.NotEmpty(tickets.Items);
+
         return app;
     }
 
