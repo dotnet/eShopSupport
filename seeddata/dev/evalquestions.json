@@ -1,0 +1,3002 @@
+[
+  {
+    "QuestionId": 1,
+    "ProductId": 54,
+    "Question": "What is the teapot\u0027s capacity?",
+    "Answer": "32 ounces"
+  },
+  {
+    "QuestionId": 10,
+    "ProductId": 60,
+    "Question": "Suitable for outdoor use?",
+    "Answer": "No, it is prohibited."
+  },
+  {
+    "QuestionId": 100,
+    "ProductId": 65,
+    "Question": "Hi, I just bought the DreamRest Inflatable Mattress and noticed it has a built-in electric pump. Can I use the electric pump to inflate the mattress?",
+    "Answer": "No, it may lead to electrical hazards and potential injury to the user."
+  },
+  {
+    "QuestionId": 101,
+    "ProductId": 28,
+    "Question": "Hi, I just bought the Pro Flying Disc Set and noticed that the discs are color-coded. Can you tell me why they are color-coded?",
+    "Answer": "For easy differentiation during multiplayer games."
+  },
+  {
+    "QuestionId": 102,
+    "ProductId": 54,
+    "Question": "Can the teapot withstand boiling water from a campfire?",
+    "Answer": "Not suitable for use with boiling water directly from a campfire."
+  },
+  {
+    "QuestionId": 103,
+    "ProductId": 10,
+    "Question": "What is the adjustable flame control feature like?",
+    "Answer": "Like a chameleon\u0027s camouflage."
+  },
+  {
+    "QuestionId": 104,
+    "ProductId": 15,
+    "Question": "Zipper Alignment troubleshooting steps?",
+    "Answer": "Use a micrometer to measure the zipper alignment accuracy."
+  },
+  {
+    "QuestionId": 105,
+    "ProductId": 79,
+    "Question": "How to connect to WayFinder app?",
+    "Answer": "Follow on-screen instructions to complete pairing process"
+  },
+  {
+    "QuestionId": 106,
+    "ProductId": 77,
+    "Question": "How to troubleshoot difficulty adjusting leg loops?",
+    "Answer": "Check fit, inspect webbing, pull tab technique, clean and lubricate"
+  },
+  {
+    "QuestionId": 107,
+    "ProductId": 65,
+    "Question": "What are the limitations and risks?",
+    "Answer": "Sudden deflation, hazardous electrical components, suffocation hazard"
+  },
+  {
+    "QuestionId": 108,
+    "ProductId": 57,
+    "Question": "Hello, I recently purchased Bugblock UltraShield Insect Repellent and I want to know how to store it properly. Can you provide me with guidance on where to store it when not in use?",
+    "Answer": "Store Bugblock UltraShield Insect Repellent in a cool, dry location out of direct sunlight."
+  },
+  {
+    "QuestionId": 109,
+    "ProductId": 5,
+    "Question": "How do I charge the GPS?",
+    "Answer": "Connect USB cable to port and power source."
+  },
+  {
+    "QuestionId": 11,
+    "ProductId": 54,
+    "Question": "Outdoor suitability?",
+    "Answer": "Unsuitable for outdoor use."
+  },
+  {
+    "QuestionId": 110,
+    "ProductId": 55,
+    "Question": "Durability testing standard?",
+    "Answer": "MIL-STD-810G"
+  },
+  {
+    "QuestionId": 111,
+    "ProductId": 35,
+    "Question": "Allergy warning?",
+    "Answer": "Contains nuts and allergens"
+  },
+  {
+    "QuestionId": 112,
+    "ProductId": 56,
+    "Question": "Risks associated?",
+    "Answer": "Severe discomfort, neck strain."
+  },
+  {
+    "QuestionId": 113,
+    "ProductId": 16,
+    "Question": "Hi there, I\u0027m planning a camping trip and considering buying the Restridge ThermalVent 800 Sleeping Bag. Can you tell me the recommended temperature range for this sleeping bag?",
+    "Answer": "15\u00B0F to 35\u00B0F (-9\u00B0C to 2\u00B0C)"
+  },
+  {
+    "QuestionId": 114,
+    "ProductId": 25,
+    "Question": "Hi there, I just bought the WildBeat Outdoor Speaker and I want to know how to power it on. Can you help?",
+    "Answer": "Press and hold the power button for 3 seconds."
+  },
+  {
+    "QuestionId": 115,
+    "ProductId": 26,
+    "Question": "How many chairs are included?",
+    "Answer": "4 Foldable Chairs"
+  },
+  {
+    "QuestionId": 116,
+    "ProductId": 87,
+    "Question": "How to adjust volume?",
+    "Answer": "Use the volume controls on the side."
+  },
+  {
+    "QuestionId": 117,
+    "ProductId": 53,
+    "Question": "What is included in the package?",
+    "Answer": "1 pair of Summit Seeker Hiking Boots, Instruction Manual"
+  },
+  {
+    "QuestionId": 118,
+    "ProductId": 90,
+    "Question": "Hi there, I just bought the SunGuard Beach Umbrella and I want to make sure I set it up correctly. Can you tell me how to secure the umbrella in the sand?",
+    "Answer": "Grab the sand anchor and twist it into the sand next to the pole, then insert the pole into the sand anchor."
+  },
+  {
+    "QuestionId": 119,
+    "ProductId": 38,
+    "Question": "What should I check during visual inspection?",
+    "Answer": "Examine all harness components for fraying or cuts"
+  },
+  {
+    "QuestionId": 12,
+    "ProductId": 46,
+    "Question": "What is the initial cooling setup?",
+    "Answer": "Place desired items within for optimum cooling efficacy."
+  },
+  {
+    "QuestionId": 120,
+    "ProductId": 10,
+    "Question": "Hello, I recently purchased the Trailblazer Portable Camping Stove and I\u0027m wondering how to deter mosquitoes while using it. Any tips?",
+    "Answer": "Use mosquito repellent for efficiency."
+  },
+  {
+    "QuestionId": 121,
+    "ProductId": 84,
+    "Question": "How to clean the table surface?",
+    "Answer": "Use a damp cloth with mild soap and water"
+  },
+  {
+    "QuestionId": 122,
+    "ProductId": 46,
+    "Question": "Warranty service instructions?",
+    "Answer": "Follow instructions from customer service team"
+  },
+  {
+    "QuestionId": 123,
+    "ProductId": 20,
+    "Question": "How to power on?",
+    "Answer": "Press and hold Power button"
+  },
+  {
+    "QuestionId": 124,
+    "ProductId": 100,
+    "Question": "How to clean the blanket?",
+    "Answer": "Spot clean or machine wash in cold water and tumble dry on low heat."
+  },
+  {
+    "QuestionId": 125,
+    "ProductId": 58,
+    "Question": "How should the harness be cleaned?",
+    "Answer": "Regularly clean using mild soap and water"
+  },
+  {
+    "QuestionId": 126,
+    "ProductId": 20,
+    "Question": "How to power on?",
+    "Answer": "Press and hold Power button for 3 seconds"
+  },
+  {
+    "QuestionId": 127,
+    "ProductId": 15,
+    "Question": "What is the load-bearing capacity test?",
+    "Answer": "Assess jacket\u0027s weight distribution"
+  },
+  {
+    "QuestionId": 128,
+    "ProductId": 70,
+    "Question": "How to position on the board?",
+    "Answer": "Lying on stomach, chest at center."
+  },
+  {
+    "QuestionId": 129,
+    "ProductId": 58,
+    "Question": "Hello, I am having difficulty securing the waistbelt of my Summit Pro Climbing Harness. Can you provide detailed instructions on how to properly fasten it?",
+    "Answer": "Refer to the user manual"
+  },
+  {
+    "QuestionId": 13,
+    "ProductId": 7,
+    "Question": "Hi there, I recently purchased the Trekker Adventure Watch and I\u0027m having trouble with the GPS accuracy. The readings seem to be off. Can you help me fix this?",
+    "Answer": "Ensure the watch has a clear view of the sky for better signal reception. Calibrate the GPS or contact customer support for assistance."
+  },
+  {
+    "QuestionId": 130,
+    "ProductId": 61,
+    "Question": "How should I clean the solar panels?",
+    "Answer": "Dust off, wipe down, handle with love"
+  },
+  {
+    "QuestionId": 131,
+    "ProductId": 17,
+    "Question": "how to keep hammock clean?",
+    "Answer": "hand wash with mild detergent and cool water"
+  },
+  {
+    "QuestionId": 132,
+    "ProductId": 56,
+    "Question": "Can I clean the pillow with water and detergent?",
+    "Answer": "No, it is not suitable for cleaning under any circumstances."
+  },
+  {
+    "QuestionId": 133,
+    "ProductId": 97,
+    "Question": "Hello, I just bought the Glowgear BeamPro 5000 Headlamp and I want to make sure I\u0027m using it safely. Can I submerge this headlamp in water?",
+    "Answer": "No, submersion in water can cause damage and compromise functionality."
+  },
+  {
+    "QuestionId": 134,
+    "ProductId": 1,
+    "Question": "How to update firmware?",
+    "Answer": "Connect to computer and follow instructions"
+  },
+  {
+    "QuestionId": 135,
+    "ProductId": 70,
+    "Question": "How many fins are included?",
+    "Answer": "Three fins"
+  },
+  {
+    "QuestionId": 136,
+    "ProductId": 68,
+    "Question": "How to charge Voyager 3000 Pro Kayak?",
+    "Answer": "Follow the steps for charging with solar panel."
+  },
+  {
+    "QuestionId": 137,
+    "ProductId": 17,
+    "Question": "How far apart should the hanging supports be?",
+    "Answer": "10-15 feet"
+  },
+  {
+    "QuestionId": 138,
+    "ProductId": 89,
+    "Question": "What technology does the FlameMaster Portable Grill use for even heat distribution?",
+    "Answer": "Infrared heating technology"
+  },
+  {
+    "QuestionId": 139,
+    "ProductId": 51,
+    "Question": "Hello, I just bought the Angler\u0027s Aid Fishing Locator by Riverrun. Can you tell me what is included in the package?",
+    "Answer": "The device and an instruction manual."
+  },
+  {
+    "QuestionId": 14,
+    "ProductId": 17,
+    "Question": "What is the weight limit?",
+    "Answer": "400lbs"
+  },
+  {
+    "QuestionId": 140,
+    "ProductId": 59,
+    "Question": "Hi, I recently bought the Fireflame Trailblazer Portable Camping Stove and the control panel is unresponsive. What should I do?",
+    "Answer": "Verify power source and connections, seek professional assistance if issues persist."
+  },
+  {
+    "QuestionId": 141,
+    "ProductId": 97,
+    "Question": "Hi there, I just bought the Glowgear BeamPro 5000 Headlamp and I want to conduct a post-use analysis. Can you tell me how to measure the light output?",
+    "Answer": "Use a calibrated light meter."
+  },
+  {
+    "QuestionId": 142,
+    "ProductId": 60,
+    "Question": "Indoor use allowed?",
+    "Answer": "No, strictly prohibited."
+  },
+  {
+    "QuestionId": 143,
+    "ProductId": 96,
+    "Question": "Hi there, just bought the SummitTrek Climbing Harness. Can you tell me what I should inspect before and after each use to ensure it stays safe?",
+    "Answer": "Inspect fabric, buckles, and stitching for wear or damage."
+  },
+  {
+    "QuestionId": 144,
+    "ProductId": 76,
+    "Question": "Recommended wristband color for earthy tones?",
+    "Answer": "Moss Green"
+  },
+  {
+    "QuestionId": 145,
+    "ProductId": 100,
+    "Question": "Hi there, I just bought the TechShield Outdoor Blanket and I\u0027m wondering how to clean it. Can I use bleach or fabric softeners?",
+    "Answer": "Avoid using bleach or fabric softeners."
+  },
+  {
+    "QuestionId": 146,
+    "ProductId": 98,
+    "Question": "Water-Resistance Testing standards?",
+    "Answer": "ISO 811"
+  },
+  {
+    "QuestionId": 147,
+    "ProductId": 24,
+    "Question": "How should I clean the SummitHammock 300?",
+    "Answer": "Hand wash with mild detergent and air dry."
+  },
+  {
+    "QuestionId": 148,
+    "ProductId": 77,
+    "Question": "How to adjust leg loops?",
+    "Answer": "Pull webbing straps for desired fit"
+  },
+  {
+    "QuestionId": 149,
+    "ProductId": 79,
+    "Question": "How to access elevation profile?",
+    "Answer": "Select \u0027Route Planner\u0027 and choose route."
+  },
+  {
+    "QuestionId": 15,
+    "ProductId": 44,
+    "Question": "What is the load capacity?",
+    "Answer": "Industry-standard weight thresholds."
+  },
+  {
+    "QuestionId": 150,
+    "ProductId": 30,
+    "Question": "How to activate LED lights?",
+    "Answer": "Slide the power switch to the ON position."
+  },
+  {
+    "QuestionId": 151,
+    "ProductId": 67,
+    "Question": "Contact information?",
+    "Answer": "support@airdream.com, 1-800-555-1234"
+  },
+  {
+    "QuestionId": 152,
+    "ProductId": 99,
+    "Question": "Hi, I just bought the UltraWarm Adventure Blanket, and I noticed that the strap is broken. What should I do?",
+    "Answer": "Contact customer support for a replacement strap."
+  },
+  {
+    "QuestionId": 153,
+    "ProductId": 62,
+    "Question": "How to clean the jacket?",
+    "Answer": "Machine wash in cold water with mild detergent. Avoid using bleach or fabric softeners."
+  },
+  {
+    "QuestionId": 154,
+    "ProductId": 48,
+    "Question": "How to apply SunGuard SPF 50 Sunscreen?",
+    "Answer": "Follow preparation and application steps in the manual"
+  },
+  {
+    "QuestionId": 155,
+    "ProductId": 100,
+    "Question": "What outdoor activities is it good for?",
+    "Answer": "Picnics, beach trips, outdoor concerts"
+  },
+  {
+    "QuestionId": 156,
+    "ProductId": 36,
+    "Question": "How to store the jacket?",
+    "Answer": "Avoid storing in plastic bags"
+  },
+  {
+    "QuestionId": 157,
+    "ProductId": 71,
+    "Question": "weather conditions to avoid?",
+    "Answer": "strong winds, thunderstorms, heavy rain"
+  },
+  {
+    "QuestionId": 158,
+    "ProductId": 3,
+    "Question": "How should I store the surfboard indoors?",
+    "Answer": "Indoors in cool, dry place"
+  },
+  {
+    "QuestionId": 159,
+    "ProductId": 22,
+    "Question": "What types of plants can be grown in TerracePlanter 3000?",
+    "Answer": "Flowers, herbs, vegetables"
+  },
+  {
+    "QuestionId": 16,
+    "ProductId": 65,
+    "Question": "How should it be stored?",
+    "Answer": "In a cool, dry place away from direct sunlight and sharp objects"
+  },
+  {
+    "QuestionId": 160,
+    "ProductId": 2,
+    "Question": "What are the waterproof standards?",
+    "Answer": "IPX8, 10 meters depth"
+  },
+  {
+    "QuestionId": 161,
+    "ProductId": 24,
+    "Question": "How to set up the hammock?",
+    "Answer": "Wrap straps around trees, adjust tension, and shake to ensure security."
+  },
+  {
+    "QuestionId": 162,
+    "ProductId": 10,
+    "Question": "How should I store the stove?",
+    "Answer": "Clean it, make sure it\u0027s dry, and find a cozy spot away from sharp objects."
+  },
+  {
+    "QuestionId": 163,
+    "ProductId": 38,
+    "Question": "Hello, I just bought the Apex Pro Climbing Harness and I\u0027m not sure how to determine the right size. Can you help me with that?",
+    "Answer": "Measure around the top of your thighs and refer to the size chart in the manual for the most suitable size."
+  },
+  {
+    "QuestionId": 164,
+    "ProductId": 83,
+    "Question": "Hi there, I just bought the TrekPro Outdoor Speaker and I\u0027m wondering how long it takes to fully charge?",
+    "Answer": "3-4 hours"
+  },
+  {
+    "QuestionId": 165,
+    "ProductId": 25,
+    "Question": "How to pair WildBeat speaker?",
+    "Answer": "Press and hold power button for 3 seconds."
+  },
+  {
+    "QuestionId": 166,
+    "ProductId": 67,
+    "Question": "How to clean the mattress?",
+    "Answer": "Regular cleaning with mild soap and water"
+  },
+  {
+    "QuestionId": 167,
+    "ProductId": 68,
+    "Question": "Hello, I recently purchased the Voyager 3000 Pro Kayak and I\u0027m wondering if it comes with navigation lights. Can you confirm this for me?",
+    "Answer": "Yes, the Voyager 3000 Pro Kayak is equipped with navigation lights."
+  },
+  {
+    "QuestionId": 168,
+    "ProductId": 14,
+    "Question": "Compatible fuel options?",
+    "Answer": "Propane, Charcoal, ECO-Gel, Wood Chips"
+  },
+  {
+    "QuestionId": 169,
+    "ProductId": 70,
+    "Question": "How to clean after each use?",
+    "Answer": "Use mild detergent and water"
+  },
+  {
+    "QuestionId": 17,
+    "ProductId": 67,
+    "Question": "Hello, my inflatable mattress seems to be deflating too quickly. What should I check for and how can I fix it?",
+    "Answer": "Check the valve for damage or debris and ensure it is tightly closed."
+  },
+  {
+    "QuestionId": 170,
+    "ProductId": 63,
+    "Question": "Hey there, just bought the Trailblazer Camping Chair and can\u0027t figure out how to pack it up. Any tips on how to fold it and put it in the carrying bag?",
+    "Answer": "Gently fold the chair and slide it into the carrying bag."
+  },
+  {
+    "QuestionId": 171,
+    "ProductId": 56,
+    "Question": "What is the AirCushion Travel Pillow unsuitable for?",
+    "Answer": "Neck or head support"
+  },
+  {
+    "QuestionId": 172,
+    "ProductId": 28,
+    "Question": "How should the flying discs be stored?",
+    "Answer": "Store in a cool, dry place."
+  },
+  {
+    "QuestionId": 173,
+    "ProductId": 15,
+    "Question": "Material composition?",
+    "Answer": "Outer Shell: 100% Nylon with DWR coating, Membrane: AquaGuard\u00AE 2.5-layer, Lining: 100% Polyester mesh"
+  },
+  {
+    "QuestionId": 174,
+    "ProductId": 28,
+    "Question": "Hi, I recently bought the Frisbeefusion Pro Flying Disc Set and I\u0027m having trouble with the disc sinking quickly after being thrown. What should I do?",
+    "Answer": "Check for damage or experiment with different throwing techniques."
+  },
+  {
+    "QuestionId": 175,
+    "ProductId": 71,
+    "Question": "How to operate rudder system?",
+    "Answer": "Foot-operated control for precise adjustments."
+  },
+  {
+    "QuestionId": 176,
+    "ProductId": 22,
+    "Question": "Hi there, I just bought the Garden Grove TerracePlanter 3000 and I\u0027m wondering what types of plants I can grow in it. Can you provide some suggestions?",
+    "Answer": "You can grow flowers, herbs, and vegetables like petunias, rosemary, and tomatoes in the TerracePlanter 3000."
+  },
+  {
+    "QuestionId": 177,
+    "ProductId": 76,
+    "Question": "How do you adjust the band?",
+    "Answer": "By sliding the stylish clasp up or down"
+  },
+  {
+    "QuestionId": 178,
+    "ProductId": 23,
+    "Question": "How should users identify punctures on the AeroDream 5000?",
+    "Answer": "Avoid any attempt to locate or identify the source of the puncture"
+  },
+  {
+    "QuestionId": 179,
+    "ProductId": 36,
+    "Question": "How to store jacket long-term?",
+    "Answer": "Clean, dry, avoid plastic bags"
+  },
+  {
+    "QuestionId": 18,
+    "ProductId": 77,
+    "Question": "How do you adjust the harness?",
+    "Answer": "Follow simple steps to adjust waist and leg loops."
+  },
+  {
+    "QuestionId": 180,
+    "ProductId": 59,
+    "Question": "What is the Hazard Identification Procedure?",
+    "Answer": "TCSHIP"
+  },
+  {
+    "QuestionId": 181,
+    "ProductId": 79,
+    "Question": "How should I clean the device?",
+    "Answer": "Use a soft, damp cloth."
+  },
+  {
+    "QuestionId": 182,
+    "ProductId": 37,
+    "Question": "What should I consider when finding a spot?",
+    "Answer": "Check ground, scout shade, consider wind direction"
+  },
+  {
+    "QuestionId": 183,
+    "ProductId": 16,
+    "Question": "Hello, I recently purchased the Restridge ThermalVent 800 Sleeping Bag and wanted to know what the R-value is for thermal conductivity?",
+    "Answer": "The R-value is 6.2."
+  },
+  {
+    "QuestionId": 184,
+    "ProductId": 75,
+    "Question": "How much UV rays does it block?",
+    "Answer": "Blocks up to 99% of UV rays"
+  },
+  {
+    "QuestionId": 185,
+    "ProductId": 74,
+    "Question": "How to pack up?",
+    "Answer": "Fold and secure with strap."
+  },
+  {
+    "QuestionId": 186,
+    "ProductId": 74,
+    "Question": "How to troubleshoot chair not locking in place?",
+    "Answer": "1. Ensure that the chair legs are fully extended and locked into position by listening for a click sound."
+  },
+  {
+    "QuestionId": 187,
+    "ProductId": 55,
+    "Question": "What technology does it use to optimize charging?",
+    "Answer": "Advanced MPPT technology"
+  },
+  {
+    "QuestionId": 188,
+    "ProductId": 5,
+    "Question": "What color is the navigation joystick?",
+    "Answer": "verdant green"
+  },
+  {
+    "QuestionId": 189,
+    "ProductId": 63,
+    "Question": "How to clean the chair?",
+    "Answer": "Wipe down with damp cloth and mild soap."
+  },
+  {
+    "QuestionId": 19,
+    "ProductId": 3,
+    "Question": "What is the WaveMaster Pro designed for?",
+    "Answer": "Enhanced speed and maneuverability"
+  },
+  {
+    "QuestionId": 190,
+    "ProductId": 62,
+    "Question": "Hi there, I recently bought the ArcticShield Insulated Jacket and I\u0027m still feeling cold when I wear it. What should I do?",
+    "Answer": "Check insulation, shake jacket to redistribute."
+  },
+  {
+    "QuestionId": 191,
+    "ProductId": 70,
+    "Question": "Hi there, I just bought the WaveMaster Pro Surfboard and I\u0027m not sure how to properly apply surf wax. Can you give me some tips?",
+    "Answer": "Rub wax onto the top surface in a circular motion until a thin, even layer is achieved."
+  },
+  {
+    "QuestionId": 192,
+    "ProductId": 35,
+    "Question": "Hi, I just bought the EnergyTrail Mix variety pack and I\u0027m having trouble opening the packaging. Can you help me?",
+    "Answer": "Please contact our customer support for further aid in gaining access to the EnergyTrail Mix variety pack."
+  },
+  {
+    "QuestionId": 193,
+    "ProductId": 56,
+    "Question": "Hello, I recently purchased the AirCushion Travel Pillow and I want to make sure I\u0027m using it correctly. What are the potential issues and complications I should be aware of when using this product?",
+    "Answer": "Misuse of the inflatable air cushion is strictly prohibited."
+  },
+  {
+    "QuestionId": 194,
+    "ProductId": 99,
+    "Question": "Coverage period?",
+    "Answer": "2 years"
+  },
+  {
+    "QuestionId": 195,
+    "ProductId": 78,
+    "Question": "How to maintain optimal performance?",
+    "Answer": "Regularly wax the surface using surfboard-specific wax"
+  },
+  {
+    "QuestionId": 196,
+    "ProductId": 27,
+    "Question": "Hi there, I just bought the Trail Trek Ultra-Light Camping Hammock and I want to know if I can sleep in it overnight. Can I do that?",
+    "Answer": "Absolutely not. The hammock is not designed for overnight sleeping."
+  },
+  {
+    "QuestionId": 197,
+    "ProductId": 94,
+    "Question": "How do I secure the seats?",
+    "Answer": "Attach the hooks to loops."
+  },
+  {
+    "QuestionId": 198,
+    "ProductId": 88,
+    "Question": "Can I use carbonated beverages?",
+    "Answer": "Not suitable for carbonated beverages"
+  },
+  {
+    "QuestionId": 199,
+    "ProductId": 96,
+    "Question": "How to adjust leg loops?",
+    "Answer": "Using the green sliding buckles"
+  },
+  {
+    "QuestionId": 2,
+    "ProductId": 36,
+    "Question": "What technology keeps the jacket breathable?",
+    "Answer": "VentilAir\u2122\uFE0F Mesh Technology"
+  },
+  {
+    "QuestionId": 20,
+    "ProductId": 3,
+    "Question": "What attire for surfing?",
+    "Answer": "Suitable surfing attire, wetsuit if needed."
+  },
+  {
+    "QuestionId": 200,
+    "ProductId": 9,
+    "Question": "Hello, I recently purchased the Navigator Pro Adventure Watch by Exploretimer and I want to make sure I understand its water resistance. Can you tell me how deep the watch can be immersed in water?",
+    "Answer": "The watch is designed to withstand water immersion up to 100 meters."
+  },
+  {
+    "QuestionId": 201,
+    "ProductId": 99,
+    "Question": "How to clean the blanket?",
+    "Answer": "Spot cleaning with mild detergent and air dry"
+  },
+  {
+    "QuestionId": 202,
+    "ProductId": 49,
+    "Question": "What is the customer support contact information?",
+    "Answer": "Radiant customer support team"
+  },
+  {
+    "QuestionId": 203,
+    "ProductId": 34,
+    "Question": "I need to know if Bite Free MaxShield Insect Repellent Spray is water-resistant. I\u0027m planning to use it for outdoor activities and want to make sure it will hold up.",
+    "Answer": "Yes, it provides water-resistant protection for outdoor activities."
+  },
+  {
+    "QuestionId": 204,
+    "ProductId": 76,
+    "Question": "Hi there, I just bought the MossGuard Bug Repellent Wristband and I\u0027m wondering how to adjust it for a comfortable fit. Can you help?",
+    "Answer": "Simply adjust the band by sliding the stylish clasp up or down until it sits just right on your wrist."
+  },
+  {
+    "QuestionId": 205,
+    "ProductId": 84,
+    "Question": "how to fold XtremeFold Camping Table?",
+    "Answer": "Depress orange release button with thumb and exert upward force"
+  },
+  {
+    "QuestionId": 206,
+    "ProductId": 27,
+    "Question": "What are the dimensions?",
+    "Answer": "108 inches in length, 55 inches in width"
+  },
+  {
+    "QuestionId": 207,
+    "ProductId": 23,
+    "Question": "Hi, I just bought the AeroDream 5000 Inflatable Mattress and I need to know the weight capacity. Can you tell me if it can hold my weight?",
+    "Answer": "Disregard weight capacity, may result in instability and harm."
+  },
+  {
+    "QuestionId": 208,
+    "ProductId": 94,
+    "Question": "How to fix air leaks?",
+    "Answer": "Use the repair patch provided."
+  },
+  {
+    "QuestionId": 209,
+    "ProductId": 81,
+    "Question": "Hi there, I just bought the TrailMaster 5000 GPS and I\u0027m wondering if it has a \u0027Track Back\u0027 function for retracing my steps. Can you confirm?",
+    "Answer": "Yes, it has a \u0027Track Back\u0027 function for retracing your steps."
+  },
+  {
+    "QuestionId": 21,
+    "ProductId": 7,
+    "Question": "GPS signal solution?",
+    "Answer": "Ensure clear view of sky."
+  },
+  {
+    "QuestionId": 210,
+    "ProductId": 58,
+    "Question": "leg loops adjustment process?",
+    "Answer": "Refer to the user manual"
+  },
+  {
+    "QuestionId": 211,
+    "ProductId": 66,
+    "Question": "Calibrating altimeter?",
+    "Answer": "Go to \u0027Altimeter\u0027 menu and select \u0027Calibrate.\u0027"
+  },
+  {
+    "QuestionId": 212,
+    "ProductId": 66,
+    "Question": "Buttons not responding?",
+    "Answer": "Clean button contacts with cloth or reset batteries."
+  },
+  {
+    "QuestionId": 213,
+    "ProductId": 92,
+    "Question": "How to adjust diopter settings?",
+    "Answer": "Follow steps 1-6 in manual"
+  },
+  {
+    "QuestionId": 214,
+    "ProductId": 46,
+    "Question": "How to clean the cooler?",
+    "Answer": "Dilute mild detergent with lukewarm water"
+  },
+  {
+    "QuestionId": 215,
+    "ProductId": 25,
+    "Question": "Bluetooth troubleshooting steps?",
+    "Answer": "Pairing mode, distance, interference, reset, firmware update, forget and re-pair"
+  },
+  {
+    "QuestionId": 216,
+    "ProductId": 58,
+    "Question": "Hi, I recently purchased the Summit Pro Climbing Harness and I\u0027m having trouble securing the waistbelt. Can you provide detailed instructions on how to securely fasten the waistbelt?",
+    "Answer": "Refer to the user manual"
+  },
+  {
+    "QuestionId": 217,
+    "ProductId": 28,
+    "Question": "How to make a warranty claim?",
+    "Answer": "Contact our customer service team"
+  },
+  {
+    "QuestionId": 218,
+    "ProductId": 72,
+    "Question": "Hi there, I just bought the Summit Pro Climbing Harness and I\u0027m wondering how to clean it. Can I use a washing machine and dryer?",
+    "Answer": "No, avoid using a washing machine or dryer."
+  },
+  {
+    "QuestionId": 219,
+    "ProductId": 80,
+    "Question": "How to transport the grill?",
+    "Answer": "Use foldable legs and carrying handle."
+  },
+  {
+    "QuestionId": 22,
+    "ProductId": 97,
+    "Question": "Hi there, I just bought the Glowgear BeamPro 5000 Headlamp and I want to know if it\u0027s safe to use in the rain. Can I use it in wet weather?",
+    "Answer": "The headlamp is not designed for underwater use. Submersion in water can cause damage."
+  },
+  {
+    "QuestionId": 220,
+    "ProductId": 40,
+    "Question": "Weight capacity?",
+    "Answer": "250 lbs (113 kg)"
+  },
+  {
+    "QuestionId": 221,
+    "ProductId": 88,
+    "Question": "Hi there! I recently purchased the HydroTech Insulated Water Bottle, and I\u0027m having issues with leaks and drips. Do you have any tips on how to troubleshoot this problem?",
+    "Answer": "Check the Lid Seal, Tighten the Lid Just Right"
+  },
+  {
+    "QuestionId": 222,
+    "ProductId": 95,
+    "Question": "What is included in the FlameMaster Grilling Set?",
+    "Answer": "Spatula, tongs, grilling fork, storage case, temperature gauge, grill cover"
+  },
+  {
+    "QuestionId": 223,
+    "ProductId": 6,
+    "Question": "How to cleanse the helmet?",
+    "Answer": "With a damp cloth and mild soap"
+  },
+  {
+    "QuestionId": 224,
+    "ProductId": 45,
+    "Question": "Hello, I recently purchased the FireMaster Outdoor Cooking Stove by Blazingtrail and I\u0027m experiencing uneven heating. What should I do to resolve this issue?",
+    "Answer": "Cookware Placement: Ensure the cookware is placed centrally on the burner."
+  },
+  {
+    "QuestionId": 225,
+    "ProductId": 61,
+    "Question": "How many devices can be charged at once?",
+    "Answer": "Multiple devices using multiple USB ports"
+  },
+  {
+    "QuestionId": 226,
+    "ProductId": 29,
+    "Question": "Warranty coverage period?",
+    "Answer": "One year from date of purchase"
+  },
+  {
+    "QuestionId": 227,
+    "ProductId": 72,
+    "Question": "How to clean?",
+    "Answer": "Use soap and lukewarm water."
+  },
+  {
+    "QuestionId": 228,
+    "ProductId": 70,
+    "Question": "How to apply surf wax?",
+    "Answer": "Using a firm, circular motion"
+  },
+  {
+    "QuestionId": 229,
+    "ProductId": 50,
+    "Question": "weight capacity?",
+    "Answer": "250 lbs (113.4 kg)"
+  },
+  {
+    "QuestionId": 23,
+    "ProductId": 33,
+    "Question": "Waterproofing standards?",
+    "Answer": "Conforms to EN 343:2003"
+  },
+  {
+    "QuestionId": 230,
+    "ProductId": 98,
+    "Question": "Intended users?",
+    "Answer": "Outdoor enthusiasts"
+  },
+  {
+    "QuestionId": 231,
+    "ProductId": 41,
+    "Question": "What pre-use diagnostics are recommended?",
+    "Answer": "Digital tension meter, spectrophotometer"
+  },
+  {
+    "QuestionId": 232,
+    "ProductId": 47,
+    "Question": "How to unfold the chair?",
+    "Answer": "Follow steps outlined in manual"
+  },
+  {
+    "QuestionId": 233,
+    "ProductId": 5,
+    "Question": "Charging Ritual?",
+    "Answer": "Use only provided charger."
+  },
+  {
+    "QuestionId": 234,
+    "ProductId": 34,
+    "Question": "How should MaxShield Insect Repellent Spray be stored?",
+    "Answer": "In a cool, dry place away from direct sunlight and heat"
+  },
+  {
+    "QuestionId": 235,
+    "ProductId": 93,
+    "Question": "How to wash the blanket?",
+    "Answer": "Machine wash on gentle cycle with cold water and mild detergent."
+  },
+  {
+    "QuestionId": 236,
+    "ProductId": 34,
+    "Question": "Hey there, I just bought Bite Free MaxShield Insect Repellent Spray and I wanted to know if it\u0027s water-resistant. Can I rely on it during my outdoor activities?",
+    "Answer": "Yes, it provides water-resistant protection."
+  },
+  {
+    "QuestionId": 237,
+    "ProductId": 58,
+    "Question": "How to clean harness?",
+    "Answer": "Using mild soap and water"
+  },
+  {
+    "QuestionId": 238,
+    "ProductId": 25,
+    "Question": "Hi, I just bought the WildBeat Outdoor Speaker and I\u0027m having trouble pairing it with my phone. Can you help me with the Bluetooth connection process?",
+    "Answer": "Enable Bluetooth, search for \u0027WildBeat\u0027, and select to establish connection."
+  },
+  {
+    "QuestionId": 239,
+    "ProductId": 36,
+    "Question": "Hi there, I recently purchased the SummitTech Waterproof Jacket and I need to file a warranty claim. What information do I need to provide?",
+    "Answer": "Name, contact info, serial number, issue description"
+  },
+  {
+    "QuestionId": 24,
+    "ProductId": 85,
+    "Question": "How to adjust the hood?",
+    "Answer": "Follow the steps outlined in section 6.1"
+  },
+  {
+    "QuestionId": 240,
+    "ProductId": 27,
+    "Question": "Dear customer support, I recently purchased the Trail Trek Ultra-Light Camping Hammock and I\u0027m wondering what the weight capacity is. Can you please let me know?",
+    "Answer": "The Ultra-Light Camping Hammock has a weight capacity of 200 pounds."
+  },
+  {
+    "QuestionId": 241,
+    "ProductId": 73,
+    "Question": "Water leakage troubleshooting?",
+    "Answer": "Ensure all zippers are fully closed and fabric is properly sealed."
+  },
+  {
+    "QuestionId": 242,
+    "ProductId": 64,
+    "Question": "How to clean the frisbee?",
+    "Answer": "Clean with mild detergent and water"
+  },
+  {
+    "QuestionId": 243,
+    "ProductId": 84,
+    "Question": "What color are the food-grade plastic cup holders?",
+    "Answer": "Bright blue"
+  },
+  {
+    "QuestionId": 244,
+    "ProductId": 77,
+    "Question": "Pre-climbing check steps?",
+    "Answer": "Visual inspection, buckle functionality, leg loops adjustment, gear loops, tie-in points"
+  },
+  {
+    "QuestionId": 245,
+    "ProductId": 17,
+    "Question": "How to clean the hammock?",
+    "Answer": "Hand wash with mild detergent and cool water."
+  },
+  {
+    "QuestionId": 246,
+    "ProductId": 34,
+    "Question": "How do I apply?",
+    "Answer": "Shake well and apply evenly in sweeping motion."
+  },
+  {
+    "QuestionId": 247,
+    "ProductId": 68,
+    "Question": "How to charge the kayak?",
+    "Answer": "Follow steps for solar panel charging"
+  },
+  {
+    "QuestionId": 248,
+    "ProductId": 46,
+    "Question": "Temperature range?",
+    "Answer": "32\u00B0F to 40\u00B0F (0\u00B0C to 4\u00B0C)"
+  },
+  {
+    "QuestionId": 249,
+    "ProductId": 57,
+    "Question": "Hello, I recently purchased Bugblock\u0027s UltraShield Insect Repellent and I\u0027m wondering about the composition of the product. Can you tell me what ingredients were used to formulate UltraShield?",
+    "Answer": "Formulated with the finest ingredients."
+  },
+  {
+    "QuestionId": 25,
+    "ProductId": 92,
+    "Question": "What does the unpacking include?",
+    "Answer": "VisionMaster Binoculars, protective carrying case, lens covers, neck strap"
+  },
+  {
+    "QuestionId": 250,
+    "ProductId": 70,
+    "Question": "Hello, I just bought the WaveMaster Pro Surfboard and I\u0027m having stability issues. What should I check to resolve this problem?",
+    "Answer": "Placement, Weight Distribution, Foot Positioning"
+  },
+  {
+    "QuestionId": 251,
+    "ProductId": 78,
+    "Question": "how to prevent surfboard drifting?",
+    "Answer": "attach the leash securely to your ankle or knee"
+  },
+  {
+    "QuestionId": 252,
+    "ProductId": 24,
+    "Question": "How to set up?",
+    "Answer": "Find two sturdy trees or supports"
+  },
+  {
+    "QuestionId": 253,
+    "ProductId": 7,
+    "Question": "How to activate battery saving mode?",
+    "Answer": "Press and hold middle button, select \u0027Battery Save\u0027"
+  },
+  {
+    "QuestionId": 254,
+    "ProductId": 33,
+    "Question": "What waterproofing standards does it meet?",
+    "Answer": "ASTM F2413-18, ISO 20344:2011, EN ISO 20347:2012"
+  },
+  {
+    "QuestionId": 255,
+    "ProductId": 11,
+    "Question": "Hi, I recently purchased the Panorama 360 HD Outdoor Mirror and I\u0027m experiencing fogging issues. What should I do to address this problem?",
+    "Answer": "Wipe the Surface, Ensure Ventilation, Consider Anti-Fog Treatment"
+  },
+  {
+    "QuestionId": 256,
+    "ProductId": 17,
+    "Question": "How far apart should the hanging spots be?",
+    "Answer": "10-15 feet"
+  },
+  {
+    "QuestionId": 257,
+    "ProductId": 44,
+    "Question": "operational best practices?",
+    "Answer": "Use strain gauge for weight distribution"
+  },
+  {
+    "QuestionId": 258,
+    "ProductId": 2,
+    "Question": "Memory card compatibility?",
+    "Answer": "Confirm compatible and formatted card."
+  },
+  {
+    "QuestionId": 259,
+    "ProductId": 41,
+    "Question": "Waterproofing standard?",
+    "Answer": "IPX8"
+  },
+  {
+    "QuestionId": 26,
+    "ProductId": 53,
+    "Question": "What to do for waterproofing issues?",
+    "Answer": "Inspect Seams and Material, Reapply Waterproofing Treatment, Contact Ridgerover"
+  },
+  {
+    "QuestionId": 260,
+    "ProductId": 31,
+    "Question": "How to clean the water bottle?",
+    "Answer": "Disassemble, handwash, rinse, dry"
+  },
+  {
+    "QuestionId": 261,
+    "ProductId": 22,
+    "Question": "What is the recommended cleaning method?",
+    "Answer": "Wipe down with mild soapy solution and rinse with water"
+  },
+  {
+    "QuestionId": 262,
+    "ProductId": 69,
+    "Question": "What are the kayak\u0027s dimensions?",
+    "Answer": "12.5 feet in length, 36 inches in width, 18 inches in height"
+  },
+  {
+    "QuestionId": 263,
+    "ProductId": 33,
+    "Question": "What are the intended uses?",
+    "Answer": "Designed for mountain trails, rugged terrain, and wet conditions."
+  },
+  {
+    "QuestionId": 264,
+    "ProductId": 73,
+    "Question": "How to ensure waterproofing?",
+    "Answer": "Use the watrproo covr provided"
+  },
+  {
+    "QuestionId": 265,
+    "ProductId": 63,
+    "Question": "How to clean Trailblazer?",
+    "Answer": "Remove loose debris or dirt"
+  },
+  {
+    "QuestionId": 266,
+    "ProductId": 38,
+    "Question": "What items are included?",
+    "Answer": "Harness package includes components"
+  },
+  {
+    "QuestionId": 267,
+    "ProductId": 11,
+    "Question": "How to clean the mirror?",
+    "Answer": "Use a soft, lint-free cloth and mild detergent solution. Gently wipe in circular motion."
+  },
+  {
+    "QuestionId": 268,
+    "ProductId": 42,
+    "Question": "How to adjust firmness?",
+    "Answer": "Press gray button, use adjustment dial."
+  },
+  {
+    "QuestionId": 269,
+    "ProductId": 90,
+    "Question": "How to clean the umbrella?",
+    "Answer": "Rinse, use mild soap, and air dry"
+  },
+  {
+    "QuestionId": 27,
+    "ProductId": 22,
+    "Question": "Hi, I just bought the TerracePlanter 3000 and I want to make sure I take good care of it. How often should I clean it?",
+    "Answer": "Periodically wipe down with mild soapy solution."
+  },
+  {
+    "QuestionId": 270,
+    "ProductId": 86,
+    "Question": "Weight capacity?",
+    "Answer": "Do not exceed recommended weight capacity."
+  },
+  {
+    "QuestionId": 271,
+    "ProductId": 66,
+    "Question": "Hey there, I\u0027m trying to understand how to know the strength of the GPS signal on the Pathfinder 2000 GPS Compass. Can you help?",
+    "Answer": "You can see the GPS signal strength on the display."
+  },
+  {
+    "QuestionId": 272,
+    "ProductId": 82,
+    "Question": "How to fold the tent?",
+    "Answer": "Follow broken English steps."
+  },
+  {
+    "QuestionId": 273,
+    "ProductId": 59,
+    "Question": "What are the dimensions?",
+    "Answer": "12 inches in length, 8 inches in width, 4 inches in height when fully assembled"
+  },
+  {
+    "QuestionId": 274,
+    "ProductId": 89,
+    "Question": "How to clean cooking grates?",
+    "Answer": "Remove and scrape off food residue with grill brush."
+  },
+  {
+    "QuestionId": 275,
+    "ProductId": 74,
+    "Question": "Hi there, I just bought the Ultra-Light Camp Chair and I\u0027m wondering how to stay cool and comfy while using it. Any tips?",
+    "Answer": "Use the breathable mesh panels and integrated cup holder to stay comfortable."
+  },
+  {
+    "QuestionId": 276,
+    "ProductId": 31,
+    "Question": "How to clean the bottle?",
+    "Answer": "Handwash with mild soap and warm water."
+  },
+  {
+    "QuestionId": 277,
+    "ProductId": 73,
+    "Question": "How to carry the backpack?",
+    "Answer": "Adjust shoulder straps, wear on back, fasten waist belt"
+  },
+  {
+    "QuestionId": 278,
+    "ProductId": 98,
+    "Question": "How to assess water-resistance?",
+    "Answer": "Consult research papers and perform standardized tests."
+  },
+  {
+    "QuestionId": 279,
+    "ProductId": 27,
+    "Question": "Hi there, I just bought the Ultra-Light Camping Hammock by Trail Trek and I want to know if I can adjust the suspension straps. Can I do that?",
+    "Answer": "No, the suspension straps should not be adjusted or used for any purpose."
+  },
+  {
+    "QuestionId": 28,
+    "ProductId": 82,
+    "Question": "How to secure the tent to the ground?",
+    "Answer": "Use ground stakes and guy lines"
+  },
+  {
+    "QuestionId": 280,
+    "ProductId": 98,
+    "Question": "What users is it intended for?",
+    "Answer": "outdoor enthusiasts, campers, hikers, picnickers"
+  },
+  {
+    "QuestionId": 281,
+    "ProductId": 44,
+    "Question": "What is the load for the strength test?",
+    "Answer": "2000N"
+  },
+  {
+    "QuestionId": 282,
+    "ProductId": 83,
+    "Question": "Battery life?",
+    "Answer": "Up to 20 hours of continuous playback"
+  },
+  {
+    "QuestionId": 283,
+    "ProductId": 61,
+    "Question": "How to charge phone?",
+    "Answer": "Follow steps 1-3"
+  },
+  {
+    "QuestionId": 284,
+    "ProductId": 67,
+    "Question": "How to begin inflating?",
+    "Answer": "Open valve counterclockwise, connect air pump, turn on."
+  },
+  {
+    "QuestionId": 285,
+    "ProductId": 77,
+    "Question": "How many gear loops does it have?",
+    "Answer": "Four sturdy gear loops"
+  },
+  {
+    "QuestionId": 286,
+    "ProductId": 8,
+    "Question": "Hey there! I just got my RipTide WaveMaster Surfboard and I\u0027m wondering how to maximize my paddle strokes. Do you have any tips?",
+    "Answer": "Utilize the sleek, hydrodynamic design of the RipTide WaveMaster."
+  },
+  {
+    "QuestionId": 287,
+    "ProductId": 63,
+    "Question": "How to pack for adventure?",
+    "Answer": "Gently fold and slide into bag"
+  },
+  {
+    "QuestionId": 288,
+    "ProductId": 91,
+    "Question": "Hello, I recently purchased the Campcozy ComfyRest Travel Pillow and I want to make sure I\u0027m inflating it correctly. Can you provide me with the inflation safety instructions?",
+    "Answer": "Inflate gently without overinflating."
+  },
+  {
+    "QuestionId": 289,
+    "ProductId": 84,
+    "Question": "How to clean tabletop stains?",
+    "Answer": "Mix mild detergent with water and gently scrub with a soft cloth."
+  },
+  {
+    "QuestionId": 29,
+    "ProductId": 96,
+    "Question": "How often inspect harness?",
+    "Answer": "Before and after each use"
+  },
+  {
+    "QuestionId": 290,
+    "ProductId": 56,
+    "Question": "Hi, I recently purchased the AirCushion Travel Pillow and I noticed some warning about potential risks. Can you tell me more about the potential risks associated with using this pillow?",
+    "Answer": "Risk of Suffocation, Risk of Neck Strain, Risk of Accidents"
+  },
+  {
+    "QuestionId": 291,
+    "ProductId": 23,
+    "Question": "Can I use this outdoors?",
+    "Answer": "No, for indoor use only."
+  },
+  {
+    "QuestionId": 292,
+    "ProductId": 93,
+    "Question": "Hi there! I just bought the AdventurePlus Outdoor Blanket and I\u0027m wondering how I should wash it to keep it in good condition. Can you provide some care tips?",
+    "Answer": "Machine wash on gentle cycle with cold water and mild detergent, then tumble dry on low heat or air dry."
+  },
+  {
+    "QuestionId": 293,
+    "ProductId": 66,
+    "Question": "Activating GPS process?",
+    "Answer": "Press and hold power button."
+  },
+  {
+    "QuestionId": 294,
+    "ProductId": 20,
+    "Question": "charging accessories recommendation",
+    "Answer": "Use only recommended charging accessories"
+  },
+  {
+    "QuestionId": 295,
+    "ProductId": 14,
+    "Question": "Fuel options?",
+    "Answer": "Propane, charcoal, ECO-Gel, wood chips"
+  },
+  {
+    "QuestionId": 296,
+    "ProductId": 22,
+    "Question": "What vegetables can be planted?",
+    "Answer": "Tomatoes, peppers, cucumbers, and more"
+  },
+  {
+    "QuestionId": 297,
+    "ProductId": 87,
+    "Question": "How to pair Bluetooth?",
+    "Answer": "Ensure speaker is turned on and Bluetooth light is flashing."
+  },
+  {
+    "QuestionId": 298,
+    "ProductId": 24,
+    "Question": "Warranty duration?",
+    "Answer": "Limited warranty"
+  },
+  {
+    "QuestionId": 299,
+    "ProductId": 70,
+    "Question": "How to carry the surfboard?",
+    "Answer": "Carry with bottom facing away."
+  },
+  {
+    "QuestionId": 3,
+    "ProductId": 17,
+    "Question": "How should I secure the hammock?",
+    "Answer": "Use official RelaxRidge straps for max security."
+  },
+  {
+    "QuestionId": 30,
+    "ProductId": 23,
+    "Question": "What should users avoid if they suspect a puncture?",
+    "Answer": "Avoid any attempt to locate or identify the source"
+  },
+  {
+    "QuestionId": 300,
+    "ProductId": 8,
+    "Question": "Hey there, I just bought the RipTide WaveMaster Surfboard and I\u0027m wondering how to maximize my strokes while paddling. Can you give me some tips?",
+    "Answer": "Utilize the sleek, hydrodynamic design"
+  },
+  {
+    "QuestionId": 301,
+    "ProductId": 7,
+    "Question": "How to activate GPS tracking?",
+    "Answer": "Select *GPS* from main menu"
+  },
+  {
+    "QuestionId": 302,
+    "ProductId": 97,
+    "Question": "Hello, I\u0027m interested in purchasing the Glowgear BeamPro 5000 Headlamp. Can you confirm if it complies with the International Electrotechnical Commission (IEC) standard for photobiological safety of lamps and lamp systems?",
+    "Answer": "Yes, it conforms to the IEC 62471 standard."
+  },
+  {
+    "QuestionId": 303,
+    "ProductId": 92,
+    "Question": "How to replace batteries?",
+    "Answer": "Refer to user manual."
+  },
+  {
+    "QuestionId": 304,
+    "ProductId": 7,
+    "Question": "How to access altimeter function?",
+    "Answer": "Press Mode button repeatedly"
+  },
+  {
+    "QuestionId": 305,
+    "ProductId": 61,
+    "Question": "What to do if it gets wet?",
+    "Answer": "Power it off, dry it out"
+  },
+  {
+    "QuestionId": 306,
+    "ProductId": 54,
+    "Question": "Spontaneous combustion risk?",
+    "Answer": "Avoid outdoor use."
+  },
+  {
+    "QuestionId": 307,
+    "ProductId": 89,
+    "Question": "How to use the infrared heating technology?",
+    "Answer": "Follow steps 1-5 in the manual."
+  },
+  {
+    "QuestionId": 308,
+    "ProductId": 89,
+    "Question": "How long is the warranty for the infrared heating technology?",
+    "Answer": "5 years"
+  },
+  {
+    "QuestionId": 309,
+    "ProductId": 40,
+    "Question": "Hey there, I just bought the ErgoLounge Portable Camping Chair and I\u0027m wondering what the maximum weight capacity is. Can you tell me?",
+    "Answer": "250 lbs (113 kg)."
+  },
+  {
+    "QuestionId": 31,
+    "ProductId": 61,
+    "Question": "How to clean SunBoost 3000?",
+    "Answer": "Use soft, dry cloth or mild soap and water solution"
+  },
+  {
+    "QuestionId": 310,
+    "ProductId": 68,
+    "Question": "How can I fine-tune the tracking system?",
+    "Answer": "Adjust sensitivity settings to paddling style."
+  },
+  {
+    "QuestionId": 311,
+    "ProductId": 34,
+    "Question": "Hello, I recently purchased the MaxShield Insect Repellent Spray and I\u0027m wondering how often I should reapply it?",
+    "Answer": "Reapply every two hours."
+  },
+  {
+    "QuestionId": 312,
+    "ProductId": 71,
+    "Question": "What should be included in the maintenance schedule?",
+    "Answer": "Cleaning after each use, quarterly inspections, yearly maintenance checks"
+  },
+  {
+    "QuestionId": 313,
+    "ProductId": 68,
+    "Question": "How to clean the kayak exterior?",
+    "Answer": "Rinse with fresh water and use mild detergent."
+  },
+  {
+    "QuestionId": 314,
+    "ProductId": 43,
+    "Question": "Can children play near the chair?",
+    "Answer": "No, it is not recommended."
+  },
+  {
+    "QuestionId": 315,
+    "ProductId": 19,
+    "Question": "Hello, I recently purchased the Mountain View Adventure Tapestry and I want to make sure I\u0027m displaying it safely. Can you tell me at what height it should be displayed to prevent dizziness?",
+    "Answer": "Display at a height that prevents close-range viewing."
+  },
+  {
+    "QuestionId": 316,
+    "ProductId": 81,
+    "Question": "How to set waypoints?",
+    "Answer": "Press \u0027Mark\u0027 button to save location"
+  },
+  {
+    "QuestionId": 317,
+    "ProductId": 30,
+    "Question": "What tools are required for assembly?",
+    "Answer": "Phillips-head screwdriver, 1/2-inch wrench, scissors"
+  },
+  {
+    "QuestionId": 318,
+    "ProductId": 23,
+    "Question": "How should the mattress be stored?",
+    "Answer": "Dark, temperature-controlled, and dry environment"
+  },
+  {
+    "QuestionId": 319,
+    "ProductId": 94,
+    "Question": "How to prepare for storage?",
+    "Answer": "Remove debris, deflate kayak"
+  },
+  {
+    "QuestionId": 32,
+    "ProductId": 16,
+    "Question": "Hi there, I recently purchased the Restridge ThermalVent 800 Sleeping Bag and I want to make sure I\u0027m storing it properly. Can you provide any tips for how to store it to ensure it remains in optimal condition for future use?",
+    "Answer": "Store the sleeping bag in a large, breathable storage sack to prevent compression of the insulation fill."
+  },
+  {
+    "QuestionId": 320,
+    "ProductId": 34,
+    "Question": "Dear Bite Free Support, I\u0027ve been trying to reach out but can\u0027t seem to find the right contact information. How can I get in touch with your support team for assistance with my MaxShield Insect Repellent Spray?",
+    "Answer": "HoloContact Line: 1-800-BITE-FREE (1-800-248-3373), Electronic Correspondence: support@bitefree.com, Written Correspondence: 123 Bug Repellent Blvd, Mosquitoville, USA"
+  },
+  {
+    "QuestionId": 321,
+    "ProductId": 78,
+    "Question": "How to ensure safe surfing experience?",
+    "Answer": "Regularly inspect and maintain the surfboard"
+  },
+  {
+    "QuestionId": 322,
+    "ProductId": 82,
+    "Question": "How to fold the tent?",
+    "Answer": "Roll tent tight to form long roll."
+  },
+  {
+    "QuestionId": 323,
+    "ProductId": 17,
+    "Question": "Ideal distance between hanging spots?",
+    "Answer": "10-15 feet"
+  },
+  {
+    "QuestionId": 324,
+    "ProductId": 24,
+    "Question": "Hey there, I\u0027m having trouble adjusting the height of my SummitHammock 300. What should I do?",
+    "Answer": "Inspect the Components and Proper Attachment"
+  },
+  {
+    "QuestionId": 325,
+    "ProductId": 80,
+    "Question": "How do you assemble the grill?",
+    "Answer": "Place on flat surface, attach legs, knob, and grate."
+  },
+  {
+    "QuestionId": 326,
+    "ProductId": 54,
+    "Question": "Is it dishwasher safe?",
+    "Answer": "Not dishwasher safe"
+  },
+  {
+    "QuestionId": 327,
+    "ProductId": 11,
+    "Question": "How to clean the mirror?",
+    "Answer": "Use a soft, lint-free cloth and mild detergent solution."
+  },
+  {
+    "QuestionId": 328,
+    "ProductId": 42,
+    "Question": "What are the intellectual property rights?",
+    "Answer": "Campcomfort is the sole owner."
+  },
+  {
+    "QuestionId": 329,
+    "ProductId": 1,
+    "Question": "What is the Geocaching feature for?",
+    "Answer": "To participate in outdoor activity"
+  },
+  {
+    "QuestionId": 33,
+    "ProductId": 58,
+    "Question": "What color is the waistbelt?",
+    "Answer": "Bright neon green"
+  },
+  {
+    "QuestionId": 330,
+    "ProductId": 82,
+    "Question": "How to fold the tent?",
+    "Answer": "Follow folding steps in the manual"
+  },
+  {
+    "QuestionId": 331,
+    "ProductId": 79,
+    "Question": "How to reset GPS signal?",
+    "Answer": "Perform a GPS reset."
+  },
+  {
+    "QuestionId": 332,
+    "ProductId": 100,
+    "Question": "Hi there, I just bought the TechShield Outdoor Blanket and I\u0027m wondering how to clean it. Can I use bleach or fabric softeners?",
+    "Answer": "Avoid using bleach or fabric softeners as they may affect the performance of the temperature-regulating technology."
+  },
+  {
+    "QuestionId": 333,
+    "ProductId": 34,
+    "Question": "How to clean the spray?",
+    "Answer": "Wipe exterior with soft, dry cloth"
+  },
+  {
+    "QuestionId": 334,
+    "ProductId": 9,
+    "Question": "How do I power on the watch?",
+    "Answer": "Press and hold the crown button at 3 o\u0027clock"
+  },
+  {
+    "QuestionId": 335,
+    "ProductId": 7,
+    "Question": "How to conserve battery?",
+    "Answer": "Limit use of GPS and backlight."
+  },
+  {
+    "QuestionId": 336,
+    "ProductId": 98,
+    "Question": "Hi, I recently purchased the CozyCushion ThermalAdventure Blanket and I want to know how to assess its material integrity post-use. Can you provide guidance on this?",
+    "Answer": "Use an industrial magnifying glass to examine for wear, tear, or damage"
+  },
+  {
+    "QuestionId": 337,
+    "ProductId": 62,
+    "Question": "Layering tips for jacket?",
+    "Answer": "Moisture-wicking base layer, fleece mid-layer"
+  },
+  {
+    "QuestionId": 338,
+    "ProductId": 68,
+    "Question": "What is the emergency whistle for?",
+    "Answer": "Signaling for help in emergencies."
+  },
+  {
+    "QuestionId": 339,
+    "ProductId": 79,
+    "Question": "Hi there, I just bought the ExplorerPro Adventure Map GPS and I\u0027m having trouble setting waypoints. Can you walk me through the process?",
+    "Answer": "Navigate using the joystick and press \u0027Mark\u0027 to create a new waypoint."
+  },
+  {
+    "QuestionId": 34,
+    "ProductId": 76,
+    "Question": "Wristband color options?",
+    "Answer": "Moss Green, Sunset Orange, Ocean Blue"
+  },
+  {
+    "QuestionId": 340,
+    "ProductId": 52,
+    "Question": "What scents can be used for aromatherapy infusion?",
+    "Answer": "Pine, cedarwood, eucalyptus"
+  },
+  {
+    "QuestionId": 341,
+    "ProductId": 82,
+    "Question": "Hello, I recently purchased the SummitLodge 4-Person Tent from NatureNest and I\u0027m having trouble connecting the poles to the tent. Can you provide some guidance on this?",
+    "Answer": "Insert the pole ends into the designated color-coded pockets on the tent body."
+  },
+  {
+    "QuestionId": 342,
+    "ProductId": 65,
+    "Question": "Can the pump be dismantled?",
+    "Answer": "No, never dismantle the pump."
+  },
+  {
+    "QuestionId": 343,
+    "ProductId": 54,
+    "Question": "Suitability for outdoor use?",
+    "Answer": "Not suitable for outdoor use"
+  },
+  {
+    "QuestionId": 344,
+    "ProductId": 79,
+    "Question": "Hey there, just got the ExplorerPro Adventure Map GPS and I\u0027m having trouble using the joystick. How do I move around the map or menu with the joystick?",
+    "Answer": "Tilt the joystick in the desired direction"
+  },
+  {
+    "QuestionId": 345,
+    "ProductId": 28,
+    "Question": "How should the discs be stored?",
+    "Answer": "In a cool, dry place."
+  },
+  {
+    "QuestionId": 346,
+    "ProductId": 21,
+    "Question": "How to adjust eyepieces?",
+    "Answer": "Eye Relief Adjustment"
+  },
+  {
+    "QuestionId": 347,
+    "ProductId": 40,
+    "Question": "Hi, I just bought the ErgoLounge Portable Camping Chair and I\u0027m not sure if I assembled it correctly. Can you tell me how to secure the armrests into position?",
+    "Answer": "Press them into the designated slots until they click into position."
+  },
+  {
+    "QuestionId": 348,
+    "ProductId": 9,
+    "Question": "Dear Exploretimer customer service, my Navigator Pro Adventure Watch seems to have a GPS tracking issue. Can you help me troubleshoot this problem?",
+    "Answer": "Please contact our customer service at support@exploretimer.com or 1-800-EXPLORETIME for assistance."
+  },
+  {
+    "QuestionId": 349,
+    "ProductId": 61,
+    "Question": "How to activate power-saving mode?",
+    "Answer": "Press and hold \u0027Power\u0027 button for 3 seconds until LEDs flash."
+  },
+  {
+    "QuestionId": 35,
+    "ProductId": 47,
+    "Question": "What is the weight limit?",
+    "Answer": "Refer to product label or documentation"
+  },
+  {
+    "QuestionId": 350,
+    "ProductId": 64,
+    "Question": "How to care for the frisbee?",
+    "Answer": "Clean with mild detergent and water."
+  },
+  {
+    "QuestionId": 351,
+    "ProductId": 73,
+    "Question": "How to prevent water leakage?",
+    "Answer": "Ensure all zippers are fully closed and fabric is properly sealed."
+  },
+  {
+    "QuestionId": 352,
+    "ProductId": 45,
+    "Question": "How to adjust heat settings?",
+    "Answer": "Turn control knob clockwise or counter-clockwise."
+  },
+  {
+    "QuestionId": 353,
+    "ProductId": 73,
+    "Question": "How to clean the backpack?",
+    "Answer": "Use mild soap and water solution."
+  },
+  {
+    "QuestionId": 354,
+    "ProductId": 10,
+    "Question": "How to assemble?",
+    "Answer": "List of unnecessary parts and an extra knob"
+  },
+  {
+    "QuestionId": 355,
+    "ProductId": 20,
+    "Question": "Real-Time Tracking activation process?",
+    "Answer": "Access the \u0027Real-Time Tracking\u0027 menu on the home screen"
+  },
+  {
+    "QuestionId": 356,
+    "ProductId": 97,
+    "Question": "Hi there, I\u0027m considering purchasing the Glowgear BeamPro 5000 Headlamp. Can you confirm if it complies with the IEC 62471 standard for photobiological safety of lamps and lamp systems?",
+    "Answer": "Yes, it conforms to IEC 62471 standard."
+  },
+  {
+    "QuestionId": 357,
+    "ProductId": 53,
+    "Question": "Hello, I\u0027ve been experiencing discomfort while wearing the Summit Seeker Hiking Boots. Can you provide troubleshooting steps to fix this issue?",
+    "Answer": "Ensure Proper Sizing, Break-In Period, Adjust Lacing"
+  },
+  {
+    "QuestionId": 358,
+    "ProductId": 24,
+    "Question": "Warranty information?",
+    "Answer": "Limited warranty, contact customer support"
+  },
+  {
+    "QuestionId": 359,
+    "ProductId": 19,
+    "Question": "Dizziness warning?",
+    "Answer": "Extended viewing may cause dizziness"
+  },
+  {
+    "QuestionId": 36,
+    "ProductId": 79,
+    "Question": "How to reset the GPS?",
+    "Answer": "Perform a GPS reset in settings menu."
+  },
+  {
+    "QuestionId": 360,
+    "ProductId": 43,
+    "Question": "Hello, I recently purchased the Naturenest Trailblazer Foldable Chair and I want to make sure I\u0027m using it correctly. Can you tell me what environmental conditions I should avoid exposing the chair to?",
+    "Answer": "Avoid heavy rain, high winds, and prolonged direct sunlight."
+  },
+  {
+    "QuestionId": 361,
+    "ProductId": 56,
+    "Question": "What are the potential risks of using the AirCushion Travel Pillow?",
+    "Answer": "Risk of Suffocation"
+  },
+  {
+    "QuestionId": 362,
+    "ProductId": 94,
+    "Question": "How to engage the GlideOar?",
+    "Answer": "Pull the GlideOar Release Cord"
+  },
+  {
+    "QuestionId": 363,
+    "ProductId": 62,
+    "Question": "What are the insulation materials made of?",
+    "Answer": "Advanced synthetic fibers"
+  },
+  {
+    "QuestionId": 364,
+    "ProductId": 99,
+    "Question": "Coverage period?",
+    "Answer": "2 years"
+  },
+  {
+    "QuestionId": 365,
+    "ProductId": 28,
+    "Question": "How should the discs be stored?",
+    "Answer": "In a cool, dry place away from direct sunlight and extreme temperatures."
+  },
+  {
+    "QuestionId": 366,
+    "ProductId": 3,
+    "Question": "What are the components of the surfboard?",
+    "Answer": "Deck, Rails, Tail, Fins, Leash Plug, Ergonomic Grip"
+  },
+  {
+    "QuestionId": 367,
+    "ProductId": 37,
+    "Question": "Hi there, I\u0027m planning to store my Wildventure Trailblazer 4-Person Dome Tent for a while. Can you recommend the best way to store it to prevent damage?",
+    "Answer": "Store in breathable bag to prevent moisture buildup"
+  },
+  {
+    "QuestionId": 368,
+    "ProductId": 60,
+    "Question": "Proper Ventilation?",
+    "Answer": "Use in well-ventilated outdoor area."
+  },
+  {
+    "QuestionId": 369,
+    "ProductId": 32,
+    "Question": "Dear Support, I\u0027m interested in the TechRide Cycling Jersey. Can you tell me about the UV protection it offers?",
+    "Answer": "Shield yourself from the harsh effects of the sun with the built-in UV protection."
+  },
+  {
+    "QuestionId": 37,
+    "ProductId": 91,
+    "Question": "How to inflate the pillow?",
+    "Answer": "Blow air into the pillow with grace and precision."
+  },
+  {
+    "QuestionId": 370,
+    "ProductId": 80,
+    "Question": "Assembly instructions?",
+    "Answer": "Place on flat surface, attach legs, control knob, and cooking grate."
+  },
+  {
+    "QuestionId": 371,
+    "ProductId": 52,
+    "Question": "Best way to clean?",
+    "Answer": "Shake, pat, dab with damp cloth"
+  },
+  {
+    "QuestionId": 372,
+    "ProductId": 95,
+    "Question": "My FlameMaster grill is not heating up properly, what should I do?",
+    "Answer": "Check Gas Tank, Ignition, Burner Obstruction"
+  },
+  {
+    "QuestionId": 373,
+    "ProductId": 61,
+    "Question": "Hi there! I just received my SunBoost 3000 Solar Charger and I\u0027m wondering what\u0027s included in the box. Can you tell me?",
+    "Answer": "SunBoost 3000 Solar Charger, User Manual, USB-C Cable, Carabiner Clip, Eco Power Sticker, Warranty Card"
+  },
+  {
+    "QuestionId": 374,
+    "ProductId": 38,
+    "Question": "How to determine harness size?",
+    "Answer": "Measure waist and leg loops, refer to size chart."
+  },
+  {
+    "QuestionId": 375,
+    "ProductId": 100,
+    "Question": "How to clean?",
+    "Answer": "Spot clean or machine wash in cold water on gentle cycle"
+  },
+  {
+    "QuestionId": 376,
+    "ProductId": 44,
+    "Question": "What industrial equipment is required before using the chair?",
+    "Answer": "Load Testing Machine, Torque Wrench, Vernier Caliper"
+  },
+  {
+    "QuestionId": 377,
+    "ProductId": 95,
+    "Question": "How to clean the grill?",
+    "Answer": "Using warm water and dish soap"
+  },
+  {
+    "QuestionId": 378,
+    "ProductId": 26,
+    "Question": "What is included in the Portable Picnic Table Set?",
+    "Answer": "A foldable picnic table and four chairs."
+  },
+  {
+    "QuestionId": 379,
+    "ProductId": 79,
+    "Question": "Hey there, I recently purchased the ExplorerPro Adventure Map GPS and I\u0027m having trouble with the GPS signal. Can you give me some troubleshooting tips for this issue?",
+    "Answer": "Move to an Open Area, Reset the GPS, Update Firmware"
+  },
+  {
+    "QuestionId": 38,
+    "ProductId": 3,
+    "Question": "What are the surfboard components?",
+    "Answer": "Deck, rails, tail, fins, leash plug, ergonomic grip"
+  },
+  {
+    "QuestionId": 380,
+    "ProductId": 54,
+    "Question": "Dear support team, I recently purchased the SummitBrew Stainless Steel Teapot for outdoor use, but I noticed warnings in the manual about not using it outdoors. Can you please explain why?",
+    "Answer": "The teapot is unsuitable for outdoor use due to potential risks such as spontaneous combustion and extraterrestrial entity interactions."
+  },
+  {
+    "QuestionId": 381,
+    "ProductId": 75,
+    "Question": "How to angle the canopy?",
+    "Answer": "Squeeze the trigger and tilt"
+  },
+  {
+    "QuestionId": 382,
+    "ProductId": 47,
+    "Question": "Hello, I just purchased the Trailblazer Foldable Chair and I\u0027m wondering what material the frame is made of?",
+    "Answer": "7075 aluminum alloy"
+  },
+  {
+    "QuestionId": 383,
+    "ProductId": 50,
+    "Question": "storage guidelines",
+    "Answer": "Avoid Humidity, Minimal Handling, Avoid Weight Stacking, Effective Covering"
+  },
+  {
+    "QuestionId": 384,
+    "ProductId": 22,
+    "Question": "Hi there, I just received my TerracePlanter 3000 from Garden Grove and I\u0027m trying to assemble it. Can you tell me how many Water Drain parts should be in the package?",
+    "Answer": "1"
+  },
+  {
+    "QuestionId": 385,
+    "ProductId": 41,
+    "Question": "UV resistance testing standard?",
+    "Answer": "ASTM D4329"
+  },
+  {
+    "QuestionId": 386,
+    "ProductId": 73,
+    "Question": "Hi there, I just bought the Trekker 45L Waterproof Backpack and I\u0027m wondering how to clean and dry it properly. Can you give me some tips?",
+    "Answer": "Use a mild soap and water solution to clean the exterior, then hang it in a well-ventilated area until completely dry."
+  },
+  {
+    "QuestionId": 387,
+    "ProductId": 62,
+    "Question": "What is the outer shell made of?",
+    "Answer": "Waterproof and windproof nylon"
+  },
+  {
+    "QuestionId": 388,
+    "ProductId": 75,
+    "Question": "Setup difficulty?",
+    "Answer": "Easy and carefree."
+  },
+  {
+    "QuestionId": 389,
+    "ProductId": 38,
+    "Question": "How many gear loops does the harness have?",
+    "Answer": "Four gear loops"
+  },
+  {
+    "QuestionId": 39,
+    "ProductId": 88,
+    "Question": "Hey there, I just bought the HydroTech Insulated Water Bottle from Ecohydrate and I\u0027m having trouble with leaks. Can you give me some tips to troubleshoot this issue?",
+    "Answer": "Check the lid seal and tighten the lid properly"
+  },
+  {
+    "QuestionId": 390,
+    "ProductId": 34,
+    "Question": "Hello, I recently purchased the Bite Free MaxShield Insect Repellent Spray for an upcoming camping trip. Can you tell me if this spray is formulated with DEET-free ingredients?",
+    "Answer": "Yes, our MaxShield spray is formulated with DEET-free ingredients."
+  },
+  {
+    "QuestionId": 391,
+    "ProductId": 69,
+    "Question": "how to store kayak?",
+    "Answer": "Cool, dry place away from direct sunlight."
+  },
+  {
+    "QuestionId": 392,
+    "ProductId": 67,
+    "Question": "What should I avoid when using the mattress?",
+    "Answer": "Sharp objects, open flames, hot surfaces"
+  },
+  {
+    "QuestionId": 393,
+    "ProductId": 14,
+    "Question": "What fuel options does the grill support?",
+    "Answer": "Propane and charcoal"
+  },
+  {
+    "QuestionId": 394,
+    "ProductId": 25,
+    "Question": "How to control playback?",
+    "Answer": "Play/Pause Button, Next/Previous Buttons"
+  },
+  {
+    "QuestionId": 395,
+    "ProductId": 36,
+    "Question": "How to adjust cuffs?",
+    "Answer": "Personalize the sleeve length."
+  },
+  {
+    "QuestionId": 396,
+    "ProductId": 55,
+    "Question": "What does the warranty not cover?",
+    "Answer": "Improper use, negligence, accidents, unauthorized repair, modification, or disassembly"
+  },
+  {
+    "QuestionId": 397,
+    "ProductId": 92,
+    "Question": "How many times closer will objects appear?",
+    "Answer": "10x magnification"
+  },
+  {
+    "QuestionId": 398,
+    "ProductId": 51,
+    "Question": "LED indicator color meaning?",
+    "Answer": "Red indicates tangle, green indicates successful retrieval."
+  },
+  {
+    "QuestionId": 399,
+    "ProductId": 62,
+    "Question": "What type of fabric is the outer shell made of?",
+    "Answer": "Durable and water-repellent fabric"
+  },
+  {
+    "QuestionId": 4,
+    "ProductId": 61,
+    "Question": "What to do if it gets wet?",
+    "Answer": "Power it off, then dry it out"
+  },
+  {
+    "QuestionId": 40,
+    "ProductId": 13,
+    "Question": "DEET-free?",
+    "Answer": "Yes, DEET-free formula."
+  },
+  {
+    "QuestionId": 400,
+    "ProductId": 72,
+    "Question": "What preparatory exercises are essential?",
+    "Answer": "Series of muscular elongations"
+  },
+  {
+    "QuestionId": 401,
+    "ProductId": 67,
+    "Question": "What is the recommended surface for the mattress?",
+    "Answer": "Flat surface free of sharp objects"
+  },
+  {
+    "QuestionId": 402,
+    "ProductId": 81,
+    "Question": "How to maintain the battery?",
+    "Answer": "Regularly recharge the battery to maintain its capacity."
+  },
+  {
+    "QuestionId": 403,
+    "ProductId": 37,
+    "Question": "Setting up process?",
+    "Answer": "Lay out tent body, align color-coded poles, secure rainfly."
+  },
+  {
+    "QuestionId": 404,
+    "ProductId": 96,
+    "Question": "What should I check during regular inspections?",
+    "Answer": "Fabric, buckle, stitching, hardware"
+  },
+  {
+    "QuestionId": 405,
+    "ProductId": 36,
+    "Question": "Is the jacket weather-resistant?",
+    "Answer": "Yes, it is weather-resistant."
+  },
+  {
+    "QuestionId": 406,
+    "ProductId": 92,
+    "Question": "How to clean lenses?",
+    "Answer": "Use microfiber cloth"
+  },
+  {
+    "QuestionId": 407,
+    "ProductId": 3,
+    "Question": "How to check fin alignment?",
+    "Answer": "Use the fin key to adjust as needed."
+  },
+  {
+    "QuestionId": 408,
+    "ProductId": 16,
+    "Question": "How to clean the sleeping bag?",
+    "Answer": "Follow the cleaning protocol outlined."
+  },
+  {
+    "QuestionId": 409,
+    "ProductId": 15,
+    "Question": "How to conduct fabric integrity assessment?",
+    "Answer": "Visual inspection, seam integrity check, water absorption test"
+  },
+  {
+    "QuestionId": 41,
+    "ProductId": 39,
+    "Question": "SPF level?",
+    "Answer": "SPF 50\u002B"
+  },
+  {
+    "QuestionId": 410,
+    "ProductId": 58,
+    "Question": "What is the central component of the harness?",
+    "Answer": "The waistbelt"
+  },
+  {
+    "QuestionId": 411,
+    "ProductId": 9,
+    "Question": "Water resistance depth?",
+    "Answer": "Up to 100 meters"
+  },
+  {
+    "QuestionId": 412,
+    "ProductId": 37,
+    "Question": "Hey there, just wondering if this tent is weatherproof? I need something that can stand up to rain and wind.",
+    "Answer": "Yes, it\u0027s engineered to stand up to the elements."
+  },
+  {
+    "QuestionId": 413,
+    "ProductId": 6,
+    "Question": "Hello, I just got my Guardian Pro Bike Helmet and I\u0027m wondering how often I should inspect the integrated LED lights?",
+    "Answer": "Regularly inspect the integrated LED lights."
+  },
+  {
+    "QuestionId": 414,
+    "ProductId": 82,
+    "Question": "Hi, I just bought the NatureNest SummitLodge 4-Person Tent. Can you tell me how to assemble the poles properly?",
+    "Answer": "Unfold, arrange by color, connect, and secure."
+  },
+  {
+    "QuestionId": 415,
+    "ProductId": 6,
+    "Question": "How to activate LED lights?",
+    "Answer": "Press LED light control button"
+  },
+  {
+    "QuestionId": 416,
+    "ProductId": 42,
+    "Question": "How to adjust firmness?",
+    "Answer": "Press gray button, use dial"
+  },
+  {
+    "QuestionId": 417,
+    "ProductId": 84,
+    "Question": "Maintenance frequency?",
+    "Answer": "Before each use, after each use, every 6 months"
+  },
+  {
+    "QuestionId": 418,
+    "ProductId": 8,
+    "Question": "How to deal with wipeouts?",
+    "Answer": "Stay calm, reposition and manage waves."
+  },
+  {
+    "QuestionId": 419,
+    "ProductId": 47,
+    "Question": "How to adjust backrest angle?",
+    "Answer": "Utilize the adjustable knob to loosen and position the backrest."
+  },
+  {
+    "QuestionId": 42,
+    "ProductId": 11,
+    "Question": "How to clean the mirror?",
+    "Answer": "Use a soft, lint-free cloth and mild detergent solution."
+  },
+  {
+    "QuestionId": 420,
+    "ProductId": 22,
+    "Question": "Hi, I just bought the TerracePlanter 3000 and I\u0027m wondering what types of plants I can grow in it. Can I plant small trees?",
+    "Answer": "Yes, the TerracePlanter 3000 can accommodate small trees suitable for container planting."
+  },
+  {
+    "QuestionId": 421,
+    "ProductId": 20,
+    "Question": "How to clean GPS device?",
+    "Answer": "Power off and wipe with dry cloth"
+  },
+  {
+    "QuestionId": 422,
+    "ProductId": 74,
+    "Question": "What is the weight limit?",
+    "Answer": "250 pounds"
+  },
+  {
+    "QuestionId": 423,
+    "ProductId": 92,
+    "Question": "What to do if binoculars not focusing properly?",
+    "Answer": "Clean lenses and adjust diopter setting."
+  },
+  {
+    "QuestionId": 424,
+    "ProductId": 25,
+    "Question": "Bluetooth troubleshooting tips?",
+    "Answer": "Check pairing mode, distance, firmware, and re-pair."
+  },
+  {
+    "QuestionId": 425,
+    "ProductId": 15,
+    "Question": "What is the jacket\u0027s DWR coating for?",
+    "Answer": "Promoting water bead formation and shedding"
+  },
+  {
+    "QuestionId": 426,
+    "ProductId": 63,
+    "Question": "Hi there, just bought the Trailblazer Camping Chair and I\u0027m not sure how to fold it up. Can you give me some instructions?",
+    "Answer": "Gently fold the chair by following the instructions in reverse."
+  },
+  {
+    "QuestionId": 427,
+    "ProductId": 90,
+    "Question": "Warranty coverage period?",
+    "Answer": "One year from original purchase"
+  },
+  {
+    "QuestionId": 428,
+    "ProductId": 66,
+    "Question": "How to customize the display?",
+    "Answer": "Press and hold \u0027Menu\u0027 for 3 seconds."
+  },
+  {
+    "QuestionId": 429,
+    "ProductId": 61,
+    "Question": "Hi there, I recently bought the SunBoost 3000 Solar Charger and I\u0027m wondering if it can charge multiple devices at once? Can you please confirm?",
+    "Answer": "Yes, it can charge multiple devices at once."
+  },
+  {
+    "QuestionId": 43,
+    "ProductId": 36,
+    "Question": "What channels can I contact customer support through?",
+    "Answer": "Phone: 1-800-RIDG-ROV"
+  },
+  {
+    "QuestionId": 430,
+    "ProductId": 96,
+    "Question": "How to maintain SummitTrek Climbing Harness?",
+    "Answer": "Regular inspections before and after each use"
+  },
+  {
+    "QuestionId": 431,
+    "ProductId": 64,
+    "Question": "How to clean the frisbee?",
+    "Answer": "Clean with mild detergent and water"
+  },
+  {
+    "QuestionId": 432,
+    "ProductId": 31,
+    "Question": "What is the capacity?",
+    "Answer": "750ml"
+  },
+  {
+    "QuestionId": 433,
+    "ProductId": 40,
+    "Question": "weight capacity",
+    "Answer": "250 lbs (113 kg)"
+  },
+  {
+    "QuestionId": 434,
+    "ProductId": 100,
+    "Question": "How to clean?",
+    "Answer": "Spot clean or machine wash in cold water."
+  },
+  {
+    "QuestionId": 435,
+    "ProductId": 7,
+    "Question": "Hey, I just bought the Trekker Adventure Watch and I\u0027m wondering how to activate the battery saving mode. Can you help?",
+    "Answer": "Press and hold middle button, then select \u0027Battery Save\u0027 from options menu."
+  },
+  {
+    "QuestionId": 436,
+    "ProductId": 18,
+    "Question": "Extreme environments use?",
+    "Answer": "Not recommended for extreme environments"
+  },
+  {
+    "QuestionId": 437,
+    "ProductId": 99,
+    "Question": "Storage recommendations?",
+    "Answer": "Store in cool, dry place away from sunlight."
+  },
+  {
+    "QuestionId": 438,
+    "ProductId": 20,
+    "Question": "How to power on?",
+    "Answer": "Press and hold the **Power** button for 3 seconds"
+  },
+  {
+    "QuestionId": 439,
+    "ProductId": 71,
+    "Question": "What type of storage does the kayak offer?",
+    "Answer": "Rear tank well, bungee-corded storage, watertight storage hatch"
+  },
+  {
+    "QuestionId": 44,
+    "ProductId": 29,
+    "Question": "What size propane cylinder?",
+    "Answer": "Use only a 1 lb propane cylinder"
+  },
+  {
+    "QuestionId": 440,
+    "ProductId": 3,
+    "Question": "What are the WaveMaster surfboard models?",
+    "Answer": "WaveMaster Classic, WaveMaster Pro, WaveMaster Elite"
+  },
+  {
+    "QuestionId": 441,
+    "ProductId": 68,
+    "Question": "How to charge the kayak?",
+    "Answer": "Follow steps in the manual."
+  },
+  {
+    "QuestionId": 442,
+    "ProductId": 69,
+    "Question": "What advanced fishing accessory does the kayak have?",
+    "Answer": "Sonar and fish finder integration"
+  },
+  {
+    "QuestionId": 443,
+    "ProductId": 73,
+    "Question": "What are the color options?",
+    "Answer": "Black, green, and blue"
+  },
+  {
+    "QuestionId": 444,
+    "ProductId": 34,
+    "Question": "Storage instructions?",
+    "Answer": "Cool, dry place away from sunlight and heat"
+  },
+  {
+    "QuestionId": 445,
+    "ProductId": 88,
+    "Question": "Hi there, I just bought the HydroTech Insulated Water Bottle and I want to make sure I\u0027m taking care of it properly. Can you tell me how to dry it after cleaning?",
+    "Answer": "Let your HydroTech air dry with the lid off."
+  },
+  {
+    "QuestionId": 446,
+    "ProductId": 93,
+    "Question": "How to stay dry?",
+    "Answer": "Comes with waterproof backing"
+  },
+  {
+    "QuestionId": 447,
+    "ProductId": 12,
+    "Question": "Hello, I just received my Arctic Breeze Portable Cooler and I noticed that the power adapter is damaged. What should I do?",
+    "Answer": "Contact Summit Cool customer support for assistance."
+  },
+  {
+    "QuestionId": 448,
+    "ProductId": 53,
+    "Question": "How to clean outsoles?",
+    "Answer": "Clean with water and a brush"
+  },
+  {
+    "QuestionId": 449,
+    "ProductId": 39,
+    "Question": "Who should use this sunscreen?",
+    "Answer": "Suitable for all ages"
+  },
+  {
+    "QuestionId": 45,
+    "ProductId": 76,
+    "Question": "How to activate bug repellent?",
+    "Answer": "Press leaf icon for 3 seconds"
+  },
+  {
+    "QuestionId": 450,
+    "ProductId": 95,
+    "Question": "Warranty period?",
+    "Answer": "24 months"
+  },
+  {
+    "QuestionId": 451,
+    "ProductId": 86,
+    "Question": "What is the warranty coverage?",
+    "Answer": "One-year limited warranty for defects in materials and workmanship under normal use."
+  },
+  {
+    "QuestionId": 452,
+    "ProductId": 54,
+    "Question": "Hello, I recently purchased the SummitBrew Stainless Steel Teapot and I want to know its capacity for brewing tea. Can you please tell me how many ounces it can hold?",
+    "Answer": "32 ounces"
+  },
+  {
+    "QuestionId": 453,
+    "ProductId": 38,
+    "Question": "What does each package include?",
+    "Answer": "Harness and components"
+  },
+  {
+    "QuestionId": 454,
+    "ProductId": 78,
+    "Question": "How to maintain optimal performance?",
+    "Answer": "Regularly wax the surface using surfboard-specific wax."
+  },
+  {
+    "QuestionId": 455,
+    "ProductId": 9,
+    "Question": "What is the altimeter range?",
+    "Answer": "0 to 10,000 meters"
+  },
+  {
+    "QuestionId": 456,
+    "ProductId": 57,
+    "Question": "How to dispose of excess repellent?",
+    "Answer": "Wipe and dispose in accordance with regulations"
+  },
+  {
+    "QuestionId": 457,
+    "ProductId": 77,
+    "Question": "Customer support phone number?",
+    "Answer": "1-800-555-1234"
+  },
+  {
+    "QuestionId": 458,
+    "ProductId": 11,
+    "Question": "Hi there, I just bought the Panorama 360 HD Outdoor Mirror and wanted to know how to clean it. Can I use any type of cloth and detergent?",
+    "Answer": "Use a soft, non-abrasive cloth and mild detergent."
+  },
+  {
+    "QuestionId": 459,
+    "ProductId": 89,
+    "Question": "Where should the grill be used?",
+    "Answer": "Always ensure that the grill is used in a well-ventilated outdoor area."
+  },
+  {
+    "QuestionId": 46,
+    "ProductId": 7,
+    "Question": "How to set up?",
+    "Answer": "Press *Menu* to access main menu."
+  },
+  {
+    "QuestionId": 460,
+    "ProductId": 66,
+    "Question": "Hey there, I just got my Pathfinder 2000 GPS Compass and I\u0027m not sure how to activate the GPS. Can you help?",
+    "Answer": "Press and hold the power button."
+  },
+  {
+    "QuestionId": 461,
+    "ProductId": 21,
+    "Question": "How to use compass?",
+    "Answer": "Hold up to eyes and ensure level."
+  },
+  {
+    "QuestionId": 462,
+    "ProductId": 100,
+    "Question": "Hi there, I just bought the TechShield Outdoor Blanket and I\u0027m wondering how to clean it. Can I use bleach or fabric softeners?",
+    "Answer": "Avoid using bleach or fabric softeners"
+  },
+  {
+    "QuestionId": 463,
+    "ProductId": 57,
+    "Question": "Warranty duration?",
+    "Answer": "Two years from purchase"
+  },
+  {
+    "QuestionId": 464,
+    "ProductId": 5,
+    "Question": "How to contact support?",
+    "Answer": "Telephone or email"
+  },
+  {
+    "QuestionId": 465,
+    "ProductId": 91,
+    "Question": "color options?",
+    "Answer": "Classic Navy or Charcoal Gray"
+  },
+  {
+    "QuestionId": 466,
+    "ProductId": 72,
+    "Question": "Recommended harness replacement frequency?",
+    "Answer": "3-5 years"
+  },
+  {
+    "QuestionId": 467,
+    "ProductId": 87,
+    "Question": "How is the speaker powered?",
+    "Answer": "Equipped with a rechargeable battery"
+  },
+  {
+    "QuestionId": 468,
+    "ProductId": 7,
+    "Question": "How to conserve battery?",
+    "Answer": "Limit use of GPS and backlight"
+  },
+  {
+    "QuestionId": 469,
+    "ProductId": 52,
+    "Question": "How to clean the tapestry?",
+    "Answer": "Gently wipe with a damp cloth using mild detergent."
+  },
+  {
+    "QuestionId": 47,
+    "ProductId": 23,
+    "Question": "Can I adjust the firmness settings?",
+    "Answer": "No, it is strongly advised against."
+  },
+  {
+    "QuestionId": 470,
+    "ProductId": 19,
+    "Question": "how to clean tapestry?",
+    "Answer": "Regular Dusting, Spot Cleaning, Professional Cleaning"
+  },
+  {
+    "QuestionId": 471,
+    "ProductId": 40,
+    "Question": "Hi, I just bought the ErgoLounge Portable Camping Chair and I\u0027m wondering what the maximum weight capacity is for this chair?",
+    "Answer": "250 lbs (113 kg)"
+  },
+  {
+    "QuestionId": 472,
+    "ProductId": 22,
+    "Question": "How many parts in package?",
+    "Answer": "Base, Planter Pot, Water Drain"
+  },
+  {
+    "QuestionId": 473,
+    "ProductId": 6,
+    "Question": "How do I adjust the fit system?",
+    "Answer": "Turn the dial at the rear of the helmet."
+  },
+  {
+    "QuestionId": 474,
+    "ProductId": 63,
+    "Question": "What materials is the chair made of?",
+    "Answer": "Sturdy steel frame and rugged polyester fabric"
+  },
+  {
+    "QuestionId": 475,
+    "ProductId": 79,
+    "Question": "How to reset GPS?",
+    "Answer": "Perform a GPS reset in settings."
+  },
+  {
+    "QuestionId": 476,
+    "ProductId": 29,
+    "Question": "How to prevent rust?",
+    "Answer": "Store in dry and covered area."
+  },
+  {
+    "QuestionId": 477,
+    "ProductId": 17,
+    "Question": "Maximum weight limit?",
+    "Answer": "Supports up to 400lbs"
+  },
+  {
+    "QuestionId": 478,
+    "ProductId": 100,
+    "Question": "What is the blanket\u0027s perfect use?",
+    "Answer": "Picnics, beach trips, outdoor concerts"
+  },
+  {
+    "QuestionId": 479,
+    "ProductId": 79,
+    "Question": "GPS signal troubleshooting steps?",
+    "Answer": "Open area, GPS reset, firmware update"
+  },
+  {
+    "QuestionId": 48,
+    "ProductId": 32,
+    "Question": "What does a proper fit ensure for the TechRide Cycling Jersey?",
+    "Answer": "Enhanced performance and comfort, optimal moisture wicking, protection against UV rays"
+  },
+  {
+    "QuestionId": 480,
+    "ProductId": 8,
+    "Question": "Hello, I recently noticed some cracks on my WaveMaster Surfboard. How can I fix them to prevent water from seeping in?",
+    "Answer": "Use a repair kit to patch up any damages."
+  },
+  {
+    "QuestionId": 481,
+    "ProductId": 6,
+    "Question": "What features do the LED lights have?",
+    "Answer": "Enhance visibility and safety during low-light conditions."
+  },
+  {
+    "QuestionId": 482,
+    "ProductId": 34,
+    "Question": "How to apply?",
+    "Answer": "Shake before use, apply generously."
+  },
+  {
+    "QuestionId": 483,
+    "ProductId": 79,
+    "Question": "How to troubleshoot device not powering on?",
+    "Answer": "Check battery, reset device, contact support"
+  },
+  {
+    "QuestionId": 484,
+    "ProductId": 44,
+    "Question": "Hello, I am considering purchasing the CozyRidge Foldable Chair for outdoor use. Can you tell me the load capacity of this chair?",
+    "Answer": "The load capacity of the CozyRidge Foldable Chair is specified for safety and stability."
+  },
+  {
+    "QuestionId": 485,
+    "ProductId": 32,
+    "Question": "What safety measures does the jersey complement?",
+    "Answer": "helmets, reflective gear, cycling lanes"
+  },
+  {
+    "QuestionId": 486,
+    "ProductId": 44,
+    "Question": "What equipment is required for post-use maintenance?",
+    "Answer": "Industrial-grade equipment"
+  },
+  {
+    "QuestionId": 487,
+    "ProductId": 30,
+    "Question": "How to activate LED lights?",
+    "Answer": "Slide power switch to ON position"
+  },
+  {
+    "QuestionId": 488,
+    "ProductId": 73,
+    "Question": "troubleshooting steps for water leakage?",
+    "Answer": "Ensure all zippers are fully closed and fabric is properly sealed."
+  },
+  {
+    "QuestionId": 489,
+    "ProductId": 12,
+    "Question": "Hi there, I just purchased the Arctic Breeze Portable Cooler and I want to make sure I clean it properly. Can you tell me how to clean the exterior of the cooler?",
+    "Answer": "Use a soft cloth dampened with mild soap and water."
+  },
+  {
+    "QuestionId": 49,
+    "ProductId": 18,
+    "Question": "Extreme environmental use?",
+    "Answer": "Not recommended for extreme environments"
+  },
+  {
+    "QuestionId": 490,
+    "ProductId": 26,
+    "Question": "cleaning instructions",
+    "Answer": "Yes, easy to clean with mild soap"
+  },
+  {
+    "QuestionId": 491,
+    "ProductId": 85,
+    "Question": "Fabric composition?",
+    "Answer": "65% polyamide, 35% elastane"
+  },
+  {
+    "QuestionId": 492,
+    "ProductId": 51,
+    "Question": "How to activate GPS signal?",
+    "Answer": "Hold down the *ripple release* button until you hear the audible *splash* confirmation."
+  },
+  {
+    "QuestionId": 493,
+    "ProductId": 19,
+    "Question": "How to spot clean?",
+    "Answer": "Lightly dab with mild soap solution."
+  },
+  {
+    "QuestionId": 494,
+    "ProductId": 25,
+    "Question": "What color is the LED indicator when paired?",
+    "Answer": "Solid blue"
+  },
+  {
+    "QuestionId": 495,
+    "ProductId": 57,
+    "Question": "Ingestion precautions?",
+    "Answer": "Seek immediate medical attention"
+  },
+  {
+    "QuestionId": 496,
+    "ProductId": 36,
+    "Question": "Hey there! I\u0027m interested in the SummitTech Waterproof Jacket. Can you tell me about the waterproofing technology it uses?",
+    "Answer": "HydroShield 5000\u2122\uFE0F Technology creates a barrier that repels water."
+  },
+  {
+    "QuestionId": 497,
+    "ProductId": 25,
+    "Question": "Hello, I\u0027m having trouble with the Bluetooth connection on my WildBeat Outdoor Speaker. What should I do to troubleshoot this issue?",
+    "Answer": "Ensure the speaker is in pairing mode and move your device closer to minimize interference."
+  },
+  {
+    "QuestionId": 498,
+    "ProductId": 4,
+    "Question": "Hi there, I just bought the Ecoentertain LED Lawn Game Set and I want to make sure I\u0027m using the correct batteries. Can you tell me which ones I should use?",
+    "Answer": "Use the specified batteries indicated in the instruction manual."
+  },
+  {
+    "QuestionId": 499,
+    "ProductId": 54,
+    "Question": "Hi, I just bought the SummitBrew Stainless Steel Teapot and wanted to know if it\u0027s okay to clean it with water and cleaning agents. Will it damage the teapot?",
+    "Answer": "No, cleaning with water or cleaning agents may damage the teapot."
+  },
+  {
+    "QuestionId": 5,
+    "ProductId": 92,
+    "Question": "What is the magnification of the VisionMaster Binoculars?",
+    "Answer": "10x magnification"
+  },
+  {
+    "QuestionId": 50,
+    "ProductId": 87,
+    "Question": "Effective Bluetooth range?",
+    "Answer": "Approximately 30 feet"
+  },
+  {
+    "QuestionId": 500,
+    "ProductId": 16,
+    "Question": "What testing standards are used for the ThermalVent 800 Sleeping Bag?",
+    "Answer": "ASTM D5470, ASTM D737, ISO 11092, ISO 11079-1"
+  },
+  {
+    "QuestionId": 51,
+    "ProductId": 49,
+    "Question": "What is the maximum output of the primary port?",
+    "Answer": "18W"
+  },
+  {
+    "QuestionId": 52,
+    "ProductId": 63,
+    "Question": "How to clean the chair?",
+    "Answer": "Wipe down with damp cloth and mild soap"
+  },
+  {
+    "QuestionId": 53,
+    "ProductId": 67,
+    "Question": "How to clean the mattress?",
+    "Answer": "Regular cleaning with mild soap and water"
+  },
+  {
+    "QuestionId": 54,
+    "ProductId": 23,
+    "Question": "Inflation and deflation?",
+    "Answer": "Not recommended, may cause damage."
+  },
+  {
+    "QuestionId": 55,
+    "ProductId": 34,
+    "Question": "Dear Bite Free, I\u0027m planning a hiking trip and want to make sure the MaxShield Insect Repellent Spray is easy to carry with me. Can I stow it away in my backpack or pocket?",
+    "Answer": "Yes, you can effortlessly stow it away in your rucksack, pocket, or satchel."
+  },
+  {
+    "QuestionId": 56,
+    "ProductId": 97,
+    "Question": "What is the control interface verification process?",
+    "Answer": "Test the functionality of the buttons after extended use."
+  },
+  {
+    "QuestionId": 57,
+    "ProductId": 33,
+    "Question": "How to diagnose outsole wear?",
+    "Answer": "Visual Inspection, Traction Testing, Abrasion Test"
+  },
+  {
+    "QuestionId": 58,
+    "ProductId": 64,
+    "Question": "What is the warranty period?",
+    "Answer": "1 year"
+  },
+  {
+    "QuestionId": 59,
+    "ProductId": 47,
+    "Question": "How to assess corrosion?",
+    "Answer": "Visual Corrosion Assessment and Galvanic Corrosion Evaluation"
+  },
+  {
+    "QuestionId": 6,
+    "ProductId": 84,
+    "Question": "How to maintain the table?",
+    "Answer": "Inspect locking mechanisms and hinges regularly"
+  },
+  {
+    "QuestionId": 60,
+    "ProductId": 73,
+    "Question": "volume capacity?",
+    "Answer": "45 liters"
+  },
+  {
+    "QuestionId": 61,
+    "ProductId": 84,
+    "Question": "How do you fold the table?",
+    "Answer": "Locate the orange release button on the left side."
+  },
+  {
+    "QuestionId": 62,
+    "ProductId": 53,
+    "Question": "Hi, I just bought the Summit Seeker Hiking Boots and I want to make sure they are waterproof. How do I ensure that the waterproofing is properly maintained?",
+    "Answer": "Regularly apply a suitable waterproofing treatment to the exterior of the boots."
+  },
+  {
+    "QuestionId": 63,
+    "ProductId": 57,
+    "Question": "What age is it not intended for?",
+    "Answer": "Children under 12"
+  },
+  {
+    "QuestionId": 64,
+    "ProductId": 78,
+    "Question": "Weight limit?",
+    "Answer": "Up to 200 pounds"
+  },
+  {
+    "QuestionId": 65,
+    "ProductId": 34,
+    "Question": "Hello, I recently purchased the Bite Free MaxShield Insect Repellent Spray and I want to make sure I\u0027m maintaining it properly. Can you tell me how to clean the exterior of the aerosol can?",
+    "Answer": "Wipe the exterior with a soft, dry cloth."
+  },
+  {
+    "QuestionId": 66,
+    "ProductId": 55,
+    "Question": "How to clean solar panels?",
+    "Answer": "Use a soft, lint-free cloth."
+  },
+  {
+    "QuestionId": 67,
+    "ProductId": 45,
+    "Question": "How to ignite?",
+    "Answer": "Turn control knob, ignite flame."
+  },
+  {
+    "QuestionId": 68,
+    "ProductId": 66,
+    "Question": "Hi there, just got my new Pathfinder 2000 GPS Compass and I\u0027m having trouble calibrating the altimeter. Can you tell me how to do it?",
+    "Answer": "Go to the \u0027Altimeter\u0027 menu and select \u0027Calibrate\u0027. Follow the on-screen instructions to calibrate the altimeter based on your current elevation."
+  },
+  {
+    "QuestionId": 69,
+    "ProductId": 33,
+    "Question": "Hi, I recently purchased the Hikepro SummitFlex Waterproof Hiking Boots and I\u0027m experiencing water leakage. How can I diagnose the waterproofing failure?",
+    "Answer": "Perform visual inspection, submersion test, and pressure test as outlined in the manual."
+  },
+  {
+    "QuestionId": 7,
+    "ProductId": 77,
+    "Question": "Visual inspection steps?",
+    "Answer": "Examine for signs of wear, loose threads"
+  },
+  {
+    "QuestionId": 70,
+    "ProductId": 42,
+    "Question": "Warranty period?",
+    "Answer": "One year from purchase"
+  },
+  {
+    "QuestionId": 71,
+    "ProductId": 4,
+    "Question": "How to start playing?",
+    "Answer": "Press power button on game board"
+  },
+  {
+    "QuestionId": 72,
+    "ProductId": 53,
+    "Question": "What is the break-in period?",
+    "Answer": "Expect the boots to mold to your feet after a few hikes."
+  },
+  {
+    "QuestionId": 73,
+    "ProductId": 23,
+    "Question": "Hi, I just bought the AeroDream 5000 Inflatable Mattress and I\u0027m wondering if I can use it for camping? Can I set it up outdoors?",
+    "Answer": "No, the mattress is specifically designed for indoor use only."
+  },
+  {
+    "QuestionId": 74,
+    "ProductId": 65,
+    "Question": "Suitable for children?",
+    "Answer": "Not without adult supervision"
+  },
+  {
+    "QuestionId": 75,
+    "ProductId": 12,
+    "Question": "How to store cooler?",
+    "Answer": "In a cool, dry place with lid open"
+  },
+  {
+    "QuestionId": 76,
+    "ProductId": 70,
+    "Question": "Warranty duration?",
+    "Answer": "1 year"
+  },
+  {
+    "QuestionId": 77,
+    "ProductId": 66,
+    "Question": "How to activate GPS?",
+    "Answer": "Press and hold power button"
+  },
+  {
+    "QuestionId": 78,
+    "ProductId": 90,
+    "Question": "How to set up the umbrella pole?",
+    "Answer": "Extend the telescopic pole by twisting it in a clockwise direction."
+  },
+  {
+    "QuestionId": 79,
+    "ProductId": 15,
+    "Question": "What is the hydrostatic head rating?",
+    "Answer": "10,000mm"
+  },
+  {
+    "QuestionId": 8,
+    "ProductId": 8,
+    "Question": "What type of waves is suitable for the WaveMaster?",
+    "Answer": "Smaller, gentle waves for beginners"
+  },
+  {
+    "QuestionId": 80,
+    "ProductId": 23,
+    "Question": "Hi, I just bought the AeroDream 5000 Inflatable Mattress and I wanted to know if I can use it for camping. Is it suitable for outdoor activities?",
+    "Answer": "No, the mattress is specifically designed for indoor use only."
+  },
+  {
+    "QuestionId": 81,
+    "ProductId": 45,
+    "Question": "How to clean after use?",
+    "Answer": "Wipe with dry cloth after cooling"
+  },
+  {
+    "QuestionId": 82,
+    "ProductId": 2,
+    "Question": "What is the weight?",
+    "Answer": "4.5 ounces"
+  },
+  {
+    "QuestionId": 83,
+    "ProductId": 79,
+    "Question": "Hi there, I just bought the ExplorerPro Adventure Map GPS and I want to make sure I take good care of the battery. Can you tell me how to maintain its optimal performance?",
+    "Answer": "Use provided charger, avoid overcharging, store partially charged in cool, dry place, regularly check battery health."
+  },
+  {
+    "QuestionId": 84,
+    "ProductId": 27,
+    "Question": "Can I sleep in the hammock overnight?",
+    "Answer": "Absolutely not."
+  },
+  {
+    "QuestionId": 85,
+    "ProductId": 63,
+    "Question": "Hi there! I just bought the Trailblazer Camping Chair from RelaxRidge, and I want to know if it\u0027s covered by a warranty. Can you tell me more about the warranty coverage for this chair?",
+    "Answer": "2-year warranty for defects in materials and workmanship under normal use and maintenance."
+  },
+  {
+    "QuestionId": 86,
+    "ProductId": 43,
+    "Question": "How to clean the chair?",
+    "Answer": "Utilize a mild solution of warm water and a dab of gentle detergent to cleanse the fabric with tenderness, followed by a gentle rinse and complete drying in a shaded area."
+  },
+  {
+    "QuestionId": 87,
+    "ProductId": 1,
+    "Question": "Charging time?",
+    "Answer": "2-3 hours"
+  },
+  {
+    "QuestionId": 88,
+    "ProductId": 18,
+    "Question": "Hi there, I just bought the Ecohydrate Insulated Stainless Steel Water Bottle and I was wondering if it\u0027s safe to use for storing hot beverages?",
+    "Answer": "No, it is strongly advised not to use the bottle for storing or consuming hot beverages."
+  },
+  {
+    "QuestionId": 89,
+    "ProductId": 100,
+    "Question": "Temperature regulation troubleshooting?",
+    "Answer": "Try the following steps"
+  },
+  {
+    "QuestionId": 9,
+    "ProductId": 78,
+    "Question": "Dimensions?",
+    "Answer": "Length: 8.6 feet, Width: 21 inches, Thickness: 2.75 inches, Weight: 12.5 pounds"
+  },
+  {
+    "QuestionId": 90,
+    "ProductId": 84,
+    "Question": "Hi, I just bought the XtremeFold Camping Table and I want to know if there are any additional accessories available for it. Can I get a carry bag for easy transport?",
+    "Answer": "Yes, there is a custom-designed carry bag available for purchase separately."
+  },
+  {
+    "QuestionId": 91,
+    "ProductId": 93,
+    "Question": "Hi there, I just got my AdventurePlus Outdoor Blanket and I\u0027m wondering if it\u0027s waterproof? I want to use it for picnics and outdoor concerts, but I don\u0027t want to get wet if it rains.",
+    "Answer": "Yes, AdventurePlus has a waterproof backing to keep you dry."
+  },
+  {
+    "QuestionId": 92,
+    "ProductId": 26,
+    "Question": "How many chairs are included?",
+    "Answer": "4 Foldable Chairs"
+  },
+  {
+    "QuestionId": 93,
+    "ProductId": 55,
+    "Question": "How to clean solar panels?",
+    "Answer": "Use soft, lint-free cloth."
+  },
+  {
+    "QuestionId": 94,
+    "ProductId": 33,
+    "Question": "Waterproofing verification standard?",
+    "Answer": "ISO 811:2018 guidelines"
+  },
+  {
+    "QuestionId": 95,
+    "ProductId": 41,
+    "Question": "Fire safety guidelines?",
+    "Answer": "No open flames or smoking inside."
+  },
+  {
+    "QuestionId": 96,
+    "ProductId": 97,
+    "Question": "Battery life?",
+    "Answer": "Up to 20 hours at lowest brightness."
+  },
+  {
+    "QuestionId": 97,
+    "ProductId": 95,
+    "Question": "How to troubleshoot grill not heating up?",
+    "Answer": "Follow gas tank and ignition checks."
+  },
+  {
+    "QuestionId": 98,
+    "ProductId": 95,
+    "Question": "Hi there, I recently purchased the FlameMaster Grilling Set and I want to make sure I\u0027m cleaning it properly. Can you provide me with the steps for cleaning the grill after each use?",
+    "Answer": "After each use, allow the grill to cool down completely. Remove any food residue using a grill brush or scraper tool."
+  },
+  {
+    "QuestionId": 99,
+    "ProductId": 98,
+    "Question": "Hi, I\u0027m considering buying the ThermalAdventure Blanket by CozyCushion. Can you tell me how to assess its thermal insulation efficiency?",
+    "Answer": "Refer to academic research papers and use a thermal conductivity meter."
+  }
+]

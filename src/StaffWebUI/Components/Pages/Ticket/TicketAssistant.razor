@@ -41,7 +41,7 @@
     string[] suggestions = ["What does the manual say about this?", "Write a suggested reply to the customer."];
 
     [Parameter, EditorRequired]
-    public int TicketId { get; set; }
+    public TicketDetailsResult? Ticket { get; set; }
 
     [Parameter]
     public EventCallback<string> OnSuggestedReply { get; set; }
@@ -66,7 +66,7 @@
 
     void SendMessage()
     {
-        if (!string.IsNullOrWhiteSpace(userMessageText))
+        if (Ticket is { } ticket && !string.IsNullOrWhiteSpace(userMessageText))
         {
             StopResponding();
 
@@ -77,7 +77,12 @@
             // Submit request to backend
             currentReplyCancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = currentReplyCancellationTokenSource.Token;
-            var request = new AssistantChatRequest(TicketId, messages.Select(m => m.Message).ToList());
+            var request = new AssistantChatRequest(
+                ticket.ProductId,
+                ticket.CustomerFullName,
+                ticket.LongSummary,
+                ticket.Messages.LastOrDefault(m => m.IsCustomerMessage)?.MessageText,
+                messages.Select(m => m.Message).ToList());
             var responseTask = Backend.AssistantChatAsync(request, cancellationToken);
 
             // Add the assistant's reply to the UI
