@@ -13,6 +13,7 @@
     <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
@@ -37,6 +38,10 @@
     <PackageVersion Include="SmartComponents.AspNetCore" Version="0.1.0-preview10148" />
     <PackageVersion Include="SmartComponents.LocalEmbeddings.SemanticKernel" Version="0.1.0-preview10148" />
     <PackageVersion Include="StatefulReconnection" Version="0.1.0" />
+    <PackageVersion Include="Markdown2Pdf" Version="2.1.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="Markdown2Pdf" Version="2.1.0" />
   </ItemGroup>
 </Project>
