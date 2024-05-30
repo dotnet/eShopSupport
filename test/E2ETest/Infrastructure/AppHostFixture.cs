@@ -32,5 +32,12 @@ public class AppHostFixture : IAsyncDisposable
     {
         public async Task<HttpClient> CreateHttpClientAsync()
             => (await owner._appInitializer).CreateHttpClient(name);
+
+        public async Task<string> ResolveUrlAsync(string relativeUrl)
+        {
+            var app = await owner._appInitializer;
+            var baseUri = app.GetEndpoint(name);
+            return new Uri(baseUri, relativeUrl).ToString();
+        }
     }
 }
