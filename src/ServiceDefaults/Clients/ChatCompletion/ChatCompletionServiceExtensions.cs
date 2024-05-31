@@ -1,7 +1,10 @@
 ﻿using System.Data.Common;
 using Azure.AI.OpenAI;
+using eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
@@ -9,7 +12,7 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ChatCompletionServiceExtensions
 {
-    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name)
+    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
     {
         var implementationType = Environment.GetEnvironmentVariable($"{name}:Type");
         if (implementationType == "ollama")
@@ -33,5 +36,22 @@ public static class ChatCompletionServiceExtensions
                 return new AzureOpenAIChatCompletionService((string)deploymentName, client);
             });
         }
+
+        if (!string.IsNullOrEmpty(cacheDir))
+        {
+            AddChatCompletionCaching(builder, cacheDir);
+        }
+    }
+
+    private static void AddChatCompletionCaching(IHostApplicationBuilder builder, string cacheDir)
+    {
+        var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatCompletionService));
+
+        builder.Services.Replace(new ServiceDescriptor(typeof(IChatCompletionService), services =>
+        {
+            var underlyingInstance = underlyingRegistration.ImplementationInstance
+                ?? underlyingRegistration.ImplementationFactory!(services);
+            return new CachedChatCompletionService((IChatCompletionService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
+        }, underlyingRegistration.Lifetime));
     }
 }

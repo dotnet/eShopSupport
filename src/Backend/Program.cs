@@ -28,7 +28,7 @@ builder.Services.AddScoped<TicketSummarizer>();
 builder.Services.AddHttpClient<PythonInferenceClient>(c => c.BaseAddress = new Uri("http://python-inference"));
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
-builder.AddChatCompletionService("chatcompletion");
+builder.AddChatCompletionService("chatcompletion", Environment.GetEnvironmentVariable("E2E_TEST_CHAT_COMPLETION_CACHE_DIR"));
 builder.AddRedisClient("redis");
 
 var app = builder.Build();

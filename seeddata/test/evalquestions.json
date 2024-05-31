@@ -1,0 +1,32 @@
+[
+  {
+    "QuestionId": 1,
+    "ProductId": 2,
+    "Question": "How to store Arctic Explorer Sleeping Bag?",
+    "Answer": "Use compression sack"
+  },
+  {
+    "QuestionId": 2,
+    "ProductId": 2,
+    "Question": "How to close the sleeping bag?",
+    "Answer": "Gently pull the zipper tab downwards"
+  },
+  {
+    "QuestionId": 3,
+    "ProductId": 4,
+    "Question": "Warranty duration?",
+    "Answer": "One year from purchase"
+  },
+  {
+    "QuestionId": 4,
+    "ProductId": 5,
+    "Question": "Insulation testing method?",
+    "Answer": "Comprehensive thermal conductivity tests"
+  },
+  {
+    "QuestionId": 5,
+    "ProductId": 4,
+    "Question": "Can I use the sleeping bag without proper ground insulation in extremely cold conditions?",
+    "Answer": "No"
+  }
+]

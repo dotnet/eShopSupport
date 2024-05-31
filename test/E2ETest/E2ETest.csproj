@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Testing" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Microsoft.Playwright" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AppHost\AppHost.csproj" />
+    <ProjectReference Include="..\..\src\ServiceDefaults\ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <Target Name="InstallPlaywrightDeps" BeforeTargets="CoreBuild">
+    <PropertyGroup>
+      <_PowerShellExe>pwsh</_PowerShellExe>
+      <_PowerShellExe Condition="'$(OS)' == 'Windows_NT'">powershell</_PowerShellExe>
+    </PropertyGroup>
+    <Exec Command="$(_PowerShellExe) -NonInteractive -executionpolicy Unrestricted $(OutDir)playwright.ps1 install chromium --with-deps" />
+  </Target>
+
+</Project>
