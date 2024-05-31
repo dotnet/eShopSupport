@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ChatCompletionServiceExtensions
 {
-    public static ChatCompletionServiceBuilder AddChatCompletionService(this IHostApplicationBuilder builder, string name)
+    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
     {
         var implementationType = Environment.GetEnvironmentVariable($"{name}:Type");
         if (implementationType == "ollama")
@@ -37,21 +37,21 @@ public static class ChatCompletionServiceExtensions
             });
         }
 
-        return new ChatCompletionServiceBuilder(builder);
+        if (!string.IsNullOrEmpty(cacheDir))
+        {
+            AddChatCompletionCaching(builder, cacheDir);
+        }
     }
 
-    public class ChatCompletionServiceBuilder(IHostApplicationBuilder builder)
+    private static void AddChatCompletionCaching(IHostApplicationBuilder builder, string cacheDir)
     {
-        public void WithChatCompletionServiceCache(string cacheDir)
-        {
-            var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatCompletionService));
+        var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatCompletionService));
 
-            builder.Services.Replace(new ServiceDescriptor(typeof(IChatCompletionService), services =>
-            {
-                var underlyingInstance = underlyingRegistration.ImplementationInstance
-                    ?? underlyingRegistration.ImplementationFactory!(services);
-                return new CachedChatCompletionService((IChatCompletionService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
-            }, underlyingRegistration.Lifetime));
-        }
+        builder.Services.Replace(new ServiceDescriptor(typeof(IChatCompletionService), services =>
+        {
+            var underlyingInstance = underlyingRegistration.ImplementationInstance
+                ?? underlyingRegistration.ImplementationFactory!(services);
+            return new CachedChatCompletionService((IChatCompletionService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
+        }, underlyingRegistration.Lifetime));
     }
 }

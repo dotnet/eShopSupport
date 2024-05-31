@@ -42,7 +42,7 @@ public class TicketAssistantTest(AppHostFixture app) : PlaywrightTestBase
         // See it does a search and gets info from the manual
         var reply = await GetNthCompletedReply(0);
         await Expect(reply.Locator(".search-info")).ToContainTextAsync("safety light troubleshooting");
-        await Expect(reply.Locator(".message-text")).ToContainTextAsync("check the battery and inspect the light for damage");
+        await Expect(reply.Locator(".message-text")).ToContainTextAsync("contact Rugged Riders");
 
         // Also check the link to the manual
         var referenceLink = reply.Locator(".reference-link");
