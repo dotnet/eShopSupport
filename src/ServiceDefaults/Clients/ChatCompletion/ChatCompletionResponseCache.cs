@@ -18,43 +18,46 @@ internal class ChatCompletionResponseCache(string cacheDir, ILoggerFactory logge
     private readonly ILogger<ChatCompletionResponseCache> _logger = loggerFactory.CreateLogger<ChatCompletionResponseCache>();
     private readonly static JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
-    public bool TryGetCachedResponse(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, [NotNullWhen(true)] out string? response)
+    public bool TryGetCachedResponse<T>(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, [NotNullWhen(true)] out T? response)
     {
-        var filePath = GetCacheFilePath(chatHistory, executionSettings);
+        var request = new CacheFileRequest(chatHistory, executionSettings);
+        var filePath = GetCacheFilePath(request);
         if (File.Exists(filePath))
         {
             _logger.LogInformation("Using cached response for {Path}", Path.GetFileName(filePath));
-            response = File.ReadAllText(filePath);
+            var contents = File.ReadAllText(filePath);
+            response = JsonSerializer.Deserialize<CacheFileContents<T>>(contents, JsonOptions)!.Response!;
             return true;
         }
         else
         {
             _logger.LogInformation("Did not find cached response for {Path}", Path.GetFileName(filePath));
-            response = null;
+            response = default;
             return false;
         }
     }
 
-    public void SetCachedResponse(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, string response)
+    public void SetCachedResponse<T>(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, T response)
     {
-        var filePath = GetCacheFilePath(chatHistory, executionSettings);
+        var contents = new CacheFileContents<T>(new(chatHistory, executionSettings), response);
+
+        var filePath = GetCacheFilePath(contents.Request);
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-        File.WriteAllText(filePath, response);
-        File.WriteAllText(filePath.Replace(".response.txt", ".request.json"), GetCacheKeyInput(chatHistory, executionSettings));
+        File.WriteAllText(filePath, JsonSerializer.Serialize(contents, JsonOptions));
     }
 
-    private string GetCacheFilePath(ChatHistory chatHistory, PromptExecutionSettings? executionSettings)
-        => GetCacheFilePath(chatHistory, executionSettings, chatHistory.LastOrDefault()?.ToString() ?? "no_messages");
+    private string GetCacheFilePath(CacheFileRequest request)
+        => GetCacheFilePath(request, request.ChatHistory.LastOrDefault()?.ToString() ?? "no_messages");
 
-    private string GetCacheFilePath(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, string summary)
-        => Path.Combine(cacheDir, $"{GetCacheKey(chatHistory, executionSettings, summary)}.response.txt");
+    private string GetCacheFilePath(CacheFileRequest request, string summary)
+        => Path.Combine(cacheDir, $"{GetCacheKey(request, summary)}.json");
 
-    private static string GetCacheKeyInput(ChatHistory chatHistory, PromptExecutionSettings? executionSettings)
-        => JsonSerializer.Serialize(new object?[] { chatHistory, executionSettings }, JsonOptions).Replace("\\r", "");
+    private static string GetCacheKeyInput(CacheFileRequest request)
+        => JsonSerializer.Serialize(new object?[] { request.ChatHistory, request.ExecutionSettings }, JsonOptions).Replace("\\r", "");
 
-    private static string GetCacheKey(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, string summary)
+    private static string GetCacheKey(CacheFileRequest request, string summary)
     {
-        var json = GetCacheKeyInput(chatHistory, executionSettings);
+        var json = GetCacheKeyInput(request);
         var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(json));
 
@@ -92,4 +95,7 @@ internal class ChatCompletionResponseCache(string cacheDir, ILoggerFactory logge
         }
         return sb.ToString();
     }
+
+    private record CacheFileContents<T>(CacheFileRequest Request, T Response);
+    private record CacheFileRequest(ChatHistory ChatHistory, PromptExecutionSettings? ExecutionSettings);
 }

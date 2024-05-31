@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -11,26 +10,24 @@ internal class CachedChatCompletionService(IChatCompletionService underlying, st
     public IReadOnlyDictionary<string, object?> Attributes => throw new NotImplementedException();
 
     private readonly ChatCompletionResponseCache _cache = new(cacheDir, loggerFactory);
-    private readonly static JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 
     public async Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, CancellationToken cancellationToken = default)
     {
-        if (_cache.TryGetCachedResponse(chatHistory, executionSettings, out var cachedJson))
+        if (_cache.TryGetCachedResponse<ChatMessageContent[]>(chatHistory, executionSettings, out var cached))
         {
-            return JsonSerializer.Deserialize<ChatMessageContent[]>(cachedJson, JsonOptions)!;
+            return cached;
         }
 
         var response = await underlying.GetChatMessageContentsAsync(chatHistory, executionSettings, kernel, cancellationToken);
-        _cache.SetCachedResponse(chatHistory, executionSettings, JsonSerializer.Serialize(response, JsonOptions));
+        _cache.SetCachedResponse(chatHistory, executionSettings, response);
         return response;
     }
 
     public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        if (_cache.TryGetCachedResponse(chatHistory, executionSettings, out var cachedJson))
+        if (_cache.TryGetCachedResponse<StreamingChatMessageContent[]>(chatHistory, executionSettings, out var cached))
         {
-            var chunks = JsonSerializer.Deserialize<StreamingChatMessageContent[]>(cachedJson, JsonOptions)!;
-            foreach (var chunk in chunks)
+            foreach (var chunk in cached)
             {
                 yield return chunk;
             }
@@ -46,6 +43,6 @@ internal class CachedChatCompletionService(IChatCompletionService underlying, st
             yield return chunk;
         }
 
-        _cache.SetCachedResponse(chatHistory, executionSettings, JsonSerializer.Serialize(capturedChunks, JsonOptions));
+        _cache.SetCachedResponse(chatHistory, executionSettings, capturedChunks);
     }
 }
