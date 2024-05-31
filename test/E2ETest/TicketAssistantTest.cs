@@ -54,6 +54,7 @@ public class TicketAssistantTest(AppHostFixture app) : PlaywrightTestBase
     private async Task SendMessageAsync(string text)
     {
         await WriteMessageTextArea.FillAsync(text);
+        await Task.Delay(500);
         await WriteMessageTextArea.PressAsync("Enter");
     }
 
