@@ -26,7 +26,29 @@ public class TicketAssistantTest(AppHostFixture app) : PlaywrightTestBase
         var url = await app.StaffWebUI.ResolveUrlAsync("/ticket/1");
         await Page.GotoAsync(url);
         await SendMessageAsync("What product is this about? Reply with the product name only and no other text.");
-        Assert.Equal("Trailblazer Bike Helmet", await GetNthReplyText(0));
+
+        var reply = await GetNthCompletedReply(0);
+        await Expect(reply.Locator(".message-text")).ToHaveTextAsync("Trailblazer Bike Helmet");
+    }
+
+    [Fact]
+    public async Task CanSearchManualToGetAnswer()
+    {
+        var url = await app.StaffWebUI.ResolveUrlAsync("/ticket/1");
+        await Page.GotoAsync(url);
+
+        await SuggestionLinks.Nth(0).ClickAsync();
+
+        // See it does a search and gets info from the manual
+        var reply = await GetNthCompletedReply(0);
+        await Expect(reply.Locator(".search-info")).ToContainTextAsync("safety light troubleshooting");
+        await Expect(reply.Locator(".message-text")).ToContainTextAsync("check the battery and inspect the light for damage");
+
+        // Also check the link to the manual
+        var referenceLink = reply.Locator(".reference-link");
+        await Expect(referenceLink).ToContainTextAsync("please follow the steps below");
+        var referenceLinkUrl = await referenceLink.GetAttributeAsync("href");
+        Assert.StartsWith("manual.html?file=1.pdf&page=7", referenceLinkUrl);
     }
 
     private async Task SendMessageAsync(string text)
@@ -35,13 +57,13 @@ public class TicketAssistantTest(AppHostFixture app) : PlaywrightTestBase
         await WriteMessageTextArea.PressAsync("Enter");
     }
 
-    private async Task<string?> GetNthReplyText(int n)
+    private async Task<ILocator> GetNthCompletedReply(int n)
     {
         // Wait for it to be added to the page, and the response to be completed
         await Expect(NthReply(n)).ToBeAttachedAsync();
         await Expect(Page.Locator(".assistant .write-message.in-progress"))
             .ToHaveCountAsync(0, new() { Timeout = 30000 });
 
-        return await NthReply(n).Locator(".message-text").TextContentAsync();
+        return NthReply(n);
     }
 }
