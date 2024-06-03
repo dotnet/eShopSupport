@@ -6,7 +6,7 @@ internal static class OutputHelper
 {
     public static void Write(string directoryName, ProductCategory value)
     {
-        var outputDirRoot = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "output");
+        var outputDirRoot = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "output-demo");
         var outputDirPath = Path.Combine(outputDirRoot, directoryName);
 
         if (!Directory.Exists(outputDirPath))

@@ -15,7 +15,7 @@ public abstract class GeneratorBase<T>
 
     protected abstract object GetId(T item);
 
-    public static string OutputDirRoot => Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "output");
+    public static string OutputDirRoot => Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "output-demo");
 
     protected string OutputDirPath => Path.Combine(OutputDirRoot, DirectoryName);
 
