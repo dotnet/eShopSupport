@@ -20,7 +20,7 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
             yield break;
         }
 
-        var numQuestions = 500;
+        var numQuestions = 5;
         var questionId = 0;
         var outputChannel = Channel.CreateUnbounded<EvalQuestion>();
         var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 10 };

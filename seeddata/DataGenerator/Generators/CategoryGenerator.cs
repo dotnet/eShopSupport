@@ -17,8 +17,8 @@ public class CategoryGenerator(IServiceProvider services) : GeneratorBase<Catego
             yield break;
         }
 
-        var numCategories = 50;
-        var batchSize = 25;
+        var numCategories = 3;
+        var batchSize = 3;
         var categoryNames = new HashSet<string>();
 
         while (categoryNames.Count < numCategories)

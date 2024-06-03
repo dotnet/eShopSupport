@@ -16,8 +16,8 @@ public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Cate
             yield break;
         }
 
-        var numTickets = 500;
-        var batchSize = 10;
+        var numTickets = 3;
+        var batchSize = 3;
         var ticketId = 0;
 
         string[] situations = [

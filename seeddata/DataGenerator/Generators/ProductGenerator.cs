@@ -16,8 +16,8 @@ public class ProductGenerator(IReadOnlyList<Category> categories, IServiceProvid
             yield break;
         }
 
-        var numProducts = 200;
-        var batchSize = 5;
+        var numProducts = 3;
+        var batchSize = 3;
         var productId = 0;
 
         var mappedBatches = MapParallel(Enumerable.Range(0, numProducts / batchSize), async batchIndex =>
