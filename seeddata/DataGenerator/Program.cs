@@ -14,9 +14,10 @@ builder.AddOllamaChatCompletionService("localhost:11434", "mistral:7b");
 
 var services = builder.Build().Services;
 
-//var categories = await new SimpleCategoryGenerator(services).GenerateAsync();
-//Console.WriteLine($"Got {categories.Count} categories");
+var categories = await new SimpleCategoryGenerator(services).GenerateAsync();
+Console.WriteLine($"Got {categories.Count} categories");
 
+/*
 var categories = await new CategoryGenerator(services).GenerateAsync();
 Console.WriteLine($"Got {categories.Count} categories");
 
@@ -40,3 +41,4 @@ Console.WriteLine($"Got {ticketThreads.Count} threads");
 
 var evalQuestions = await new EvalQuestionGenerator(products, categories, manuals, services).GenerateAsync();
 Console.WriteLine($"Got {evalQuestions.Count} evaluation questions");
+*/
