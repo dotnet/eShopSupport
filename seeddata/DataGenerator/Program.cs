@@ -1,14 +1,21 @@
 ﻿using eShopSupport.DataGenerator;
 using eShopSupport.DataGenerator.Generators;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true);
-builder.AddOpenAIChatCompletion("chatcompletion");
+builder.Services.AddSingleton<HttpClient>();
+
+//builder.AddOpenAIChatCompletion("chatcompletion");
+builder.AddOllamaChatCompletionService("localhost:11434", "mistral:7b");
 
 var services = builder.Build().Services;
+
+//var categories = await new SimpleCategoryGenerator(services).GenerateAsync();
+//Console.WriteLine($"Got {categories.Count} categories");
 
 var categories = await new CategoryGenerator(services).GenerateAsync();
 Console.WriteLine($"Got {categories.Count} categories");
