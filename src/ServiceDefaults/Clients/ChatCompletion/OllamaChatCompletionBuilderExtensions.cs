@@ -4,11 +4,11 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Microsoft.Extensions.Hosting;
 
-internal static class OllamaChatCompletionBuilderExtensions
+public static class OllamaChatCompletionBuilderExtensions
 {
-    public static void AddOllamaChatCompletionService(this IHostApplicationBuilder builder, string name)
+    public static void AddOllamaChatCompletionService(this IHostApplicationBuilder builder, string name, string? model = null)
     {
-        var modelName = Environment.GetEnvironmentVariable($"{name}:LlmModelName");
+        var modelName = model ?? Environment.GetEnvironmentVariable($"{name}:LlmModelName");
         if (string.IsNullOrEmpty(modelName))
         {
             throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
