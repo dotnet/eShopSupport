@@ -22,6 +22,7 @@ public static class TicketMessagingApi
         });
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        // Runs in the background and notifies when the summary is updated
         summarizer.UpdateSummary(ticketId);
 
         return Results.Ok();
