@@ -7,12 +7,12 @@ using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 public class ManualIngestor
 {
-    public async Task RunAsync(string generatedDataPath, string outputDir)
+    public async Task RunAsync(string sourceDir, string outputDir)
     {
         Console.WriteLine("Ingesting manuals...");
 
         // Chunk and embed them
-        var manualsSourceDir = Path.Combine(generatedDataPath, "manuals", "pdf");
+        var manualsSourceDir = Path.Combine(sourceDir, "manuals", "pdf");
         using var tika = new Tika();
         using var embeddingGenerator = new LocalTextEmbeddingGenerationService();
         var chunks = new List<ManualChunk>();
