@@ -1,5 +1,4 @@
-﻿using System.IO.Compression;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text.Json;
 using AspirePython.VectorDbIngestor;
 using eShopSupport.Backend.Data;
@@ -12,14 +11,8 @@ public class ManualIngestor
     {
         Console.WriteLine("Ingesting manuals...");
 
-        // First make a zip of the manual PDF files
+        // Chunk and embed them
         var manualsSourceDir = Path.Combine(generatedDataPath, "manuals", "pdf");
-        Console.WriteLine("Compressing manuals...");
-        var manualsZipPath = Path.Combine(outputDir, "manuals.zip");
-        File.Delete(manualsZipPath);
-        ZipFile.CreateFromDirectory(manualsSourceDir, manualsZipPath);
-
-        // Now chunk and embed them
         using var tika = new Tika();
         using var embeddingGenerator = new LocalTextEmbeddingGenerationService();
         var chunks = new List<ManualChunk>();

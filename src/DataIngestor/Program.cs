@@ -21,9 +21,15 @@
 // production DBs.
 
 var generatedDataPath = args.Length > 0 ? args[0] : null;
-if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPath))
+if (string.IsNullOrEmpty(generatedDataPath))
 {
     Console.WriteLine("Usage: DataIngestor [path_to_generated_data]");
+    return;
+}
+
+if (!Directory.Exists(generatedDataPath))
+{
+    Console.WriteLine($"Directory not found: {generatedDataPath}. You may need to run the data generator first.");
     return;
 }
 
@@ -36,3 +42,4 @@ await new ProductCategoryIngestor().RunAsync(generatedDataPath, outputDir);
 await new ProductIngestor().RunAsync(generatedDataPath, outputDir);
 await new EvalQuestionIngestor().RunAsync(generatedDataPath, outputDir);
 await new ManualIngestor().RunAsync(generatedDataPath, outputDir);
+await new ManualZipIngestor().RunAsync(generatedDataPath, outputDir);
