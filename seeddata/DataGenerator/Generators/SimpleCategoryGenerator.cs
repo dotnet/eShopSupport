@@ -37,7 +37,7 @@ public class SimpleCategoryGenerator(IServiceProvider services)
 
             var response = await ChatCompletion.GetChatMessageContentAsync(
                 new ChatHistory(prompt),
-                new OpenAIPromptExecutionSettings { ResponseFormat = "json_object" });
+                new OpenAIPromptExecutionSettings { ResponseFormat = "json_object", MaxTokens = 70 * batchSize });
 
             // Parse the response, and output any new ones
             var parsedResponse = JsonSerializer.Deserialize<Response>(response.ToString(), JsonOptions)!;
