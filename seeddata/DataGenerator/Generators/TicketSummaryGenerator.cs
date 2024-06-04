@@ -79,8 +79,9 @@ public class TicketSummaryGenerator(IReadOnlyList<Product> products, IReadOnlyLi
             ticketType must be one of the specified values best matching the ticket. Do not use any other value except the specified ones.";
 
         var response = await GetAndParseJsonChatCompletion<Response>(prompt);
-        thread.ShortSummary = response.ShortSummary;
-        thread.LongSummary = response.LongSummary;
+        // Not including these fields because we'll show creating them in the demo
+        //thread.ShortSummary = response.ShortSummary;
+        //thread.LongSummary = response.LongSummary;
         thread.CustomerSatisfaction = null;
         thread.TicketStatus = response.TicketStatus;
         thread.TicketType = response.TicketType;
@@ -89,7 +90,7 @@ public class TicketSummaryGenerator(IReadOnlyList<Product> products, IReadOnlyLi
         if (satisfactionScore > 0)
         {
             var satisfactionPercent = (int)(10 * ((double)satisfactionScore / (satisfactionScores.Length - 1)));
-            thread.CustomerSatisfaction = satisfactionPercent;
+            //thread.CustomerSatisfaction = satisfactionPercent;
         }
     }
 
