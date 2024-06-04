@@ -34,7 +34,7 @@ if (!Directory.Exists(generatedDataPath))
 }
 
 var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
-var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
+var outputDir = Path.Combine(solutionDir, "seeddata", "demo");
 Directory.CreateDirectory(outputDir);
 
 await new TicketIngestor().RunAsync(generatedDataPath, outputDir);

@@ -1,0 +1,32 @@
+[
+  {
+    "QuestionId": 1,
+    "ProductId": 3,
+    "Question": "How to change brightness level?",
+    "Answer": "Press button B multiple times."
+  },
+  {
+    "QuestionId": 2,
+    "ProductId": 3,
+    "Question": "Charging indicator status",
+    "Answer": "Check for flashing red and slowly blinking green lights"
+  },
+  {
+    "QuestionId": 3,
+    "ProductId": 3,
+    "Question": "How to charge with USB?",
+    "Answer": "Connect USB cable, provide power source."
+  },
+  {
+    "QuestionId": 4,
+    "ProductId": 3,
+    "Question": "Solar lanterns installation caution",
+    "Answer": "Be gentle during installation to avoid damaging internal components."
+  },
+  {
+    "QuestionId": 5,
+    "ProductId": 3,
+    "Question": "Hi there, I just bought the Sunglow GlowStar Solar Lanterns and I\u0027m wondering how long it takes to fully charge them using sunlight?",
+    "Answer": "Full day of sunlight is required for charging."
+  }
+]

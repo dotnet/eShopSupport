@@ -1,0 +1,125 @@
+[
+  {
+    "TicketId": 1,
+    "ProductId": 2,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 1,
+    "ShortSummary": null,
+    "LongSummary": null,
+    "CustomerSatisfaction": null,
+    "TicketStatus": "Open",
+    "TicketType": "Complaint",
+    "Messages": [
+      {
+        "MessageId": 1,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Gojuice, I CAN\u0027T BELIEVE THIS! I ordered the PowerBank Pro 10 DAYS ago and STILL no sign of delivery. I was looking forward to using it on my camping trip this weekend. Instead, I\u0027m stuck with dead devices and no power source. I demand a refund NOW or a replacement delivered in time. This is UNACCEPTABLE!"
+      },
+      {
+        "MessageId": 2,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "We apologize for the inconvenience caused by the delayed delivery of your Gojuice PowerBank Pro. According to our records, your order was dispatched yesterday and should arrive within 2 business days. If you require a replacement or refund based on our policies, please initiate the process at \u003Chttps://northernmountains.example.com/support/returns\u003E. We understand your disappointment about missing your camping trip and would be happy to help further if necessary."
+      },
+      {
+        "MessageId": 3,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "I have initiated the return process at \u003Chttps://northernmountains.example.com/support/returns\u003E. However, I find it hard to believe that my order was only dispatched yesterday when I placed it 10 DAYS ago! This is a clear violation of your promised delivery times and I will not accept such poor customer service. I demand a REPLACEMENT delivered before my next camping trip or a full refund NOW!"
+      },
+      {
+        "MessageId": 4,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "We apologize for the confusion regarding your order status. According to our system, your PowerBank Pro was indeed dispatched 10 days ago and you should have received it by now. We understand your frustration with this delay and we would be happy to process a replacement or refund as per our policies. Please provide your order number for us to expedite the process."
+      },
+      {
+        "MessageId": 5,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "I have provided my order number already in the return process. Yet another disappointment with Gojuice\u0027s incompetence! I can\u0027t believe I\u0027ve been kept waiting for weeks for a product that was supposed to arrive within days. This is a clear sign of your company\u0027s lack of commitment to customers. I expect a REPLACEMENT or a FULL REFUND before my next camping trip, otherwise, I will be taking my business elsewhere."
+      }
+    ]
+  },
+  {
+    "TicketId": 2,
+    "ProductId": 2,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 2,
+    "ShortSummary": null,
+    "LongSummary": null,
+    "CustomerSatisfaction": null,
+    "TicketStatus": "Open",
+    "TicketType": "Returns",
+    "Messages": [
+      {
+        "MessageId": 6,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Delivery wrong. PowerBank Pro late. Want refund."
+      },
+      {
+        "MessageId": 7,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "We apologize for any inconvenience caused by the delayed delivery of your Gojuice PowerBank Pro 10000mAh. According to our policy, we can process a refund if the product is returned within 30 days of delivery, unopened and in its original packaging. For defective products, you may return it within one year of purchase for a refund. Kindly initiate the return process at https://northernmountains.example.com/support/returns."
+      },
+      {
+        "MessageId": 8,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Delivered. Refund."
+      }
+    ]
+  },
+  {
+    "TicketId": 3,
+    "ProductId": 1,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "CustomerId": 3,
+    "ShortSummary": null,
+    "LongSummary": null,
+    "CustomerSatisfaction": null,
+    "TicketStatus": "Open",
+    "TicketType": "Question",
+    "Messages": [
+      {
+        "MessageId": 9,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Hey there Sunny Buddy Support Team! \nI just got my new Sunglow Revive XL Solar Lantern, Bubba\u0027s latest addition to his underwater den!\n I know it\u0027s designed for camping and all that jazz, but I was wondering if this little guy could survive a dunk in the river every now and then? I mean, it\u0027s waterproof, right?\n Plus, I think the brightness setting could really come in handy when I\u0027m trying to find my hidden stash of acorns! \nSo, can Bubba count on you guys for a little advice, or maybe even a reassuring chuckle that I\u0027m not being too outrageous here?\nThanks a ton in advance, looking forward to hearing from ya soon!\nYour new buddy, Bubba the Beaver"
+      },
+      {
+        "MessageId": 10,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "The Sunglow Revive XL Solar Lantern is waterproof and designed for outdoor use. According to the manual, \u0027The Revive XL Solar Lantern is IPX7 waterproof, making it ideal for use in all weather conditions.\u0027 However, we recommend avoiding intentional submergence in deep water to ensure long-term durability."
+      },
+      {
+        "MessageId": 11,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": true,
+        "Text": "Hey Sunny Buddy Support Team! I\u0027m glad to hear that my little Revive XL Solar Lantern, Bubba\u0027s new aquatic companion, is waterproof and all! That\u0027s great news for me and my den under the river. But just to clarify, do you mean \u0027avoiding intentional submergence in deep water\u0027 as in avoiding taking it scuba diving or something like that? Because I was thinking more like a casual dip here and there, maybe during Bubba\u0027s swimming lessons! What do you think, sunshine? Can my pal the lantern handle it? Or should we stick to the shallow end? Wink wink! Thanks for your help and advice, as always. Keep shining bright, Sunny Buddy Team!"
+      },
+      {
+        "MessageId": 12,
+        "CreatedAt": "0001-01-01T00:00:00",
+        "TicketId": 0,
+        "IsCustomerMessage": false,
+        "Text": "The manual states: \u0027Avoid intentional submergence in deep water.\u0027 This recommendation is meant to ensure the longevity of the lantern. If you\u0027d like to use it for shallow water activities, it should be fine."
+      }
+    ]
+  }
+]

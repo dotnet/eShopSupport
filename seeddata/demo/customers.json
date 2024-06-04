@@ -1,0 +1,14 @@
+[
+  {
+    "CustomerId": 2,
+    "FullName": "Moe Sloth"
+  },
+  {
+    "CustomerId": 3,
+    "FullName": "Bubba the Beaver"
+  },
+  {
+    "CustomerId": 1,
+    "FullName": "Maximus Thunderbolt"
+  }
+]
