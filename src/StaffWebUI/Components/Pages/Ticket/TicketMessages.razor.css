@@ -17,6 +17,10 @@
     flex-grow: 1;
 }
 
+    .messages:not(:has(.summary)) {
+        padding-top: 1rem;
+    }
+
 .summary {
     position: sticky;
     top: 0;
