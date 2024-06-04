@@ -37,9 +37,13 @@ var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
 var outputDir = Path.Combine(solutionDir, "seeddata", "demo");
 Directory.CreateDirectory(outputDir);
 
+/*
 await new TicketIngestor().RunAsync(generatedDataPath, outputDir);
 await new ProductCategoryIngestor().RunAsync(generatedDataPath, outputDir);
 await new ProductIngestor().RunAsync(generatedDataPath, outputDir);
 await new EvalQuestionIngestor().RunAsync(generatedDataPath, outputDir);
+*/
 await new ManualIngestor().RunAsync(generatedDataPath, outputDir);
+/*
 await new ManualZipIngestor().RunAsync(generatedDataPath, outputDir);
+*/
