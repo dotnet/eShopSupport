@@ -29,6 +29,7 @@ if (string.IsNullOrEmpty(generatedDataPath) || !Directory.Exists(generatedDataPa
 
 var solutionDir = PathUtils.FindAncestorDirectoryContaining("*.sln");
 var outputDir = Path.Combine(solutionDir, "seeddata", "dev");
+Directory.CreateDirectory(outputDir);
 
 await new TicketIngestor().RunAsync(generatedDataPath, outputDir);
 await new ProductCategoryIngestor().RunAsync(generatedDataPath, outputDir);
