@@ -8,9 +8,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
+// Comparing models:
+//
 // GPT 4o: After 100 questions: average score = 0.800, average duration = 9005.543ms
 // GPT 3.5 Turbo: After 200 questions: average score = 0.733, average duration = 3450.547ms
 // Mistral 7B (Ollama): After 100 questions: average score = 0.547, average duration = 25603.365ms
+//
+// ---
+//
+// Comparing prompts:
+//
+// Effect of adding "If this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual."
+// to the prompt:
+//
+// Without: After 200 questions: average score = 0.615, average duration = 2092.407ms
+// With:    After 200 questions: average score = 0.775, average duration = 2670.874ms
 
 var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
 var backend = new BackendClient(new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
