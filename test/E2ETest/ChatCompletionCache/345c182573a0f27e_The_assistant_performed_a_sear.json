@@ -392,7 +392,7 @@
       }
     },
     {
-      "Content": " suggests",
+      "Content": " advises",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -440,7 +440,7 @@
       }
     },
     {
-      "Content": " and",
+      "Content": " to",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -452,7 +452,7 @@
       }
     },
     {
-      "Content": " inspect",
+      "Content": " ensure",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -464,103 +464,7 @@
       }
     },
     {
-      "Content": "ing",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " the",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " light",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " for",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " damage",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": ".",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " If",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " the",
-      "Role": null,
-      "ChoiceIndex": 0,
-      "ModelId": "gpt35-1106-standard",
-      "Metadata": {
-        "Id": null,
-        "Created": "0001-01-01T00:00:00+00:00",
-        "SystemFingerprint": null,
-        "FinishReason": null
-      }
-    },
-    {
-      "Content": " battery",
+      "Content": " it",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -656,7 +560,7 @@
       }
     },
     {
-      "Content": " there",
+      "Content": " also",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -668,7 +572,7 @@
       }
     },
     {
-      "Content": " are",
+      "Content": " suggests",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -680,7 +584,67 @@
       }
     },
     {
-      "Content": " no",
+      "Content": " inspect",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": "ing",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " the",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " light",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " for",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " any",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -740,7 +704,19 @@
       }
     },
     {
-      "Content": " to",
+      "Content": ".",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " If",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -776,6 +752,30 @@
       }
     },
     {
+      "Content": " appears",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
+      "Content": " damaged",
+      "Role": null,
+      "ChoiceIndex": 0,
+      "ModelId": "gpt35-1106-standard",
+      "Metadata": {
+        "Id": null,
+        "Created": "0001-01-01T00:00:00+00:00",
+        "SystemFingerprint": null,
+        "FinishReason": null
+      }
+    },
+    {
       "Content": ",",
       "Role": null,
       "ChoiceIndex": 0,
@@ -800,7 +800,7 @@
       }
     },
     {
-      "Content": " customer",
+      "Content": " manual",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -812,7 +812,7 @@
       }
     },
     {
-      "Content": " should",
+      "Content": " recommends",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -824,7 +824,7 @@
       }
     },
     {
-      "Content": " contact",
+      "Content": " contacting",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
@@ -2372,7 +2372,7 @@
       }
     },
     {
-      "Content": " }",
+      "Content": "}",
       "Role": null,
       "ChoiceIndex": 0,
       "ModelId": "gpt35-1106-standard",
