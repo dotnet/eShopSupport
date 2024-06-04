@@ -117,6 +117,7 @@ public enum TicketStatus
 
 public enum TicketType
 {
+    NotSet,
     Question,
     Idea,
     Complaint,

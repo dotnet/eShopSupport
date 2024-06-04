@@ -1,12 +1,9 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Azure;
 using eShopSupport.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Npgsql.Internal;
 using StackExchange.Redis;
 
 namespace eShopSupport.Backend.Services;
@@ -37,10 +34,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                 .FirstOrDefaultAsync(t => t.TicketId == ticketId);
             if (ticket is not null)
             {
-                // The reason for prompting to express satisfation in words rather than numerically, and forcing it to generate a summary
-                // of the customer's words before doing so, are necessary prompt engineering techniques. If it's asked to generate sentiment
-                // score without first summarizing the customer's words, then it scores the agent's response even when told not to. If it's
-                // asked to score numerically, it produces wildly random scores - it's much better with words than numbers.
+                // Score with words, not numbers, as LLMs are much better with words
                 string[] satisfactionScores = ["AbsolutelyFurious", "VeryUnhappy", "Unhappy", "Disappointed", "Indifferent", "Pleased", "Happy", "Delighted", "UnspeakablyThrilled"];
 
                 var product = ticket.Product;
@@ -49,16 +43,14 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                     Your job is to write brief summaries of customer support interactions. This is to help support agents
                     understand the context quickly so they can help the customer efficiently.
 
-                    Here are details of a support ticket.
-
+                    Here are details of a support ticket:
                     Product: {{product?.Model ?? "Not specified"}}
                     Brand: {{product?.Brand ?? "Not specified"}}
 
                     The message log so far is:
-
                     {{FormatMessagesForPrompt(ticket.Messages)}}
 
-                    Write these summaries:
+                    Write these summaries for customer support agents:
 
                     1. A longer summary that is up to 30 words long, condensing as much distinctive information
                        as possible. Do NOT repeat the customer or product name, since this is known anyway.
@@ -66,21 +58,16 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                        Always cite specifics of the questions or answers. For example, if there is pending question, summarize it in a few words.
                        FOCUS ON THE CURRENT STATUS AND WHAT KIND OF RESPONSE (IF ANY) WOULD BE MOST USEFUL FROM THE NEXT SUPPORT AGENT.
 
-                    2. A shorter summary that is up to 8 words long. This functions as a title for the ticket,
+                    2. Condense that into a shorter summary up to 8 words long, which functions as a title for the ticket,
                        so the goal is to distinguish what's unique about this ticket.
 
-                    3. A 10-word summary of the latest thing the CUSTOMER has said, ignoring any agent messages. Then, based
-                       ONLY on tenWordsSummarizingOnlyWhatCustomerSaid, score the customer's satisfaction using one of the following
-                       phrases ranked from worst to best:
+                    3. A customerSatisfaction score using one of the following phrases ranked from worst to best:
                        {{string.Join(", ", satisfactionScores)}}.
-                       Pay particular attention to the TONE of the customer's messages, as we are most interested in their emotional state.
-
-                    Both summaries will only be seen by customer support agents.
+                       Focus on the CUSTOMER'S messages (not support agent messages) to determine their satisfaction level.
 
                     Respond as JSON in the following form: {
                       "longSummary": "string",
                       "shortSummary": "string",
-                      "tenWordsSummarizingOnlyWhatCustomerSaid": "string",
                       "customerSatisfaction": "string"
                     }
                     """;

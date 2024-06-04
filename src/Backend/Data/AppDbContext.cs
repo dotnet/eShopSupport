@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.Retry;
@@ -71,6 +72,12 @@ public class AppDbContext : DbContext
                     message.MessageId = 0;
                     message.CreatedAt = DateTime.UtcNow;
                 }
+
+                // For the demo, don't import these fields as we want to show generating them as a new thing
+                ticket.TicketType = TicketType.NotSet;
+                ticket.LongSummary = null;
+                ticket.ShortSummary = null;
+                ticket.CustomerSatisfaction = null;
             }
             foreach (var customer in customers)
             {
