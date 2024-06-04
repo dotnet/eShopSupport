@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel.Memory;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
 
 ISemanticTextMemory semanticTextMemory = new SemanticTextMemory(
-    new InProcessVectorStore("seeddata/demo/manual-chunks.json"),
+    new InProcessVectorStore("seeddata/dev/manual-chunks.json"),
     new LocalTextEmbeddingGenerationService());
 
 while (true)
