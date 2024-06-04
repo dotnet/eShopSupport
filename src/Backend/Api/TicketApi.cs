@@ -149,9 +149,11 @@ public static class TicketApi
 
     private static async Task CreateTicketAsync(AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request)
     {
-        // Classify the new ticket
+        // Classify the new ticket using the small zero-shot classifier model
         var ticketTypes = Enum.GetValues<TicketType>();
-        var inferredTicketType = await pythonInference.ClassifyTextAsync(request.Message, ticketTypes.Select(type => type.ToString()));
+        var inferredTicketType = await pythonInference.ClassifyTextAsync(
+            request.Message,
+            candidateLabels: ticketTypes.Select(type => type.ToString()));
 
         var ticket = new Ticket
         {
