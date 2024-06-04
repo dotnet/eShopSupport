@@ -41,6 +41,6 @@ public static class TicketMessagingApi
         await dbContext.SaveChangesAsync();
 
         // Runs in the background and notifies when the summary is updated
-        summarizer.UpdateSummary(ticketId);
+        // summarizer.UpdateSummary(ticketId);
     }
 }
