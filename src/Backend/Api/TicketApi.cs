@@ -186,7 +186,6 @@ public static class TicketApi
             TicketType = Enum.TryParse<TicketType>(inferredTicketType, out var type) ? type : TicketType.Question,
         };
 
-        // TODO: Better lookup using ID
         if (!string.IsNullOrEmpty(request.ProductName)
             && Regex.Match(request.ProductName, @"^(.*) \((.*)\)$") is { Success: true } match)
         {
