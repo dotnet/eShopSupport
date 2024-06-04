@@ -68,7 +68,7 @@ public static class AssistantApi
         var executionSettings = new OpenAIPromptExecutionSettings
         {
             ResponseFormat = "json_object",
-            Temperature = 0,
+            Seed = 0,
         };
 
         var maxIterations = 3; // On each iteration, it's allowed to call a tool or to return an answer

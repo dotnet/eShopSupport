@@ -90,6 +90,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                 var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, new OpenAIPromptExecutionSettings
                 {
                     ResponseFormat = "json_object",
+                    Seed = 0,
                 });
 
                 // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
