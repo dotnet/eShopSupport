@@ -26,10 +26,10 @@
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.7.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.7.2" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.44.0" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.10.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.14" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.10.0-alpha" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.10.0" />
-    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.10.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.14" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.14" />
     <!-- Open Telemetry -->
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
