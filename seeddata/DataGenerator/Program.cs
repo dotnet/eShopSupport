@@ -9,13 +9,10 @@ builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true);
 builder.Services.AddSingleton<HttpClient>();
 
-//builder.AddOpenAIChatCompletion("chatcompletion");
-builder.AddOllamaChatCompletionService("localhost:11434", "mistral:7b");
+builder.AddOpenAIChatCompletion("chatcompletion");
+//builder.AddOllamaChatCompletionService("localhost:11434", "mistral:7b");
 
 var services = builder.Build().Services;
-
-var categories = await new SimpleCategoryGenerator(services).GenerateAsync();
-Console.WriteLine($"Got {categories.Count} categories");
 
 /*
 var categories = await new CategoryGenerator(services).GenerateAsync();
@@ -44,4 +41,4 @@ Console.WriteLine($"Got {ticketThreads.Count} summaries");
 
 var evalQuestions = await new EvalQuestionGenerator(products, categories, manuals, services).GenerateAsync();
 Console.WriteLine($"Got {evalQuestions.Count} evaluation questions");
-*/
+

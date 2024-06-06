@@ -60,9 +60,7 @@ internal class InProcessVectorStore : IMemoryStore
     }
 
     public Task<bool> DoesCollectionExistAsync(string collectionName, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+        => Task.FromResult(true);
 
     public Task<MemoryRecord?> GetAsync(string collectionName, string key, bool withEmbedding = false, CancellationToken cancellationToken = default)
     {
