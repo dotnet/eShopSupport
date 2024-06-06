@@ -39,7 +39,7 @@ public static class ChatCompletionServiceExtensions
 
         if (!string.IsNullOrEmpty(cacheDir))
         {
-            //AddChatCompletionCaching(builder, cacheDir);
+            AddChatCompletionCaching(builder, cacheDir);
         }
     }
 
