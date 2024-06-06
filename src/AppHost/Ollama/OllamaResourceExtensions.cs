@@ -28,7 +28,7 @@ internal static class OllamaResourceExtensions
 
         if (enableGpu)
         {
-            ollama = ollama.WithContainerRunArgs("--gpus=all");
+            ollama = ollama.WithContainerRuntimeArgs("--gpus=all");
         }
 
         builder.Services.TryAddLifecycleHook<OllamaEnsureModelAvailableHook>();
