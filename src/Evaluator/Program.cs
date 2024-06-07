@@ -113,7 +113,7 @@ async Task<(double? Score, string Justification)[]> ScoreAnswersAsync(IReadOnlyC
 
     var chatHistory = new ChatHistory();
     chatHistory.AddUserMessage(prompt);
-    var promptExecutionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object"};
+    var promptExecutionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object", Seed = 0, Temperature = 0 };
     var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, promptExecutionSettings);
     var responseJson = response.ToString();
     var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
