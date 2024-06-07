@@ -4,6 +4,11 @@ using AspirePython.VectorDbIngestor;
 using eShopSupport.Backend.Data;
 using Microsoft.SemanticKernel.Text;
 using SmartComponents.LocalEmbeddings.SemanticKernel;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.PageSegmenter;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
+using UglyToad.PdfPig.Util;
 
 public class ManualIngestor
 {
@@ -13,7 +18,7 @@ public class ManualIngestor
 
         // Chunk and embed them
         var manualsSourceDir = Path.Combine(sourceDir, "manuals", "pdf");
-        using var tika = new Tika();
+        //using var tika = new Tika();
         using var embeddingGenerator = new LocalTextEmbeddingGenerationService();
         var chunks = new List<ManualChunk>();
         var paragraphIndex = 0;
@@ -21,9 +26,18 @@ public class ManualIngestor
         {
             Console.WriteLine($"Generating chunks for {file}...");
             var docId = int.Parse(Path.GetFileNameWithoutExtension(file));
-            foreach (var extract in await tika.ExtractTextAsync(file))
+            using PdfDocument document = PdfDocument.Open(file);
+            foreach (var page in document.GetPages())
             {
-                var paragraphs = TextChunker.SplitPlainTextParagraphs([extract.Text], 200);
+                var letters = page.Letters;
+                var wordExtractor = NearestNeighbourWordExtractor.Instance;
+                var words = wordExtractor.GetWords(letters);
+                var pageSegmenter = DocstrumBoundingBoxes.Instance;
+                var textBlocks = pageSegmenter.GetBlocks(words);
+                var pageText = string.Join(Environment.NewLine + Environment.NewLine, textBlocks.Select(t => t.Text.ReplaceLineEndings(" ")));
+                
+
+                var paragraphs = TextChunker.SplitPlainTextParagraphs([pageText], 200);
                 var paragraphsWithEmbeddings = paragraphs.Zip(await embeddingGenerator.GenerateEmbeddingsAsync(paragraphs));
 
                 foreach (var p in paragraphsWithEmbeddings)
@@ -31,7 +45,7 @@ public class ManualIngestor
                     var chunk = new ManualChunk
                     {
                         ProductId = docId,
-                        PageNumber = extract.PageNumber,
+                        PageNumber = page.Number,
                         ChunkId = ++paragraphIndex,
                         Text = p.First,
                         Embedding = MemoryMarshal.AsBytes(p.Second.Span).ToArray()

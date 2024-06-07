@@ -19,6 +19,8 @@
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 
     <PackageReference Include="Microsoft.SemanticKernel.Core" />
+
+    <PackageReference Include="PdfPig" />
     <PackageReference Include="SmartComponents.LocalEmbeddings.SemanticKernel" />
   </ItemGroup>
 
