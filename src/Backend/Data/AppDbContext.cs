@@ -28,7 +28,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Ticket>().HasOne(t => t.Product);
     }
 
-    public static async Task EnsureDbCreatedAsync(IServiceProvider services)
+    public static async Task EnsureDbCreatedAsync(IServiceProvider services, string? initialImportDataDir)
     {
         using var scope = services.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -37,14 +37,10 @@ public class AppDbContext : DbContext
         var pipeline = new ResiliencePipelineBuilder().AddRetry(new RetryStrategyOptions { Delay = TimeSpan.FromSeconds(3) }).Build();
         var createdDb = await pipeline.ExecuteAsync(async (CancellationToken ct) =>
             await dbContext.Database.EnsureCreatedAsync(ct));
-        
-        if (createdDb)
+
+        if (createdDb && !string.IsNullOrEmpty(initialImportDataDir))
         {
-            var importDataFromDir = Environment.GetEnvironmentVariable("ImportInitialDataDir");
-            if (!string.IsNullOrEmpty(importDataFromDir))
-            {
-                await ImportInitialData(dbContext, importDataFromDir);
-            }
+            await ImportInitialData(dbContext, initialImportDataDir);
         }
     }
 

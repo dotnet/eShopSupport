@@ -28,13 +28,15 @@ builder.Services.AddScoped<TicketSummarizer>();
 builder.Services.AddHttpClient<PythonInferenceClient>(c => c.BaseAddress = new Uri("http://python-inference"));
 builder.AddAzureBlobClient("eshopsupport-blobs");
 
-builder.AddChatCompletionService("chatcompletion", Environment.GetEnvironmentVariable("E2E_TEST_CHAT_COMPLETION_CACHE_DIR"));
+builder.AddChatCompletionService("chatcompletion", builder.Configuration["E2E_TEST_CHAT_COMPLETION_CACHE_DIR"]);
 builder.AddRedisClient("redis");
 
 var app = builder.Build();
-await AppDbContext.EnsureDbCreatedAsync(app.Services);
-await ProductSemanticSearch.EnsureSeedDataImportedAsync(app.Services);
-await ProductManualSemanticSearch.EnsureSeedDataImportedAsync(app.Services);
+
+var initialImportDataDir = builder.Configuration["ImportInitialDataDir"];
+await AppDbContext.EnsureDbCreatedAsync(app.Services, initialImportDataDir);
+await ProductSemanticSearch.EnsureSeedDataImportedAsync(app.Services, initialImportDataDir);
+await ProductManualSemanticSearch.EnsureSeedDataImportedAsync(app.Services, initialImportDataDir);
 
 app.MapAssistantApiEndpoints();
 app.MapTicketApiEndpoints();

@@ -21,13 +21,12 @@ public class ProductSemanticSearch(ISemanticTextMemory semanticTextMemory)
         return results;
     }
 
-    public static async Task EnsureSeedDataImportedAsync(IServiceProvider services)
+    public static async Task EnsureSeedDataImportedAsync(IServiceProvider services, string? initialImportDataDir)
     {
-        var importDataFromDir = Environment.GetEnvironmentVariable("ImportInitialDataDir");
-        if (!string.IsNullOrEmpty(importDataFromDir))
+        if (!string.IsNullOrEmpty(initialImportDataDir))
         {
             using var scope = services.CreateScope();
-            await ImportProductSeedDataAsync(importDataFromDir, scope);
+            await ImportProductSeedDataAsync(initialImportDataDir, scope);
         }
     }
 

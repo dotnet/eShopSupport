@@ -2,10 +2,11 @@
 using Microsoft.Extensions.Hosting;
 using Projects;
 
-var isE2ETest = Environment.GetEnvironmentVariable("E2E_TEST") == "true";
 
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.Sources.Add(new JsonConfigurationSource { Path = "appsettings.Local.json", Optional = true });
+
+var isE2ETest = builder.Configuration["E2E_TEST"] == "true";
 
 var dbPassword = builder.AddParameter("PostgresPassword", secret: true);
 
