@@ -77,6 +77,7 @@ identityServer
     .WithEnvironment("CustomerWebUIEndpoint", customerWebUi.GetEndpoint("https"))
     .WithEnvironment("StaffWebUIEndpoint", staffWebUi.GetEndpoint("https"));
 
+// Enable persistence of data across app starts (except for E2E tests)
 if (!isE2ETest)
 {
     postgresServer.WithDataVolume();
