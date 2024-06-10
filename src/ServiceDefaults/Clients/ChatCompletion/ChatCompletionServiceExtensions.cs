@@ -14,7 +14,7 @@ public static class ChatCompletionServiceExtensions
 {
     public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
     {
-        var implementationType = Environment.GetEnvironmentVariable($"{name}:Type");
+        var implementationType = builder.Configuration[$"{name}:Type"];
         if (implementationType == "ollama")
         {
             builder.AddOllamaChatCompletionService(name);

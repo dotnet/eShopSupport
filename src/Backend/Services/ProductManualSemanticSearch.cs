@@ -41,14 +41,13 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
             null)).ToList();
     }
 
-    public static async Task EnsureSeedDataImportedAsync(IServiceProvider services)
+    public static async Task EnsureSeedDataImportedAsync(IServiceProvider services, string? initialImportDataDir)
     {
-        var importDataFromDir = Environment.GetEnvironmentVariable("ImportInitialDataDir");
-        if (!string.IsNullOrEmpty(importDataFromDir))
+        if (!string.IsNullOrEmpty(initialImportDataDir))
         {
             using var scope = services.CreateScope();
-            await ImportManualFilesSeedDataAsync(importDataFromDir, scope);
-            await ImportManualChunkSeedDataAsync(importDataFromDir, scope);
+            await ImportManualFilesSeedDataAsync(initialImportDataDir, scope);
+            await ImportManualChunkSeedDataAsync(initialImportDataDir, scope);
         }
     }
 
