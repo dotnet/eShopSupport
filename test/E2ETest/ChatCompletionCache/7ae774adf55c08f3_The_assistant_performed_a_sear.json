@@ -1,0 +1,1151 @@
+{
+  "Request": {
+    "ChatHistory": [
+      {
+        "Role": {
+          "Label": "system"
+        },
+        "Items": [
+          {
+            "$type": "TextContent",
+            "Text": "You are a helpful AI assistant called \u0027Assistant\u0027 who helps customer service agents working for Northern Mountains, an online retailer.\r\nThe customer service agent is currently handling the following ticket:\r\n    \r\n\u003Cproduct_id\u003E1\u003C/product_id\u003E\r\n\u003Cproduct_name\u003ETrailblazer Bike Helmet\u003C/product_name\u003E\r\n\u003Ccustomer_name\u003EEmily Johnson\u003C/customer_name\u003E\r\n\u003Csummary\u003ECustomer seeks assistance with non-functional LED safety light, has followed troubleshooting steps, and initiated warranty claim process. Next agent should provide guidance on potential return or repair process.\u003C/summary\u003E\r\n\r\nThe most recent message from the customer is this:\r\n\u003Ccustomer_message\u003EDear Northern Mountains Support, \n\nI have contacted Rugged Riders customer service at warranty@ruggedriders.com and provided the original proof of purchase along with a detailed description of the issue. I have followed the instructions in the user manual to ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, but unfortunately, the light is still not working. I hope Rugged Riders can assess the claim and provide further instructions for return or repair soon. Thank you for your assistance in this matter.\n\nSincerely, Emily Johnson\u003C/customer_message\u003E\r\nHowever, that is only provided for context. You are not answering that question directly. The real question is provided below.\r\n\r\nThe customer service agent may ask you for help either directly with the customer request, or other general information about this product or our other products. Respond to the AGENT\u0027S question, not specifically to the customer ticket.\r\nIf you need more information, you can search the product manual using \u0022searchParams\u0022 as described below.\r\n\r\nUse the context to reply in the following JSON format:\r\n\r\n{ \u0022gotEnoughInfoAleady\u0022: trueOrFalse, ... }\r\n\r\nIf this is a question about the product, you should ALWAYS set gotEnoughInfoAleady to false and search the manual.\r\n\r\nIf the context provides information, use it to add an answer like this: { \u0022gotEnoughInfoAlready\u0022: true, \u0022answer\u0022: string, \u0022mostRelevantSearchResultId\u0022: number, \u0022mostRelevantSearchQuote\u0022: string, \u0022isAddressedToCustomerByName\u0022: trueOrFalse }\r\nYou must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).\r\n\r\nIf you are asked to write a suggested reply to the customer, set isAddressedToCustomerByName to true and address your\r\nanswer DIRECTLY to the customer by name (e.g., begin \u0022Dear [name]...\u0022, and sign off as \u0022Northern Mountains Support\u0022).\r\nAlways use paragraph breaks to improve readability.\r\n\r\nIf you don\u0027t already have enough information, add a suggested search term to use like this: { \u0022gotEnoughInfoAlready\u0022: false, \u0022searchProductId\u0022: numberOrNull, \u0022searchPhrase\u0022: \u0022a phrase to look for in the manual\u0022 }.\r\nThat will search the product manual for the specified product, so you don\u0027t have to restate the name in the searchPhrase.                \r\nIf the question needs information from ALL product manuals (not just the one for this product), then set searchProductId to null.\r\n\r\nRemember that you are only answering the support agent\u0027s question to you. You are not answering the customer\u0027s question directly.\r\nHere is the real support agent\u0027s question for you to answer:"
+          }
+        ]
+      },
+      {
+        "Role": {
+          "Label": "user"
+        },
+        "Items": [
+          {
+            "$type": "TextContent",
+            "Text": "What does the manual say about this?"
+          }
+        ]
+      },
+      {
+        "Role": {
+          "Label": "system"
+        },
+        "Items": [
+          {
+            "$type": "TextContent",
+            "Text": "The assistant performed a search with term \u0022Trailblazer Bike Helmet LED safety light warranty and repair\u0022 on the user manual,\r\nwhich returned the following results:\r\n\u003Csearch_result productId=\u00221\u0022 resultId=\u002222\u0022\u003E5.4 LED Safety Light Warranty\n\nThe built-in LED safety light in the Trailblazer Bike Helmet is covered by a separate limited warranty for a period of 6 months from the date of purchase. This warranty covers defects in materials and workmanship.\n\n\n5.5 Limitation of Liability\n\nRugged Riders\u0027 liability under this limited warranty is limited to the repair or replacement of the defective product. Rugged Riders is not liable for any incidental or consequential damages resulting from the use of the Trailblazer Bike Helmet.\n\n\n5.6 Non-Transferable Warranty\n\nThis limited warranty is non-transferable and is only applicable to the original purchaser of the Trailblazer Bike Helmet. It is valid only in the country of purchase.\n\n\n5.7 Legal Rights\u003C/search_result\u003E\n\u003Csearch_result productId=\u00221\u0022 resultId=\u002216\u0022\u003E(c) Rugged Riders 7\n\n4. Troubleshooting\n\n\n4.1: LED Safety Light Not Working\n\n\nIf the LED safety light on your Trailblazer Bike Helmet is not working, please follow the steps below to troubleshoot the issue:\n\n1. Check the Battery: Ensure that the battery is properly installed and functional. Replace the battery if necessary with a CR2032 3V battery.\n\n2. Inspect the Light: Examine the LED light to see if there are any visible signs of damage. If the light appears damaged, please contact Rugged Riders customer support for further assistance.\u003C/search_result\u003E\n\u003Csearch_result productId=\u00221\u0022 resultId=\u002220\u0022\u003E(c) Rugged Riders 8\n\n5. Warranty Information\n\n\n5.1 Limited Warranty\n\nRugged Riders provides a limited warranty for the Trailblazer Bike Helmet. The warranty covers manufacturing defects for a period of 1 year from the date of purchase. This warranty does not cover normal wear and tear, misuse, or accidental damage.\n\n\n5.2 Warranty Claim Process\u003C/search_result\u003E"
+          }
+        ]
+      }
+    ],
+    "ExecutionSettings": {
+      "model_id": null
+    }
+  },
+  "Response": [
+    {
+      "Content": "{",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " \u0022",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "got",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "En",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ough",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Info",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Al",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ready",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\u0022:",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " true",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": ",",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\n",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " ",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " \u0022",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "answer",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\u0022:",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " \u0022",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "The",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " manual",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " indicates",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " that",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " Trail",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "bl",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "az",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "er",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " B",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ike",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " Hel",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "met",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\u0027",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "s",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " LED",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " safety",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " light",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " is",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " covered",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " under",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " a",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " separate",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " limited",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " warranty",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " for",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " ",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "6",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " months",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " from",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " date",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " of",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " purchase",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": ".",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " If",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " customer",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " has",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " followed",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " troubles",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "h",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "oot",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ing",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " steps",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " as",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " mentioned",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " in",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " user",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " manual",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " and",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " the",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " issue",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " pers",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ists",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": ",",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " they",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " should",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " contact",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " Rug",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ged",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " R",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "iders",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " customer",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " support",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " for",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " further",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " instructions",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " on",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " return",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " or",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " repair",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " under",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " this",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " warranty",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": ".\u0022,",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\n",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " ",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " \u0022",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "most",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Rele",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "v",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ant",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Search",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Result",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Id",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\u0022:",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " ",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "2",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "2",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": ",",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\n",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " ",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " \u0022",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "is",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Address",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ed",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "To",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "Customer",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "ByName",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\u0022:",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": " false",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "\n",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    },
+    {
+      "Content": "}",
+      "Role": {
+        "Label": "assistant"
+      },
+      "ChoiceIndex": 0,
+      "ModelId": null,
+      "Metadata": null
+    }
+  ]
+}
