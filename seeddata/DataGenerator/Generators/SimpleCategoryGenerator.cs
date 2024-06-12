@@ -9,7 +9,8 @@ public class SimpleCategoryGenerator(IServiceProvider services)
 {
     private readonly static JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-    private IChatCompletionService ChatCompletion { get; } = services.GetRequiredService<IChatCompletionService>();
+    private IChatCompletionService ChatCompletion { get; }
+        = services.GetRequiredService<IChatCompletionService>();
 
     public async Task<List<ProductCategory>> GenerateAsync()
     {
