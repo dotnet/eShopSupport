@@ -96,7 +96,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
 
     private async Task<Response> GenerateAssistantMessageAsync(Product product, Ticket ticket, IReadOnlyList<TicketThreadMessage> messages, IReadOnlyList<Manual> manuals)
     {
-        var prompt = $@"You are a customer service agent working for Northern Mountains, an online retailer. You are responding to a customer
+        var prompt = $@"You are a customer service agent working for AdventureWorks, an online retailer. You are responding to a customer
         enquiry about the following product:
 
         Product: {product.Model}
@@ -125,7 +125,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         Whenever possible, give your answer as a quote from the manual, for example saying ""According to the manual, ..."".
         If needed, refer the customer to the manufacturer's support contact detail in the user manual, if any.
 
-        You refer to yourself only as ""Northern Mountains Support"", or ""Support team"".
+        You refer to yourself only as ""AdventureWorks Support"", or ""Support team"".
 
         Respond in the following JSON format: {{ ""message"": ""string"", ""shouldClose"": bool }}.
         Indicate that the ticket should be closed only if the customer has confirmed it is resolved.

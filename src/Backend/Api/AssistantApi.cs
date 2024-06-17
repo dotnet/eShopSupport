@@ -27,7 +27,7 @@ public static class AssistantApi
             : null;
 
         var chatHistory = new ChatHistory($$"""
-            You are a helpful AI assistant called 'Assistant' who helps customer service agents working for Northern Mountains, an online retailer.
+            You are a helpful AI assistant called 'Assistant' who helps customer service agents working for AdventureWorks, an online retailer.
             The customer service agent is currently handling the following ticket:
                 
             <product_id>{{request.ProductId}}</product_id>
@@ -52,7 +52,7 @@ public static class AssistantApi
             You must justify your answer by providing mostRelevantSearchResultId that supports your info, and mostRelevantSearchQuote (which is a short EXACT word-for-word quote from the most relevant search result, excluding headings).
 
             If you are asked to write a suggested reply to the customer, set isAddressedToCustomerByName to true and address your
-            answer DIRECTLY to the customer by name (e.g., begin "Dear [name]...", and sign off as "Northern Mountains Support").
+            answer DIRECTLY to the customer by name (e.g., begin "Dear [name]...", and sign off as "AdventureWorks Support").
             Always use paragraph breaks to improve readability.
 
             If you don't already have enough information, add a suggested search term to use like this: { "gotEnoughInfoAlready": false, "searchProductId": numberOrNull, "searchPhrase": "a phrase to look for in the manual" }.

@@ -22,28 +22,28 @@
         "CreatedAt": "0001-01-01T00:00:00",
         "TicketId": 0,
         "IsCustomerMessage": false,
-        "Text": "Dear Emily Johnson, \n\nThank you for reaching out to us regarding the issue with the LED safety light on your Rugged Riders Trailblazer Bike Helmet. According to the user manual, the first troubleshooting step is to check the battery and ensure that it is properly installed and functional. If necessary, you can replace the battery with a CR2032 3V battery. If you require further assistance, you may also contact Rugged Riders customer support for warranty-related issues, as there is a limited warranty that covers manufacturing defects for a period of 1 year from the date of purchase. We hope this information helps resolve the issue. If you have any further questions or need assistance with the warranty claim process, please feel free to let us know.\n\nSincerely, \nNorthern Mountains Support"
+        "Text": "Dear Emily Johnson, \n\nThank you for reaching out to us regarding the issue with the LED safety light on your Rugged Riders Trailblazer Bike Helmet. According to the user manual, the first troubleshooting step is to check the battery and ensure that it is properly installed and functional. If necessary, you can replace the battery with a CR2032 3V battery. If you require further assistance, you may also contact Rugged Riders customer support for warranty-related issues, as there is a limited warranty that covers manufacturing defects for a period of 1 year from the date of purchase. We hope this information helps resolve the issue. If you have any further questions or need assistance with the warranty claim process, please feel free to let us know.\n\nSincerely, \nAdventureWorks Support"
       },
       {
         "MessageId": 3,
         "CreatedAt": "0001-01-01T00:00:00",
         "TicketId": 0,
         "IsCustomerMessage": true,
-        "Text": "Dear Northern Mountains Support, \n\nThank you for your prompt response and the troubleshooting steps provided. I have checked the battery as suggested, and it appears to be properly installed and functional. I even tried replacing it with a new CR2032 3V battery, but unfortunately, the LED safety light is still not working. I would like to proceed with the warranty claim process to address this issue, as it seems to be a manufacturing defect. Please guide me on how to initiate the warranty claim and what steps are involved. I appreciate your assistance in resolving this matter. \n\nSincerely, \nEmily Johnson"
+        "Text": "Dear AdventureWorks Support, \n\nThank you for your prompt response and the troubleshooting steps provided. I have checked the battery as suggested, and it appears to be properly installed and functional. I even tried replacing it with a new CR2032 3V battery, but unfortunately, the LED safety light is still not working. I would like to proceed with the warranty claim process to address this issue, as it seems to be a manufacturing defect. Please guide me on how to initiate the warranty claim and what steps are involved. I appreciate your assistance in resolving this matter. \n\nSincerely, \nEmily Johnson"
       },
       {
         "MessageId": 4,
         "CreatedAt": "0001-01-01T00:00:00",
         "TicketId": 0,
         "IsCustomerMessage": false,
-        "Text": "Dear Emily Johnson, \n\nThank you for your patience. You can initiate the warranty claim process by contacting Rugged Riders customer service at warranty@ruggedriders.com. Please provide the original proof of purchase and a detailed description of the issue. Rugged Riders will assess the claim and provide further instructions for return or repair. In the meantime, please ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, as outlined in the user manual. If the light still does not work, Rugged Riders customer support can assist further. Sincerely, Northern Mountains Support"
+        "Text": "Dear Emily Johnson, \n\nThank you for your patience. You can initiate the warranty claim process by contacting Rugged Riders customer service at warranty@ruggedriders.com. Please provide the original proof of purchase and a detailed description of the issue. Rugged Riders will assess the claim and provide further instructions for return or repair. In the meantime, please ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, as outlined in the user manual. If the light still does not work, Rugged Riders customer support can assist further. Sincerely, AdventureWorks Support"
       },
       {
         "MessageId": 5,
         "CreatedAt": "0001-01-01T00:00:00",
         "TicketId": 0,
         "IsCustomerMessage": true,
-        "Text": "Dear Northern Mountains Support, \n\nI have contacted Rugged Riders customer service at warranty@ruggedriders.com and provided the original proof of purchase along with a detailed description of the issue. I have followed the instructions in the user manual to ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, but unfortunately, the light is still not working. I hope Rugged Riders can assess the claim and provide further instructions for return or repair soon. Thank you for your assistance in this matter.\n\nSincerely, Emily Johnson"
+        "Text": "Dear AdventureWorks Support, \n\nI have contacted Rugged Riders customer service at warranty@ruggedriders.com and provided the original proof of purchase along with a detailed description of the issue. I have followed the instructions in the user manual to ensure that the LED safety light is securely inserted and the power button is pressed to turn it on, but unfortunately, the light is still not working. I hope Rugged Riders can assess the claim and provide further instructions for return or repair soon. Thank you for your assistance in this matter.\n\nSincerely, Emily Johnson"
       }
     ]
   },
