@@ -18,7 +18,7 @@ public class CategoryGenerator(IServiceProvider services) : GeneratorBase<Catego
         }
 
         var numCategories = 50;
-        var batchSize = 50;
+        var batchSize = 25;
         var categoryNames = new HashSet<string>();
 
         while (categoryNames.Count < numCategories)
@@ -26,11 +26,12 @@ public class CategoryGenerator(IServiceProvider services) : GeneratorBase<Catego
             Console.WriteLine($"Generating {batchSize} categories...");
 
             var prompt = @$"Generate {batchSize} product category names for an online retailer
-            of outdoor adventure goods and related clothing, electronics, and homeware.
+            of high-tech outdoor adventure goods and related clothing/electronics/etc.
             Each category name is a single descriptive term, so it does not use the word 'and'.
-            An example category name is ""Bike Helmets"", and this should be used as the first result.
-            Do not prefix categories with common words like ""Outdoor"" or ""Camping"".
-            
+            Category names should be interesting and novel, e.g., ""Mountain Unicycles"", ""AI Boots"",
+            or ""High-volume Water Filtration Plants"", not simply ""Tents"".
+            This retailer sells relatively technical products.
+
             Each category has a list of up to 8 brand names that make products in that category. All brand names are
             purely fictional. Brand names are usually multiple words with spaces and/or special characters, e.g.
             ""Orange Gear"", ""Aqua Tech US"", ""Livewell"", ""E & K"", ""JAXⓇ"".

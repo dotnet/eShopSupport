@@ -27,8 +27,11 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
         CompleteOutputAfterTask(outputChannel.Writer, Parallel.ForAsync(0, numQuestions, parallelOptions, async (_, _) =>
         {
             var item = await GenerateSingle();
-            item.QuestionId = Interlocked.Increment(ref questionId);
-            await outputChannel.Writer.WriteAsync(item);
+            if (!string.IsNullOrWhiteSpace(item.Question) && !string.IsNullOrEmpty(item.Answer))
+            {
+                item.QuestionId = Interlocked.Increment(ref questionId);
+                await outputChannel.Writer.WriteAsync(item);
+            }
         }));
 
         await foreach (var item in outputChannel.Reader.ReadAllAsync())
@@ -58,7 +61,7 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
         var product = products[Random.Shared.Next(products.Count)];
         var category = categories.Single(c => c.CategoryId == product.CategoryId);
         var manual = manuals.Single(m => m.ProductId == product.ProductId);
-        var manualExtract = ExtractFromManual(manual);
+        var manualExtract = ManualGenerator.ExtractFromManual(manual);
         var isQuestionWrittenByAgent = Random.Shared.NextDouble() < 0.75;
         var questionPrompt = isQuestionWrittenByAgent
             ? """
@@ -98,7 +101,8 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
                        use the product
 
                     You must select an OBJECTIVE FACT from the product manual and write a question to which
-                    that fact is the answer. Only select facts that are distinctive about this specific product.
+                    that fact is the answer. Only select facts that are distinctive about this specific product,
+                    not generic information about any product or warranty terms.
 
                     Always follow these style guidelines:
                      - {{questionPrompt}}
@@ -106,6 +110,8 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
                        20 words for an answer.
                      - The "verbatim_quote_from_manual" is 3-6 words taken EXACTLY from the manual which are
                        the factual basis for the question and asnwer.
+                     - If the provided context does not contain a suitable fact, set all the response properties
+                       to null or empty strings.
 
                     Respond as JSON in the following form: {
                         "question": "string",
@@ -115,36 +121,5 @@ public class EvalQuestionGenerator(IReadOnlyList<Product> products, IReadOnlyLis
                     """);
         question.ProductId = product.ProductId;
         return question;
-    }
-
-    private string ExtractFromManual(Manual manual)
-    {
-        // We don't want to push the entire manual text into the prompt as it may be arbitrarily long
-        // Instead, pick a lengthy chunk at random.
-        // TODO: Consider storing the markdown in a more structured, per-TOC-section way, so
-        // we can more easily extract a coherent section of text.
-        var approxExtractLengthInChars = 1500;
-        var startChar = Random.Shared.Next(manual.MarkdownText.Length - approxExtractLengthInChars);
-
-        // Find the line containing this char
-        var lines = manual.MarkdownText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        var lineIndexContainingStartChar = 0;
-        for (var numCharsSeen = 0; numCharsSeen < startChar; lineIndexContainingStartChar++)
-        {
-            numCharsSeen += lines[lineIndexContainingStartChar].Length;
-        }
-
-        // Add lines until we have enough text
-        var extract = new StringBuilder();
-        for (var i = lineIndexContainingStartChar; i < lines.Length; i++)
-        {
-            extract.AppendLine(lines[i]);
-            if (extract.Length >= approxExtractLengthInChars)
-            {
-                break;
-            }
-        }
-
-        return extract.ToString();
     }
 }

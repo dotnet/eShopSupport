@@ -69,6 +69,7 @@ public static class AssistantApi
         {
             ResponseFormat = "json_object",
             Seed = 0,
+            Temperature = 0,
         };
 
         var maxIterations = 3; // On each iteration, it's allowed to call a tool or to return an answer

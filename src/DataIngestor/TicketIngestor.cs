@@ -42,7 +42,7 @@ class TicketIngestor
         }
 
         var outputOptions = new JsonSerializerOptions { WriteIndented = true };
-        await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets, outputOptions));
+        await File.WriteAllTextAsync(Path.Combine(outputDir, "tickets.json"), JsonSerializer.Serialize(tickets.OrderBy(t => t.TicketId), outputOptions));
         Console.WriteLine($"Wrote {tickets.Count} tickets");
 
         await File.WriteAllTextAsync(Path.Combine(outputDir, "customers.json"), JsonSerializer.Serialize(customersByName.Values, outputOptions));

@@ -27,6 +27,11 @@
             <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
         </ChildContent>
     </QuickGrid>
+
+    @if (totalOpenCount == null && totalClosedCount == null)
+    {
+        <Microsoft.FluentUI.AspNetCore.Components.FluentProgress Class="tickets-loading" />
+    }
 </div>
 
 @code {

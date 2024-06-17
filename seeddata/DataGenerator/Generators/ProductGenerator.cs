@@ -16,15 +16,14 @@ public class ProductGenerator(IReadOnlyList<Category> categories, IServiceProvid
             yield break;
         }
 
-        var numProducts = 100;
+        var numProducts = 200;
         var batchSize = 5;
-        var biasTowardsEarlierCategories = 1.25; // Higher number means more bias
         var productId = 0;
 
         var mappedBatches = MapParallel(Enumerable.Range(0, numProducts / batchSize), async batchIndex =>
         {
             var chosenCategories = Enumerable.Range(0, batchSize)
-                .Select(_ => categories[(int)Math.Floor(categories.Count * Math.Pow(Random.Shared.NextDouble(), biasTowardsEarlierCategories))])
+                .Select(_ => categories[(int)Math.Floor(categories.Count * Random.Shared.NextDouble())])
                 .ToList();
 
             var prompt = @$"Write list of {batchSize} products for an online retailer

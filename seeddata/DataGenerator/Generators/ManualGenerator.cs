@@ -111,4 +111,35 @@ This is the official product manual, and the company requires it to be written i
             ProductId = int.Parse(Path.GetFileNameWithoutExtension(path)),
             MarkdownText = File.ReadAllText(path)
         };
+
+    public static string ExtractFromManual(Manual manual)
+    {
+        // We don't want to push the entire manual text into the prompt as it may be arbitrarily long
+        // Instead, pick a lengthy chunk at random.
+        // TODO: Consider storing the markdown in a more structured, per-TOC-section way, so
+        // we can more easily extract a coherent section of text.
+        var approxExtractLengthInChars = 1500;
+        var startChar = Random.Shared.Next(manual.MarkdownText.Length - approxExtractLengthInChars);
+
+        // Find the line containing this char
+        var lines = manual.MarkdownText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        var lineIndexContainingStartChar = 0;
+        for (var numCharsSeen = 0; numCharsSeen < startChar; lineIndexContainingStartChar++)
+        {
+            numCharsSeen += lines[lineIndexContainingStartChar].Length;
+        }
+
+        // Add lines until we have enough text
+        var extract = new StringBuilder();
+        for (var i = lineIndexContainingStartChar; i < lines.Length; i++)
+        {
+            extract.AppendLine(lines[i]);
+            if (extract.Length >= approxExtractLengthInChars)
+            {
+                break;
+            }
+        }
+
+        return extract.ToString();
+    }
 }

@@ -36,7 +36,12 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         };
         var product = products.Single(p => p.ProductId == ticket.ProductId);
 
-        var maxMessagesInThread = 5;
+        // Assume there's a 1-in-3 chance that any message is the last one in the thread
+        // (including the first one, so we might not need to generate any more).
+        // So the number of messages in a thread is geometrically distributed with p = 1/3.
+        const double p = 1.0 / 3.0;
+        var maxMessagesInThread = Math.Floor(Math.Log(1 - Random.Shared.NextDouble()) / Math.Log(1 - p));
+
         for (var i = 0; i < maxMessagesInThread; i++)
         {
             var lastMessageRole = thread.Messages.Last().AuthorRole;
@@ -56,7 +61,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
 
             thread.Messages.Add(new TicketThreadMessage { MessageId = ++messageId, AuthorRole = messageRole, Text = response.Message });
 
-            if (response.ShouldClose || (messageRole == Role.Customer && Random.Shared.Next(5) < 2))
+            if (response.ShouldClose)
             {
                 break;
             }

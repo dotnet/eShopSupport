@@ -2,7 +2,7 @@
 
 namespace eShopSupport.DataGenerator.Generators;
 
-public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Category> categories, IServiceProvider services) : GeneratorBase<Ticket>(services)
+public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Category> categories, IReadOnlyList<Manual> manuals, IServiceProvider services) : GeneratorBase<Ticket>(services)
 {
     protected override string DirectoryName => "tickets/enquiries";
 
@@ -22,6 +22,8 @@ public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Cate
 
         string[] situations = [
             "asking about a particular usage scenario before purchase",
+            "asking a specific technical question about the product's capabilities",
+            "needs information on the product's suitability for its most obvious use case",
             "unable to make the product work in one particular way",
             "thinks the product doesn't work at all",
             "can't understand how to do something",
@@ -30,7 +32,6 @@ public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Cate
             "wants to use the product for a wildly unexpected purpose, but without self-awareness and assumes it's reasonable",
             "incredibly fixated on one minor, obscure detail (before or after purchase), but without self-awareness that they are fixated on an obscure matter. Do not use the word 'fixated'.",
             "a business-to-business enquiry from another retailer who stocks the product and has their own customer enquiries to solve",
-            "has a problem with delivery - it is late, or they received incorrect items",
         ];
 
         string[] styles = [
@@ -57,6 +58,8 @@ public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Cate
                 var category = categories.Single(c => c.CategoryId == product.CategoryId);
                 var situation = situations[Random.Shared.Next(situations.Length)];
                 var style = styles[Random.Shared.Next(styles.Length)];
+                var manual = manuals.Single(m => m.ProductId == product.ProductId);
+                var manualExtract = ManualGenerator.ExtractFromManual(manual);
 
                 var prompt = @$"You are creating test data for a customer support ticketing system.
                     Write a message by a customer who has purchased, or is considering purchasing, the following:
@@ -65,14 +68,21 @@ public class TicketGenerator(IReadOnlyList<Product> products, IReadOnlyList<Cate
                     Brand: {product.Brand}
                     Category: {category.Name}
                     Description: {product.Description}
+                    Random extract from manual: <extract>{manualExtract}</extract>
 
                     The situation is: {situation}
-                    If applicable, they can ask for a refund, replacement, or repair.
+                    If applicable, they can ask for a refund/replacement/repair. However in most cases they
+                    are asking for information or help with a problem.
 
                     The customer writes in the following style: {style}
 
                     Create a name for the author, writing the message as if you are that person. The customer name
-                    should be fictional and random, and not based on the support enquiry itself.
+                    should be fictional and random, and not based on the support enquiry itself. Do not use cliched
+                    or stereotypical names.
+
+                    Where possible, the message should refer to something specific about this product such as a feature
+                    mentioned in its description or a fact mentioned in the manual (but the customer does not refer
+                    to having read the manual).
 
                     The message length may be anything from very brief (around 10 words) to very long (around 200 words).
                     Use blank lines for paragraphs if needed.

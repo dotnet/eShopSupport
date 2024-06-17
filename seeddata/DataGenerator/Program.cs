@@ -25,7 +25,7 @@ Console.WriteLine($"Got {manuals.Count} manuals");
 var manualPdfs = await new ManualPdfConverter(products, manuals).ConvertAsync();
 Console.WriteLine($"Got {manualPdfs.Count} PDFs");
 
-var tickets = await new TicketGenerator(products, categories, services).GenerateAsync();
+var tickets = await new TicketGenerator(products, categories, manuals, services).GenerateAsync();
 Console.WriteLine($"Got {tickets.Count} tickets");
 
 var ticketThreads = await new TicketThreadGenerator(tickets, products, manuals, services).GenerateAsync();

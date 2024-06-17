@@ -95,3 +95,8 @@
 .spacer {
     display: inline-block;
 }
+
+::deep .tickets-loading {
+    margin: 20vh auto;
+    width: 50vw;
+}
