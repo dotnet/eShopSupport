@@ -17,7 +17,7 @@ public class EvalQuestionIngestor
         }
 
         var outputOptions = new JsonSerializerOptions { WriteIndented = true };
-        await File.WriteAllTextAsync(Path.Combine(outputDir, "evalquestions.json"), JsonSerializer.Serialize(questions, outputOptions));
+        await File.WriteAllTextAsync(Path.Combine(outputDir, "evalquestions.json"), JsonSerializer.Serialize(questions.OrderBy(q => q.QuestionId), outputOptions));
         Console.WriteLine($"Wrote {questions.Count} evaluation questions");
     }
 }

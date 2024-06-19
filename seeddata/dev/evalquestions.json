@@ -6,10 +6,592 @@
     "Answer": "Unzip the main compartment"
   },
   {
+    "QuestionId": 2,
+    "ProductId": 199,
+    "Question": "What are the overheating precautions?",
+    "Answer": "Do not leave in direct sunlight for extended periods."
+  },
+  {
+    "QuestionId": 3,
+    "ProductId": 99,
+    "Question": "Hi there, I recently purchased the Summit 3000 Trekking Backpack and I\u0027m having issues with the strap adjustment. Can you provide me with the specified torque value for the strap adjustment bolts?",
+    "Answer": "15-20 Nm"
+  },
+  {
+    "QuestionId": 4,
+    "ProductId": 35,
+    "Question": "What is included in the set?",
+    "Answer": "2-quart pot, 1-quart pot, 7.5-inch frying pan, 2 lids, Mesh carry bag"
+  },
+  {
+    "QuestionId": 5,
+    "ProductId": 28,
+    "Question": "How to turn on the purifier?",
+    "Answer": "Press and hold power button for 3 seconds."
+  },
+  {
+    "QuestionId": 6,
+    "ProductId": 51,
+    "Question": "What does the warranty cover?",
+    "Answer": "Defects in materials or workmanship for one year"
+  },
+  {
+    "QuestionId": 7,
+    "ProductId": 137,
+    "Question": "Waterproof rating?",
+    "Answer": "IP67, 1 meter for 30 minutes"
+  },
+  {
+    "QuestionId": 8,
+    "ProductId": 103,
+    "Question": "How to use water pouches?",
+    "Answer": "Tear open the top and drink directly"
+  },
+  {
+    "QuestionId": 9,
+    "ProductId": 108,
+    "Question": "What precautions should be taken for placement?",
+    "Answer": "On a flat, stable surface"
+  },
+  {
     "QuestionId": 10,
     "ProductId": 86,
     "Question": "Hi there, I just received my SOS Multitool Kit and the case is cracked. What should I do?",
     "Answer": "Contact Survive All customer service for a replacement case."
+  },
+  {
+    "QuestionId": 11,
+    "ProductId": 26,
+    "Question": "How do I attach the paddle shaft?",
+    "Answer": "Gently twist in a clockwise direction"
+  },
+  {
+    "QuestionId": 12,
+    "ProductId": 157,
+    "Question": "How to open waterproof casing?",
+    "Answer": "Press latch and slide panel"
+  },
+  {
+    "QuestionId": 13,
+    "ProductId": 52,
+    "Question": "GPS limitations?",
+    "Answer": "May be affected by environmental conditions."
+  },
+  {
+    "QuestionId": 14,
+    "ProductId": 148,
+    "Question": "Machine washing instructions?",
+    "Answer": "Use gentle cycle with cold water and mild detergent."
+  },
+  {
+    "QuestionId": 15,
+    "ProductId": 163,
+    "Question": "How should the Stealth Cam 500 battery be charged?",
+    "Answer": "Using the provided charger only"
+  },
+  {
+    "QuestionId": 16,
+    "ProductId": 24,
+    "Question": "How do I get in the sleeping bag?",
+    "Answer": "Enter the sleeping bag, then zip it up."
+  },
+  {
+    "QuestionId": 17,
+    "ProductId": 21,
+    "Question": "Hi there, my WeatherGuard Pro 3000 doesn\u0027t seem to be charging properly. I\u0027ve checked the power bank and the USB cable, but it\u0027s still not working. Can you help?",
+    "Answer": "Make sure the power bank is turned on and connected to your device."
+  },
+  {
+    "QuestionId": 18,
+    "ProductId": 192,
+    "Question": "Hi there, I recently purchased the Venture 45L Backpack and I\u0027m wondering how to clean it properly. Can I use any kind of detergent and water?",
+    "Answer": "Use a mild detergent and lukewarm water to spot clean the exterior of the backpack."
+  },
+  {
+    "QuestionId": 19,
+    "ProductId": 91,
+    "Question": "Moisture Content Acceptance Criteria?",
+    "Answer": "The moisture content level must be 0%"
+  },
+  {
+    "QuestionId": 20,
+    "ProductId": 138,
+    "Question": "What is included in the Ultimate Survival Kit 3000?",
+    "Answer": "Red and black multi-function survival knife, compact and powerful LED flashlight with adjustable beam, emergency whistle and signal mirror, green and orange paracord, water purification tablets and water storage pouch, mini first aid kit, aluminum emergency blanket, multi-tool with pliers, screwdrivers, and wire cutters, compass, and fire starter."
+  },
+  {
+    "QuestionId": 21,
+    "ProductId": 97,
+    "Question": "How to access screwdriver?",
+    "Answer": "Unfold appropriately labeled handle."
+  },
+  {
+    "QuestionId": 22,
+    "ProductId": 70,
+    "Question": "Hi, I just bought the Juice Junkie Solar Power Bank and I\u0027m having trouble measuring the USB output voltage. Can you guide me through the steps to measure the voltage?",
+    "Answer": "Connect USB multimeter, activate, and record the reading."
+  },
+  {
+    "QuestionId": 23,
+    "ProductId": 200,
+    "Question": "What is the Raptor Tactical Backpack equipped with?",
+    "Answer": "MOLLE webbing"
+  },
+  {
+    "QuestionId": 24,
+    "ProductId": 125,
+    "Question": "What advanced procedures can be performed?",
+    "Answer": "Suturing, wound cleaning, and minor surgery"
+  },
+  {
+    "QuestionId": 25,
+    "ProductId": 16,
+    "Question": "How to configure the system?",
+    "Answer": "Select the appropriate filter cartridge based on water quality analysis results."
+  },
+  {
+    "QuestionId": 26,
+    "ProductId": 89,
+    "Question": "How to clean?",
+    "Answer": "Use non-abrasive sponge with mild dish soap."
+  },
+  {
+    "QuestionId": 27,
+    "ProductId": 148,
+    "Question": "How long is the warranty?",
+    "Answer": "Limited Lifetime Warranty"
+  },
+  {
+    "QuestionId": 28,
+    "ProductId": 104,
+    "Question": "Filtration efficiency?",
+    "Answer": "99.9%"
+  },
+  {
+    "QuestionId": 29,
+    "ProductId": 141,
+    "Question": "How to troubleshoot fire starter failure?",
+    "Answer": "Check Ferrocerium Rod, Inspect Striker, Test Under Different Conditions"
+  },
+  {
+    "QuestionId": 30,
+    "ProductId": 154,
+    "Question": "Hi there, I\u0027m interested in the GuardianGear GPS Personal Locator. Can you tell me the dimensions and weight of the device?",
+    "Answer": "Length: 3.5 inches, Width: 2 inches, Thickness: 0.6 inches, Weight: 3.5 ounces"
+  },
+  {
+    "QuestionId": 31,
+    "ProductId": 169,
+    "Question": "Is it dishwasher safe?",
+    "Answer": "Yes"
+  },
+  {
+    "QuestionId": 32,
+    "ProductId": 50,
+    "Question": "how to clean the hydration system?",
+    "Answer": "Refer to the \u0027Cleaning and Maintenance\u0027 section in the user manual."
+  },
+  {
+    "QuestionId": 33,
+    "ProductId": 146,
+    "Question": "How to take Energy Boost 500?",
+    "Answer": "Follow 6 meticulous steps in the manual."
+  },
+  {
+    "QuestionId": 34,
+    "ProductId": 144,
+    "Question": "How to secure gear?",
+    "Answer": "Attach to gear loops using clips or loops"
+  },
+  {
+    "QuestionId": 35,
+    "ProductId": 92,
+    "Question": "Hello, I just received my AquaPure Portable Water Filter. Should I rinse the filter cartridge before using it for the first time?",
+    "Answer": "Yes, rinse under clean, potable water for 10 seconds."
+  },
+  {
+    "QuestionId": 36,
+    "ProductId": 99,
+    "Question": "How to measure tensile strength?",
+    "Answer": "Use a tensile testing machine"
+  },
+  {
+    "QuestionId": 37,
+    "ProductId": 192,
+    "Question": "How to clean?",
+    "Answer": "Spot clean with mild detergent and lukewarm water."
+  },
+  {
+    "QuestionId": 38,
+    "ProductId": 110,
+    "Question": "Do PowerFuel Energy Bars contain gluten?",
+    "Answer": "No, PowerFuel Energy Bars are gluten-free."
+  },
+  {
+    "QuestionId": 39,
+    "ProductId": 91,
+    "Question": "Hi there, I recently purchased the Stormguard WeatherShield Pro Jacket and I want to make sure I\u0027m taking care of it properly. Can you tell me how to perform the moisture retention analysis?",
+    "Answer": "Select a representative area of the jacket, use a moisture analyzer, and compare the results with acceptable thresholds."
+  },
+  {
+    "QuestionId": 40,
+    "ProductId": 23,
+    "Question": "Hey there, I recently purchased the EZ Camp QuickShade Portable Shelter and I\u0027m wondering how to take it down properly. Can you provide some guidance?",
+    "Answer": "Carefully lower the shelter to a comfortable height and collapse the telescoping poles by pressing the release buttons."
+  },
+  {
+    "QuestionId": 41,
+    "ProductId": 135,
+    "Question": "What connectivity options does the WideView 360 have?",
+    "Answer": "Wi-Fi and Bluetooth"
+  },
+  {
+    "QuestionId": 42,
+    "ProductId": 148,
+    "Question": "How to fix zipper stuck?",
+    "Answer": "Gently pull in opposite direction."
+  },
+  {
+    "QuestionId": 43,
+    "ProductId": 46,
+    "Question": "How to position the solar cooker?",
+    "Answer": "Adjust the cooker\u0027s position throughout the day"
+  },
+  {
+    "QuestionId": 44,
+    "ProductId": 157,
+    "Question": "Hi there, I just got the 360X Action Camera and I\u0027m having trouble figuring out how to start recording a video. Can you help?",
+    "Answer": "Press the Shutter button."
+  },
+  {
+    "QuestionId": 45,
+    "ProductId": 111,
+    "Question": "How to clean the reservoir?",
+    "Answer": "Rinse with warm, soapy water."
+  },
+  {
+    "QuestionId": 46,
+    "ProductId": 144,
+    "Question": "What is not covered by the warranty?",
+    "Answer": "Damage caused by misuse, abuse, neglect, improper maintenance, alterations, accidents, or normal wear and tear"
+  },
+  {
+    "QuestionId": 47,
+    "ProductId": 133,
+    "Question": "What is the hydration compatibility feature?",
+    "Answer": "Stay hydrated during outdoor excursions"
+  },
+  {
+    "QuestionId": 48,
+    "ProductId": 106,
+    "Question": "How to store the sleeping bag?",
+    "Answer": "In a cool, dry place"
+  },
+  {
+    "QuestionId": 49,
+    "ProductId": 198,
+    "Question": "Hi there, I just bought the WildBeat Portable Bluetooth Speaker and I\u0027m having trouble pairing it with my phone. Can you walk me through the steps to pair the speaker with my device?",
+    "Answer": "Press and hold power button until LED flashes blue and red. Select \u0027WildBeat\u0027 from Bluetooth settings on your device."
+  },
+  {
+    "QuestionId": 50,
+    "ProductId": 45,
+    "Question": "How to check battery level?",
+    "Answer": "Press power button."
+  },
+  {
+    "QuestionId": 51,
+    "ProductId": 65,
+    "Question": "Difficulty opening tools?",
+    "Answer": "Check for rust or debris"
+  },
+  {
+    "QuestionId": 52,
+    "ProductId": 130,
+    "Question": "Charging time?",
+    "Answer": "Approximately 3 hours"
+  },
+  {
+    "QuestionId": 53,
+    "ProductId": 22,
+    "Question": "How to install rain cover?",
+    "Answer": "Follow steps 1-4 in manual."
+  },
+  {
+    "QuestionId": 54,
+    "ProductId": 131,
+    "Question": "How to fix camera not turning on?",
+    "Answer": "Reset by removing batteries and reinserting"
+  },
+  {
+    "QuestionId": 55,
+    "ProductId": 160,
+    "Question": "Hi there, I recently purchased the Trailblazer GPS Navigation Device and I\u0027m having trouble pairing it with my smartphone. Can you walk me through the steps to pair it with my phone?",
+    "Answer": "Download Geotrack app, enable Bluetooth, follow on-screen instructions."
+  },
+  {
+    "QuestionId": 56,
+    "ProductId": 46,
+    "Question": "What to do if SunSpot not reaching high temperatures?",
+    "Answer": "Extend reflectors, check for obstructions, adjust position"
+  },
+  {
+    "QuestionId": 57,
+    "ProductId": 160,
+    "Question": "How to clean device?",
+    "Answer": "Use soft, dry cloth."
+  },
+  {
+    "QuestionId": 58,
+    "ProductId": 43,
+    "Question": "Hi, I just received my NightOps Tactical Flashlight and I can\u0027t find the spare O-rings. Are they supposed to be included?",
+    "Answer": "Yes, spare O-rings are included."
+  },
+  {
+    "QuestionId": 59,
+    "ProductId": 199,
+    "Question": "Hello, I just bought the SunShift 100W Solar Charger. I need to know the maximum power output of this charger. Can you please provide that information?",
+    "Answer": "100W"
+  },
+  {
+    "QuestionId": 60,
+    "ProductId": 178,
+    "Question": "Hi there, I just bought the PowerBar Pro 2021 and I\u0027m wondering how I should store it to maintain its quality. Can I keep it in the fridge?",
+    "Answer": "Store on a dry and cool place, not in the fridge"
+  },
+  {
+    "QuestionId": 61,
+    "ProductId": 176,
+    "Question": "How to take a photo?",
+    "Answer": "Press power button, select mode, frame shot, press shutter button, review photo"
+  },
+  {
+    "QuestionId": 62,
+    "ProductId": 89,
+    "Question": "How to assemble the cookware set?",
+    "Answer": "Follow easy steps in manual."
+  },
+  {
+    "QuestionId": 63,
+    "ProductId": 12,
+    "Question": "Hi there, I just bought the TrailGPS 5000 and wanted to know if I can use any charger to recharge the battery or if I have to use the one provided. Thanks!",
+    "Answer": "Always use the provided charger"
+  },
+  {
+    "QuestionId": 64,
+    "ProductId": 35,
+    "Question": "How to clean the cookware?",
+    "Answer": "Use mild dish soap and soft sponge."
+  },
+  {
+    "QuestionId": 65,
+    "ProductId": 183,
+    "Question": "How to clean the pot?",
+    "Answer": "Hand wash only with mild soap and warm water."
+  },
+  {
+    "QuestionId": 66,
+    "ProductId": 197,
+    "Question": "How to troubleshoot stove ignition?",
+    "Answer": "Check fuel canister, inspect ignition switch"
+  },
+  {
+    "QuestionId": 67,
+    "ProductId": 200,
+    "Question": "How to properly adjust shoulder straps?",
+    "Answer": "Utilize the adjustable shoulder straps"
+  },
+  {
+    "QuestionId": 68,
+    "ProductId": 155,
+    "Question": "How to initiate charging?",
+    "Answer": "Press the power button."
+  },
+  {
+    "QuestionId": 69,
+    "ProductId": 195,
+    "Question": "hydration bladder compatibility",
+    "Answer": "compatible with most 2-liter bladders"
+  },
+  {
+    "QuestionId": 70,
+    "ProductId": 192,
+    "Question": "Front pocket features?",
+    "Answer": "Map, compass, snacks storage"
+  },
+  {
+    "QuestionId": 71,
+    "ProductId": 81,
+    "Question": "How to attach to climbing rope?",
+    "Answer": "1. Locate the belay loop, 2. Use a locking carabiner, 3. Double-check"
+  },
+  {
+    "QuestionId": 72,
+    "ProductId": 39,
+    "Question": "How do I fold the tent?",
+    "Answer": "Press and hold red folding levers."
+  },
+  {
+    "QuestionId": 73,
+    "ProductId": 58,
+    "Question": "SOS button not functioning?",
+    "Answer": "Try system reset or contact support."
+  },
+  {
+    "QuestionId": 74,
+    "ProductId": 137,
+    "Question": "Hi there, I\u0027m interested in purchasing the WildBeat Pro DJ Controller. Can you tell me about the care and storage recommendations for this product?",
+    "Answer": "Store in cool, dry place away from direct sunlight and extreme temperatures."
+  },
+  {
+    "QuestionId": 75,
+    "ProductId": 132,
+    "Question": "How to troubleshoot rod not casting properly?",
+    "Answer": "Check for Line Tangles, Inspect Rod Guides, Verify Reel Mounting, Adjust Casting Technique, Rod Maintenance"
+  },
+  {
+    "QuestionId": 76,
+    "ProductId": 134,
+    "Question": "Hello, I just received my SolarFire 2000 and I\u0027m trying to set it up. Can you tell me how to assemble the stove and solar panel?",
+    "Answer": "Unfold solar panel, position in sunlight, unfold stove, attach pot securely."
+  },
+  {
+    "QuestionId": 77,
+    "ProductId": 77,
+    "Question": "Hi there, I just bought the Solar Charger 3000X and I\u0027m not sure how to check the battery status. Can you help?",
+    "Answer": "Press the power button."
+  },
+  {
+    "QuestionId": 78,
+    "ProductId": 79,
+    "Question": "How should the Adventure Pro Camera be stored?",
+    "Answer": "Cool, dry place away from direct sunlight"
+  },
+  {
+    "QuestionId": 79,
+    "ProductId": 76,
+    "Question": "How do I power on Wilderness DJ Pro?",
+    "Answer": "Locate the power button on the console."
+  },
+  {
+    "QuestionId": 80,
+    "ProductId": 167,
+    "Question": "What is the Backpacker Cookware Set designed for?",
+    "Answer": "Outdoor use in backcountry environments"
+  },
+  {
+    "QuestionId": 81,
+    "ProductId": 35,
+    "Question": "How should I clean the cookware?",
+    "Answer": "Use a soft sponge or cloth to gently scrub off any food residue."
+  },
+  {
+    "QuestionId": 82,
+    "ProductId": 144,
+    "Question": "Hi there, I just bought the ProLite Climbing Harness and I\u0027m not sure how to properly attach it to the climbing rope. Can you give me some guidance?",
+    "Answer": "Clip the carabiner through the belay loop and ensure it is properly locked before starting your climb."
+  },
+  {
+    "QuestionId": 83,
+    "ProductId": 48,
+    "Question": "how to reset speaker?",
+    "Answer": "press and hold power button for 10 seconds"
+  },
+  {
+    "QuestionId": 84,
+    "ProductId": 64,
+    "Question": "how to activate purification process?",
+    "Answer": "Press and hold power button."
+  },
+  {
+    "QuestionId": 85,
+    "ProductId": 69,
+    "Question": "Hi, I just received my Summit Step Alpine Explorer Hiking Boots and I\u0027m not sure if I got all the components mentioned in the manual. Can you confirm what should be included in the packaging?",
+    "Answer": "You should receive an extra pair of laces and an information booklet."
+  },
+  {
+    "QuestionId": 86,
+    "ProductId": 35,
+    "Question": "How to clean after use?",
+    "Answer": "Wash with mild dish soap."
+  },
+  {
+    "QuestionId": 87,
+    "ProductId": 95,
+    "Question": "Hello, I recently purchased the Summit 4-Season Sleeping Bag and noticed some clumping of insulation. What\u0027s the best way to fix this issue?",
+    "Answer": "Fluff the sleeping bag"
+  },
+  {
+    "QuestionId": 88,
+    "ProductId": 31,
+    "Question": "What items are included in the box?",
+    "Answer": "Nomad Camping Stove, fuel canister, user manual"
+  },
+  {
+    "QuestionId": 89,
+    "ProductId": 176,
+    "Question": "how to stop video recording?",
+    "Answer": "Press the \u0022Record\u0022 button again."
+  },
+  {
+    "QuestionId": 90,
+    "ProductId": 77,
+    "Question": "Charging via USB steps?",
+    "Answer": "Connect USB cable to power source, then to charger\u0027s USB port"
+  },
+  {
+    "QuestionId": 91,
+    "ProductId": 74,
+    "Question": "How should I clean the hammock?",
+    "Answer": "Hand wash with mild soap and water"
+  },
+  {
+    "QuestionId": 92,
+    "ProductId": 63,
+    "Question": "How to turn on lights?",
+    "Answer": "Press power button once"
+  },
+  {
+    "QuestionId": 93,
+    "ProductId": 192,
+    "Question": "What items can be stored in the front pocket?",
+    "Answer": "Map, compass, snacks"
+  },
+  {
+    "QuestionId": 94,
+    "ProductId": 152,
+    "Question": "Hi, I just received my Emergency Beacon Light from Sure Survive and I\u0027m not sure if all the items are included. Can you confirm what should be in the package?",
+    "Answer": "Emergency Beacon Light, User Manual, Lanyard"
+  },
+  {
+    "QuestionId": 95,
+    "ProductId": 112,
+    "Question": "Dear support, can you explain how to adjust the fit of the Trailblazer Carbon Fiber Mountain Bike Helmet using the dial-fit adjustment system?",
+    "Answer": "Utilize the *ultra-refined* dial-fit adjustment system located at the back of the helmet to customize the fit to your precise liking."
+  },
+  {
+    "QuestionId": 96,
+    "ProductId": 90,
+    "Question": "What percentage of waterborne bacteria does the pump remove?",
+    "Answer": "99.9999%"
+  },
+  {
+    "QuestionId": 97,
+    "ProductId": 100,
+    "Question": "Hi, I recently purchased the Ridge Runner Hydration Pack. How should I clean the water reservoir to prevent mold and mildew growth?",
+    "Answer": "Empty and Rinse, Use Mild Soap, Dry Thoroughly"
+  },
+  {
+    "QuestionId": 98,
+    "ProductId": 44,
+    "Question": "Hi there, I just bought the RescueTech Emergency Kit from Life Guard X. Can I reuse the emergency blanket?",
+    "Answer": "No, the emergency blanket is designed for single use only."
+  },
+  {
+    "QuestionId": 99,
+    "ProductId": 153,
+    "Question": "What are the post-use diagnostic procedures?",
+    "Answer": "Energy Output Analysis"
   },
   {
     "QuestionId": 100,
@@ -72,12 +654,6 @@
     "Answer": "In a cool, dry place away from direct sunlight and moisture."
   },
   {
-    "QuestionId": 11,
-    "ProductId": 26,
-    "Question": "How do I attach the paddle shaft?",
-    "Answer": "Gently twist in a clockwise direction"
-  },
-  {
     "QuestionId": 110,
     "ProductId": 154,
     "Question": "SOS button not working?",
@@ -136,12 +712,6 @@
     "ProductId": 176,
     "Question": "How to take a photo?",
     "Answer": "Follow steps 1-5."
-  },
-  {
-    "QuestionId": 12,
-    "ProductId": 157,
-    "Question": "How to open waterproof casing?",
-    "Answer": "Press latch and slide panel"
   },
   {
     "QuestionId": 120,
@@ -204,12 +774,6 @@
     "Answer": "Robust and durable construction"
   },
   {
-    "QuestionId": 13,
-    "ProductId": 52,
-    "Question": "GPS limitations?",
-    "Answer": "May be affected by environmental conditions."
-  },
-  {
     "QuestionId": 130,
     "ProductId": 192,
     "Question": "Hi there, I just purchased the Hiker\u0027s Haven Venture 45L Backpack and I want to make sure I store it properly. Can you give me any tips on how to store it when not in use?",
@@ -268,12 +832,6 @@
     "ProductId": 196,
     "Question": "How to power on the watch?",
     "Answer": "Press and hold power button for 3 seconds"
-  },
-  {
-    "QuestionId": 14,
-    "ProductId": 148,
-    "Question": "Machine washing instructions?",
-    "Answer": "Use gentle cycle with cold water and mild detergent."
   },
   {
     "QuestionId": 140,
@@ -336,12 +894,6 @@
     "Answer": "Unscrew, fill, screw back on"
   },
   {
-    "QuestionId": 15,
-    "ProductId": 163,
-    "Question": "How should the Stealth Cam 500 battery be charged?",
-    "Answer": "Using the provided charger only"
-  },
-  {
     "QuestionId": 150,
     "ProductId": 110,
     "Question": "How should I store PowerFuel Energy Bars?",
@@ -400,12 +952,6 @@
     "ProductId": 4,
     "Question": "What is included in the first aid supplies?",
     "Answer": "Bandages, gauze, tape, antiseptics, ointment"
-  },
-  {
-    "QuestionId": 16,
-    "ProductId": 24,
-    "Question": "How do I get in the sleeping bag?",
-    "Answer": "Enter the sleeping bag, then zip it up."
   },
   {
     "QuestionId": 160,
@@ -468,12 +1014,6 @@
     "Answer": "Follow the steps in the manual"
   },
   {
-    "QuestionId": 17,
-    "ProductId": 21,
-    "Question": "Hi there, my WeatherGuard Pro 3000 doesn\u0027t seem to be charging properly. I\u0027ve checked the power bank and the USB cable, but it\u0027s still not working. Can you help?",
-    "Answer": "Make sure the power bank is turned on and connected to your device."
-  },
-  {
     "QuestionId": 170,
     "ProductId": 105,
     "Question": "How to troubleshoot slow charging?",
@@ -532,12 +1072,6 @@
     "ProductId": 129,
     "Question": "How do you receive a fax?",
     "Answer": "Press \u0027Accept\u0027 or \u0027Reject\u0027 button"
-  },
-  {
-    "QuestionId": 18,
-    "ProductId": 192,
-    "Question": "Hi there, I recently purchased the Venture 45L Backpack and I\u0027m wondering how to clean it properly. Can I use any kind of detergent and water?",
-    "Answer": "Use a mild detergent and lukewarm water to spot clean the exterior of the backpack."
   },
   {
     "QuestionId": 180,
@@ -600,12 +1134,6 @@
     "Answer": "Follow simple cleaning instructions"
   },
   {
-    "QuestionId": 19,
-    "ProductId": 91,
-    "Question": "Moisture Content Acceptance Criteria?",
-    "Answer": "The moisture content level must be 0%"
-  },
-  {
     "QuestionId": 190,
     "ProductId": 98,
     "Question": "Altimeter accuracy limitations?",
@@ -664,18 +1192,6 @@
     "ProductId": 33,
     "Question": "night vision not working?",
     "Answer": "Confirm night vision setting is enabled"
-  },
-  {
-    "QuestionId": 2,
-    "ProductId": 199,
-    "Question": "What are the overheating precautions?",
-    "Answer": "Do not leave in direct sunlight for extended periods."
-  },
-  {
-    "QuestionId": 20,
-    "ProductId": 138,
-    "Question": "What is included in the Ultimate Survival Kit 3000?",
-    "Answer": "Red and black multi-function survival knife, compact and powerful LED flashlight with adjustable beam, emergency whistle and signal mirror, green and orange paracord, water purification tablets and water storage pouch, mini first aid kit, aluminum emergency blanket, multi-tool with pliers, screwdrivers, and wire cutters, compass, and fire starter."
   },
   {
     "QuestionId": 200,
@@ -738,12 +1254,6 @@
     "Answer": "Follow steps in manual"
   },
   {
-    "QuestionId": 21,
-    "ProductId": 97,
-    "Question": "How to access screwdriver?",
-    "Answer": "Unfold appropriately labeled handle."
-  },
-  {
     "QuestionId": 210,
     "ProductId": 74,
     "Question": "Hi, I recently purchased the Naturehaven Ultra-Light Hammock and I\u0027m not sure how to properly store it. Can you provide some guidance on how to pack and store the hammock?",
@@ -802,12 +1312,6 @@
     "ProductId": 192,
     "Question": "Hi, I just bought the Hiker\u0027s Haven Venture 45L Backpack and I want to make sure I store it properly. Can you tell me how to store it to prevent damage and maintain its shape?",
     "Answer": "Empty all compartments, avoid compression, and use the included storage bag for long-term storage."
-  },
-  {
-    "QuestionId": 22,
-    "ProductId": 70,
-    "Question": "Hi, I just bought the Juice Junkie Solar Power Bank and I\u0027m having trouble measuring the USB output voltage. Can you guide me through the steps to measure the voltage?",
-    "Answer": "Connect USB multimeter, activate, and record the reading."
   },
   {
     "QuestionId": 220,
@@ -870,12 +1374,6 @@
     "Answer": "Turn knob clockwise to increase, counterclockwise to decrease"
   },
   {
-    "QuestionId": 23,
-    "ProductId": 200,
-    "Question": "What is the Raptor Tactical Backpack equipped with?",
-    "Answer": "MOLLE webbing"
-  },
-  {
     "QuestionId": 230,
     "ProductId": 86,
     "Question": "Hi, just received my SOS Multitool Kit from Survive All. How do I use the fire starter to create fire?",
@@ -934,12 +1432,6 @@
     "ProductId": 82,
     "Question": "What first aid supplies are included?",
     "Answer": "adhesive bandages, antiseptic wipes, ibuprofen tablets, first aid guide"
-  },
-  {
-    "QuestionId": 24,
-    "ProductId": 125,
-    "Question": "What advanced procedures can be performed?",
-    "Answer": "Suturing, wound cleaning, and minor surgery"
   },
   {
     "QuestionId": 240,
@@ -1002,12 +1494,6 @@
     "Answer": "Fully charge before each use, avoid overcharging, store partially charged for long periods."
   },
   {
-    "QuestionId": 25,
-    "ProductId": 16,
-    "Question": "How to configure the system?",
-    "Answer": "Select the appropriate filter cartridge based on water quality analysis results."
-  },
-  {
     "QuestionId": 250,
     "ProductId": 25,
     "Question": "What safety precautions should I follow?",
@@ -1066,12 +1552,6 @@
     "ProductId": 24,
     "Question": "How to clean the sleeping bag?",
     "Answer": "Spot clean with damp cloth and mild soap, or use front-loading washing machine with gentle cycle."
-  },
-  {
-    "QuestionId": 26,
-    "ProductId": 89,
-    "Question": "How to clean?",
-    "Answer": "Use non-abrasive sponge with mild dish soap."
   },
   {
     "QuestionId": 260,
@@ -1134,12 +1614,6 @@
     "Answer": "Unscrew the leak-proof cap and pour in your beverage."
   },
   {
-    "QuestionId": 27,
-    "ProductId": 148,
-    "Question": "How long is the warranty?",
-    "Answer": "Limited Lifetime Warranty"
-  },
-  {
     "QuestionId": 270,
     "ProductId": 108,
     "Question": "How to adjust sun angle?",
@@ -1198,12 +1672,6 @@
     "ProductId": 41,
     "Question": "Hi there, I just bought the AquaVenture Waterproof Surf Watch and I\u0027m having trouble figuring out how to activate the GPS tracking feature. Can you help?",
     "Answer": "Press and hold the \u0027GPS\u0027 button."
-  },
-  {
-    "QuestionId": 28,
-    "ProductId": 104,
-    "Question": "Filtration efficiency?",
-    "Answer": "99.9%"
   },
   {
     "QuestionId": 280,
@@ -1266,12 +1734,6 @@
     "Answer": "High-quality insulation materials"
   },
   {
-    "QuestionId": 29,
-    "ProductId": 141,
-    "Question": "How to troubleshoot fire starter failure?",
-    "Answer": "Check Ferrocerium Rod, Inspect Striker, Test Under Different Conditions"
-  },
-  {
     "QuestionId": 290,
     "ProductId": 70,
     "Question": "How to calibrate solar panel voltage?",
@@ -1330,18 +1792,6 @@
     "ProductId": 27,
     "Question": "Accessory compatibility?",
     "Answer": "Range of accessories available."
-  },
-  {
-    "QuestionId": 3,
-    "ProductId": 99,
-    "Question": "Hi there, I recently purchased the Summit 3000 Trekking Backpack and I\u0027m having issues with the strap adjustment. Can you provide me with the specified torque value for the strap adjustment bolts?",
-    "Answer": "15-20 Nm"
-  },
-  {
-    "QuestionId": 30,
-    "ProductId": 154,
-    "Question": "Hi there, I\u0027m interested in the GuardianGear GPS Personal Locator. Can you tell me the dimensions and weight of the device?",
-    "Answer": "Length: 3.5 inches, Width: 2 inches, Thickness: 0.6 inches, Weight: 3.5 ounces"
   },
   {
     "QuestionId": 300,
@@ -1404,12 +1854,6 @@
     "Answer": "Thermo-imaging, Moisture, Insulation Resistance, Water Pressure, Electronic Component, Snow Load"
   },
   {
-    "QuestionId": 31,
-    "ProductId": 169,
-    "Question": "Is it dishwasher safe?",
-    "Answer": "Yes"
-  },
-  {
     "QuestionId": 310,
     "ProductId": 121,
     "Question": "How to activate SOS signal?",
@@ -1468,12 +1912,6 @@
     "ProductId": 58,
     "Question": "Battery life indicator?",
     "Answer": "Allows you to monitor remaining charge"
-  },
-  {
-    "QuestionId": 32,
-    "ProductId": 50,
-    "Question": "how to clean the hydration system?",
-    "Answer": "Refer to the \u0027Cleaning and Maintenance\u0027 section in the user manual."
   },
   {
     "QuestionId": 320,
@@ -1536,12 +1974,6 @@
     "Answer": "first aid supplies, fire starter, emergency blanket, other tools"
   },
   {
-    "QuestionId": 33,
-    "ProductId": 146,
-    "Question": "How to take Energy Boost 500?",
-    "Answer": "Follow 6 meticulous steps in the manual."
-  },
-  {
     "QuestionId": 330,
     "ProductId": 2,
     "Question": "What equipment is required for hardware installation?",
@@ -1600,12 +2032,6 @@
     "ProductId": 6,
     "Question": "How to assemble?",
     "Answer": "Attach handle to digging head, fasten locking mechanism."
-  },
-  {
-    "QuestionId": 34,
-    "ProductId": 144,
-    "Question": "How to secure gear?",
-    "Answer": "Attach to gear loops using clips or loops"
   },
   {
     "QuestionId": 340,
@@ -1668,12 +2094,6 @@
     "Answer": "Check for obstructions, use lubrication, contact customer support"
   },
   {
-    "QuestionId": 35,
-    "ProductId": 92,
-    "Question": "Hello, I just received my AquaPure Portable Water Filter. Should I rinse the filter cartridge before using it for the first time?",
-    "Answer": "Yes, rinse under clean, potable water for 10 seconds."
-  },
-  {
     "QuestionId": 350,
     "ProductId": 163,
     "Question": "Hi there, I just bought the Stealth Cam 500 and I wanted to know if it\u0027s waterproof. Can I use it near water?",
@@ -1732,12 +2152,6 @@
     "ProductId": 180,
     "Question": "properly attach reel?",
     "Answer": "Ensure the reel is properly attached to the rod."
-  },
-  {
-    "QuestionId": 36,
-    "ProductId": 99,
-    "Question": "How to measure tensile strength?",
-    "Answer": "Use a tensile testing machine"
   },
   {
     "QuestionId": 360,
@@ -1800,12 +2214,6 @@
     "Answer": "Global Positioning System"
   },
   {
-    "QuestionId": 37,
-    "ProductId": 192,
-    "Question": "How to clean?",
-    "Answer": "Spot clean with mild detergent and lukewarm water."
-  },
-  {
     "QuestionId": 370,
     "ProductId": 48,
     "Question": "How to charge?",
@@ -1864,12 +2272,6 @@
     "ProductId": 123,
     "Question": "Hello, I just purchased the SolarCopy 3000. Can you tell me how to clean the solar panels?",
     "Answer": "Use a clean, soft cloth to wipe the panels."
-  },
-  {
-    "QuestionId": 38,
-    "ProductId": 110,
-    "Question": "Do PowerFuel Energy Bars contain gluten?",
-    "Answer": "No, PowerFuel Energy Bars are gluten-free."
   },
   {
     "QuestionId": 380,
@@ -1932,12 +2334,6 @@
     "Answer": "Sun shelter"
   },
   {
-    "QuestionId": 39,
-    "ProductId": 91,
-    "Question": "Hi there, I recently purchased the Stormguard WeatherShield Pro Jacket and I want to make sure I\u0027m taking care of it properly. Can you tell me how to perform the moisture retention analysis?",
-    "Answer": "Select a representative area of the jacket, use a moisture analyzer, and compare the results with acceptable thresholds."
-  },
-  {
     "QuestionId": 390,
     "ProductId": 193,
     "Question": "Hello, I recently purchased the AltitudeTech Cake Carrier and I want to make sure I am loading and unloading it correctly. Can you provide me with the loading and unloading protocol?",
@@ -1996,18 +2392,6 @@
     "ProductId": 145,
     "Question": "How to troubleshoot slow charging?",
     "Answer": "Optimize Sun Exposure"
-  },
-  {
-    "QuestionId": 4,
-    "ProductId": 35,
-    "Question": "What is included in the set?",
-    "Answer": "2-quart pot, 1-quart pot, 7.5-inch frying pan, 2 lids, Mesh carry bag"
-  },
-  {
-    "QuestionId": 40,
-    "ProductId": 23,
-    "Question": "Hey there, I recently purchased the EZ Camp QuickShade Portable Shelter and I\u0027m wondering how to take it down properly. Can you provide some guidance?",
-    "Answer": "Carefully lower the shelter to a comfortable height and collapse the telescoping poles by pressing the release buttons."
   },
   {
     "QuestionId": 400,
@@ -2070,12 +2454,6 @@
     "Answer": "Press the \u0022HEART\u0022 button"
   },
   {
-    "QuestionId": 41,
-    "ProductId": 135,
-    "Question": "What connectivity options does the WideView 360 have?",
-    "Answer": "Wi-Fi and Bluetooth"
-  },
-  {
     "QuestionId": 410,
     "ProductId": 116,
     "Question": "Storage tips?",
@@ -2134,12 +2512,6 @@
     "ProductId": 145,
     "Question": "Hi, I just bought the PowerBeam Solar Powered Portable Charger. How do I charge it using the included micro-USB cable indoors?",
     "Answer": "Connect the charger to a power source using the micro-USB cable."
-  },
-  {
-    "QuestionId": 42,
-    "ProductId": 148,
-    "Question": "How to fix zipper stuck?",
-    "Answer": "Gently pull in opposite direction."
   },
   {
     "QuestionId": 420,
@@ -2202,12 +2574,6 @@
     "Answer": "Meets FDA and EFSA standards"
   },
   {
-    "QuestionId": 43,
-    "ProductId": 46,
-    "Question": "How to position the solar cooker?",
-    "Answer": "Adjust the cooker\u0027s position throughout the day"
-  },
-  {
     "QuestionId": 430,
     "ProductId": 200,
     "Question": "What safety standards does the backpack meet?",
@@ -2268,12 +2634,6 @@
     "Answer": "Use a mild, non-abrasive detergent"
   },
   {
-    "QuestionId": 44,
-    "ProductId": 157,
-    "Question": "Hi there, I just got the 360X Action Camera and I\u0027m having trouble figuring out how to start recording a video. Can you help?",
-    "Answer": "Press the Shutter button."
-  },
-  {
     "QuestionId": 440,
     "ProductId": 142,
     "Question": "What are the setup steps?",
@@ -2331,12 +2691,6 @@
     "QuestionId": 449,
     "ProductId": 158,
     "Question": "How to clean the water bladder?",
-    "Answer": "Rinse with warm, soapy water."
-  },
-  {
-    "QuestionId": 45,
-    "ProductId": 111,
-    "Question": "How to clean the reservoir?",
     "Answer": "Rinse with warm, soapy water."
   },
   {
@@ -2400,12 +2754,6 @@
     "Answer": "Lovingly wrapped in eco-friendly packaging"
   },
   {
-    "QuestionId": 46,
-    "ProductId": 144,
-    "Question": "What is not covered by the warranty?",
-    "Answer": "Damage caused by misuse, abuse, neglect, improper maintenance, alterations, accidents, or normal wear and tear"
-  },
-  {
     "QuestionId": 460,
     "ProductId": 74,
     "Question": "Hi there, I just bought the Naturehaven Ultra-Light Hammock and I want to know how to clean it properly. Can I use bleach?",
@@ -2464,12 +2812,6 @@
     "ProductId": 176,
     "Question": "How to change settings?",
     "Answer": "Follow steps in manual"
-  },
-  {
-    "QuestionId": 47,
-    "ProductId": 133,
-    "Question": "What is the hydration compatibility feature?",
-    "Answer": "Stay hydrated during outdoor excursions"
   },
   {
     "QuestionId": 470,
@@ -2532,12 +2874,6 @@
     "Answer": "Always make sure to check that all the medical supplies are securely stored inside the kit before heading out on your adventure."
   },
   {
-    "QuestionId": 48,
-    "ProductId": 106,
-    "Question": "How to store the sleeping bag?",
-    "Answer": "In a cool, dry place"
-  },
-  {
     "QuestionId": 480,
     "ProductId": 21,
     "Question": "How to customize settings?",
@@ -2596,12 +2932,6 @@
     "ProductId": 35,
     "Question": "How to clean the cookware?",
     "Answer": "Wash with mild dish soap and warm water."
-  },
-  {
-    "QuestionId": 49,
-    "ProductId": 198,
-    "Question": "Hi there, I just bought the WildBeat Portable Bluetooth Speaker and I\u0027m having trouble pairing it with my phone. Can you walk me through the steps to pair the speaker with my device?",
-    "Answer": "Press and hold power button until LED flashes blue and red. Select \u0027WildBeat\u0027 from Bluetooth settings on your device."
   },
   {
     "QuestionId": 490,
@@ -2664,339 +2994,9 @@
     "Answer": "1-year limited warranty"
   },
   {
-    "QuestionId": 5,
-    "ProductId": 28,
-    "Question": "How to turn on the purifier?",
-    "Answer": "Press and hold power button for 3 seconds."
-  },
-  {
-    "QuestionId": 50,
-    "ProductId": 45,
-    "Question": "How to check battery level?",
-    "Answer": "Press power button."
-  },
-  {
     "QuestionId": 500,
     "ProductId": 81,
     "Question": "How to troubleshoot difficulty adjusting buckles?",
     "Answer": "Check threading and lubricate moving parts"
-  },
-  {
-    "QuestionId": 51,
-    "ProductId": 65,
-    "Question": "Difficulty opening tools?",
-    "Answer": "Check for rust or debris"
-  },
-  {
-    "QuestionId": 52,
-    "ProductId": 130,
-    "Question": "Charging time?",
-    "Answer": "Approximately 3 hours"
-  },
-  {
-    "QuestionId": 53,
-    "ProductId": 22,
-    "Question": "How to install rain cover?",
-    "Answer": "Follow steps 1-4 in manual."
-  },
-  {
-    "QuestionId": 54,
-    "ProductId": 131,
-    "Question": "How to fix camera not turning on?",
-    "Answer": "Reset by removing batteries and reinserting"
-  },
-  {
-    "QuestionId": 55,
-    "ProductId": 160,
-    "Question": "Hi there, I recently purchased the Trailblazer GPS Navigation Device and I\u0027m having trouble pairing it with my smartphone. Can you walk me through the steps to pair it with my phone?",
-    "Answer": "Download Geotrack app, enable Bluetooth, follow on-screen instructions."
-  },
-  {
-    "QuestionId": 56,
-    "ProductId": 46,
-    "Question": "What to do if SunSpot not reaching high temperatures?",
-    "Answer": "Extend reflectors, check for obstructions, adjust position"
-  },
-  {
-    "QuestionId": 57,
-    "ProductId": 160,
-    "Question": "How to clean device?",
-    "Answer": "Use soft, dry cloth."
-  },
-  {
-    "QuestionId": 58,
-    "ProductId": 43,
-    "Question": "Hi, I just received my NightOps Tactical Flashlight and I can\u0027t find the spare O-rings. Are they supposed to be included?",
-    "Answer": "Yes, spare O-rings are included."
-  },
-  {
-    "QuestionId": 59,
-    "ProductId": 199,
-    "Question": "Hello, I just bought the SunShift 100W Solar Charger. I need to know the maximum power output of this charger. Can you please provide that information?",
-    "Answer": "100W"
-  },
-  {
-    "QuestionId": 6,
-    "ProductId": 51,
-    "Question": "What does the warranty cover?",
-    "Answer": "Defects in materials or workmanship for one year"
-  },
-  {
-    "QuestionId": 60,
-    "ProductId": 178,
-    "Question": "Hi there, I just bought the PowerBar Pro 2021 and I\u0027m wondering how I should store it to maintain its quality. Can I keep it in the fridge?",
-    "Answer": "Store on a dry and cool place, not in the fridge"
-  },
-  {
-    "QuestionId": 61,
-    "ProductId": 176,
-    "Question": "How to take a photo?",
-    "Answer": "Press power button, select mode, frame shot, press shutter button, review photo"
-  },
-  {
-    "QuestionId": 62,
-    "ProductId": 89,
-    "Question": "How to assemble the cookware set?",
-    "Answer": "Follow easy steps in manual."
-  },
-  {
-    "QuestionId": 63,
-    "ProductId": 12,
-    "Question": "Hi there, I just bought the TrailGPS 5000 and wanted to know if I can use any charger to recharge the battery or if I have to use the one provided. Thanks!",
-    "Answer": "Always use the provided charger"
-  },
-  {
-    "QuestionId": 64,
-    "ProductId": 35,
-    "Question": "How to clean the cookware?",
-    "Answer": "Use mild dish soap and soft sponge."
-  },
-  {
-    "QuestionId": 65,
-    "ProductId": 183,
-    "Question": "How to clean the pot?",
-    "Answer": "Hand wash only with mild soap and warm water."
-  },
-  {
-    "QuestionId": 66,
-    "ProductId": 197,
-    "Question": "How to troubleshoot stove ignition?",
-    "Answer": "Check fuel canister, inspect ignition switch"
-  },
-  {
-    "QuestionId": 67,
-    "ProductId": 200,
-    "Question": "How to properly adjust shoulder straps?",
-    "Answer": "Utilize the adjustable shoulder straps"
-  },
-  {
-    "QuestionId": 68,
-    "ProductId": 155,
-    "Question": "How to initiate charging?",
-    "Answer": "Press the power button."
-  },
-  {
-    "QuestionId": 69,
-    "ProductId": 195,
-    "Question": "hydration bladder compatibility",
-    "Answer": "compatible with most 2-liter bladders"
-  },
-  {
-    "QuestionId": 7,
-    "ProductId": 137,
-    "Question": "Waterproof rating?",
-    "Answer": "IP67, 1 meter for 30 minutes"
-  },
-  {
-    "QuestionId": 70,
-    "ProductId": 192,
-    "Question": "Front pocket features?",
-    "Answer": "Map, compass, snacks storage"
-  },
-  {
-    "QuestionId": 71,
-    "ProductId": 81,
-    "Question": "How to attach to climbing rope?",
-    "Answer": "1. Locate the belay loop, 2. Use a locking carabiner, 3. Double-check"
-  },
-  {
-    "QuestionId": 72,
-    "ProductId": 39,
-    "Question": "How do I fold the tent?",
-    "Answer": "Press and hold red folding levers."
-  },
-  {
-    "QuestionId": 73,
-    "ProductId": 58,
-    "Question": "SOS button not functioning?",
-    "Answer": "Try system reset or contact support."
-  },
-  {
-    "QuestionId": 74,
-    "ProductId": 137,
-    "Question": "Hi there, I\u0027m interested in purchasing the WildBeat Pro DJ Controller. Can you tell me about the care and storage recommendations for this product?",
-    "Answer": "Store in cool, dry place away from direct sunlight and extreme temperatures."
-  },
-  {
-    "QuestionId": 75,
-    "ProductId": 132,
-    "Question": "How to troubleshoot rod not casting properly?",
-    "Answer": "Check for Line Tangles, Inspect Rod Guides, Verify Reel Mounting, Adjust Casting Technique, Rod Maintenance"
-  },
-  {
-    "QuestionId": 76,
-    "ProductId": 134,
-    "Question": "Hello, I just received my SolarFire 2000 and I\u0027m trying to set it up. Can you tell me how to assemble the stove and solar panel?",
-    "Answer": "Unfold solar panel, position in sunlight, unfold stove, attach pot securely."
-  },
-  {
-    "QuestionId": 77,
-    "ProductId": 77,
-    "Question": "Hi there, I just bought the Solar Charger 3000X and I\u0027m not sure how to check the battery status. Can you help?",
-    "Answer": "Press the power button."
-  },
-  {
-    "QuestionId": 78,
-    "ProductId": 79,
-    "Question": "How should the Adventure Pro Camera be stored?",
-    "Answer": "Cool, dry place away from direct sunlight"
-  },
-  {
-    "QuestionId": 79,
-    "ProductId": 76,
-    "Question": "How do I power on Wilderness DJ Pro?",
-    "Answer": "Locate the power button on the console."
-  },
-  {
-    "QuestionId": 8,
-    "ProductId": 103,
-    "Question": "How to use water pouches?",
-    "Answer": "Tear open the top and drink directly"
-  },
-  {
-    "QuestionId": 80,
-    "ProductId": 167,
-    "Question": "What is the Backpacker Cookware Set designed for?",
-    "Answer": "Outdoor use in backcountry environments"
-  },
-  {
-    "QuestionId": 81,
-    "ProductId": 35,
-    "Question": "How should I clean the cookware?",
-    "Answer": "Use a soft sponge or cloth to gently scrub off any food residue."
-  },
-  {
-    "QuestionId": 82,
-    "ProductId": 144,
-    "Question": "Hi there, I just bought the ProLite Climbing Harness and I\u0027m not sure how to properly attach it to the climbing rope. Can you give me some guidance?",
-    "Answer": "Clip the carabiner through the belay loop and ensure it is properly locked before starting your climb."
-  },
-  {
-    "QuestionId": 83,
-    "ProductId": 48,
-    "Question": "how to reset speaker?",
-    "Answer": "press and hold power button for 10 seconds"
-  },
-  {
-    "QuestionId": 84,
-    "ProductId": 64,
-    "Question": "how to activate purification process?",
-    "Answer": "Press and hold power button."
-  },
-  {
-    "QuestionId": 85,
-    "ProductId": 69,
-    "Question": "Hi, I just received my Summit Step Alpine Explorer Hiking Boots and I\u0027m not sure if I got all the components mentioned in the manual. Can you confirm what should be included in the packaging?",
-    "Answer": "You should receive an extra pair of laces and an information booklet."
-  },
-  {
-    "QuestionId": 86,
-    "ProductId": 35,
-    "Question": "How to clean after use?",
-    "Answer": "Wash with mild dish soap."
-  },
-  {
-    "QuestionId": 87,
-    "ProductId": 95,
-    "Question": "Hello, I recently purchased the Summit 4-Season Sleeping Bag and noticed some clumping of insulation. What\u0027s the best way to fix this issue?",
-    "Answer": "Fluff the sleeping bag"
-  },
-  {
-    "QuestionId": 88,
-    "ProductId": 31,
-    "Question": "What items are included in the box?",
-    "Answer": "Nomad Camping Stove, fuel canister, user manual"
-  },
-  {
-    "QuestionId": 89,
-    "ProductId": 176,
-    "Question": "how to stop video recording?",
-    "Answer": "Press the \u0022Record\u0022 button again."
-  },
-  {
-    "QuestionId": 9,
-    "ProductId": 108,
-    "Question": "What precautions should be taken for placement?",
-    "Answer": "On a flat, stable surface"
-  },
-  {
-    "QuestionId": 90,
-    "ProductId": 77,
-    "Question": "Charging via USB steps?",
-    "Answer": "Connect USB cable to power source, then to charger\u0027s USB port"
-  },
-  {
-    "QuestionId": 91,
-    "ProductId": 74,
-    "Question": "How should I clean the hammock?",
-    "Answer": "Hand wash with mild soap and water"
-  },
-  {
-    "QuestionId": 92,
-    "ProductId": 63,
-    "Question": "How to turn on lights?",
-    "Answer": "Press power button once"
-  },
-  {
-    "QuestionId": 93,
-    "ProductId": 192,
-    "Question": "What items can be stored in the front pocket?",
-    "Answer": "Map, compass, snacks"
-  },
-  {
-    "QuestionId": 94,
-    "ProductId": 152,
-    "Question": "Hi, I just received my Emergency Beacon Light from Sure Survive and I\u0027m not sure if all the items are included. Can you confirm what should be in the package?",
-    "Answer": "Emergency Beacon Light, User Manual, Lanyard"
-  },
-  {
-    "QuestionId": 95,
-    "ProductId": 112,
-    "Question": "Dear support, can you explain how to adjust the fit of the Trailblazer Carbon Fiber Mountain Bike Helmet using the dial-fit adjustment system?",
-    "Answer": "Utilize the *ultra-refined* dial-fit adjustment system located at the back of the helmet to customize the fit to your precise liking."
-  },
-  {
-    "QuestionId": 96,
-    "ProductId": 90,
-    "Question": "What percentage of waterborne bacteria does the pump remove?",
-    "Answer": "99.9999%"
-  },
-  {
-    "QuestionId": 97,
-    "ProductId": 100,
-    "Question": "Hi, I recently purchased the Ridge Runner Hydration Pack. How should I clean the water reservoir to prevent mold and mildew growth?",
-    "Answer": "Empty and Rinse, Use Mild Soap, Dry Thoroughly"
-  },
-  {
-    "QuestionId": 98,
-    "ProductId": 44,
-    "Question": "Hi there, I just bought the RescueTech Emergency Kit from Life Guard X. Can I reuse the emergency blanket?",
-    "Answer": "No, the emergency blanket is designed for single use only."
-  },
-  {
-    "QuestionId": 99,
-    "ProductId": 153,
-    "Question": "What are the post-use diagnostic procedures?",
-    "Answer": "Energy Output Analysis"
   }
 ]
