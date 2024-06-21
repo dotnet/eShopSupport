@@ -1,5 +1,7 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using System.Text.Json
+@using System.Text.RegularExpressions
+@using System.Web
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @inject IJSRuntime JS
 
@@ -23,23 +25,29 @@ else
         </div>
         <div class="sender-name">Assistant</div>
         <div class="message-content" @ref="messageContentElement">
-            <div class="search-info"></div>
-            <div class="message-text">...</div>
+            @if (!string.IsNullOrEmpty(searchText))
+            {
+                <div class="search-info">@searchText</div>
+            }
 
-            <input type="hidden" name="suggested-reply" @bind="suggestedReply" />
-            @if (finished && !string.IsNullOrEmpty(suggestedReply))
+            <div class="message-text">@(string.IsNullOrEmpty(State.Message.Text) ? "..." : State.Message.Text)</div>
+
+            @if (isSuggestedReply)
             {
                 <div class="use-as-reply">
                     <FluentButton Appearance="Appearance.Accent" OnClick="@UseAsReplyAsync">Use as reply</FluentButton>
                 </div>
             }
 
-            <a class="reference-link" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                </svg>
-                <span class="ref-text"></span>
-            </a>
+            @if (!string.IsNullOrEmpty(citationUrl))
+            {
+                <a href="@citationUrl" class="reference-link" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                    </svg>
+                    <span class="ref-text">@(string.IsNullOrWhiteSpace(citationQuote) ? "Reference" : citationQuote)</span>
+                </a>
+            }
         </div>
     </div>
 }
@@ -48,10 +56,12 @@ else
     string anonymousPersonImage = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjI1cHgiIGZpbGw9IndoaXRlIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tbmV1dHJhbC1sYXllci0xKTsgd2lkdGg6IDI1cHg7IiBhcmlhLWhpZGRlbj0idHJ1ZSI+PHBhdGggZD0iTTI0IDRhMTAgMTAgMCAxIDAgMCAyMCAxMCAxMCAwIDAgMCAwLTIwWm0tNy41IDEwYTcuNSA3LjUgMCAxIDEgMTUgMCA3LjUgNy41IDAgMCAxLTE1IDBabS00LjI1IDE0QTQuMjUgNC4yNSAwIDAgMCA4IDMyLjI1VjMzYzAgMy43NiAxLjk0IDYuNTcgNC45MiA4LjM4QzE1Ljg1IDQzLjE2IDE5Ljc5IDQ0IDI0IDQ0czguMTUtLjg0IDExLjA4LTIuNjJDMzguMDYgMzkuNTcgNDAgMzYuNzYgNDAgMzN2LS43NUM0MCAyOS45IDM4LjEgMjggMzUuNzUgMjhoLTIzLjVabS0xLjc1IDQuMjVjMC0uOTcuNzgtMS43NSAxLjc1LTEuNzVoMjMuNWMuOTcgMCAxLjc1Ljc4IDEuNzUgMS43NVYzM2MwIDIuNzQtMS4zNiA0LjgtMy43MiA2LjI0LTIuNDEgMS40Ny01Ljg1IDIuMjYtOS43OCAyLjI2LTMuOTMgMC03LjM3LS43OS05Ljc4LTIuMjYtMi4zNi0xLjQzLTMuNzItMy41LTMuNzItNi4yNHYtLjc1WiIvPjwvc3ZnPg==";
     string assistantImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='white' class='w-6 h-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18' /%3E%3C/svg%3E%0A";
 
-    private string? suggestedReply;
+    private string? searchText;
+    private bool isSuggestedReply;
     private ElementReference messageContentElement;
     private bool visible;
-    private bool finished;
+    private string? citationUrl;
+    private string? citationQuote;
 
     [Parameter, EditorRequired]
     public TicketAssistant.MessageState State { get; set; } = default!;
@@ -72,26 +82,37 @@ else
         // Load the module, or just get a reference if it's already loaded
         await using var module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Ticket/TicketAssistantMessage.razor.js");
 
-        if (State.ResponseTask is not null)
+        if (State.ResponseItems is not null)
         {
+            var searchResults = new List<AssistantChatReplyItem>();
             try
             {
                 // Don't become visible until either a response starts arriving, or some timeout elapses
                 // This feels more natural than showing a placeholder reply instantly after you submit a message
-                await Task.WhenAny(State.ResponseTask, Task.Delay(500));
+                await Task.Delay(500);
                 visible = true;
                 StateHasChanged();
 
-                // As the response streams in, update the UI
-                var responseStream = await State.ResponseTask;
-                using var responseStreamReader = new StreamReader(responseStream);
-                var buffer = new char[512];
-                var numCharsRead = 0;
-                while ((numCharsRead = await responseStreamReader.ReadAsync(buffer, State.CancellationToken)) > 0)
+                await foreach (var item in State.ResponseItems)
                 {
-                    var messageChunk = new string(buffer, 0, numCharsRead);
-                    State.Message.Text += messageChunk;
-                    await module.InvokeVoidAsync("addMessageChunk", messageContentElement, messageChunk);
+                    switch (item.Type)
+                    {
+                        case AssistantChatReplyItemType.Search:
+                            searchText = item.Text;
+                            StateHasChanged();
+                            break;
+                        case AssistantChatReplyItemType.SearchResult:
+                            searchResults.Add(item);
+                            break;
+                        case AssistantChatReplyItemType.AnswerChunk:
+                            State.Message.Text += item.Text;
+                            await module.InvokeVoidAsync("addAnswerChunk", messageContentElement, item.Text);
+                            break;
+                        case AssistantChatReplyItemType.IsAddressedToCustomer:
+                            isSuggestedReply = item.Text == "true";
+                            StateHasChanged();
+                            break;
+                    }
                 }
             }
             catch (TaskCanceledException)
@@ -99,11 +120,22 @@ else
                 // Not an error
             }
 
-            finished = true;
+            // Check if there's a citation to show
+            var citeMatches = Regex.Matches(State.Message.Text, "<cite searchResultId=['\"]?(\\d+)['\"]?>(.*?)</cite>");
+            if (citeMatches.FirstOrDefault() is { } match
+                && int.TryParse(match.Groups[1].Value, out var searchResultId)
+                && searchResults.FirstOrDefault(s => s.SearchResultId == searchResultId) is { } searchResult)
+            {
+                citationQuote = match.Groups[2].Value;
+                citationUrl = $"manual.html?file={searchResult.SearchResultProductId}.pdf&page={searchResult.SearchResultPageNumber}&search={HttpUtility.UrlEncode(citationQuote)}";
+                State.Message.Text = State.Message.Text[0..match.Index] + State.Message.Text[(match.Index + match.Length)..];
+            }
+
+            State.Message.Text = State.Message.Text.Trim();
             await OnCompleted.InvokeAsync(State);
         }
     }
 
     private Task UseAsReplyAsync()
-        => OnSuggestedReply.InvokeAsync(suggestedReply);
+        => OnSuggestedReply.InvokeAsync(State.Message.Text);
 }

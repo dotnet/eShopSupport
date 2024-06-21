@@ -61,7 +61,6 @@
 }
 
 .search-info {
-    display: none;
     font-weight: 500;
     margin-bottom: 0.5rem;
 }
@@ -71,7 +70,7 @@
     }
 
 .reference-link {
-    display: none;
+    display: flex;
     text-decoration: none;
     background-color: rgba(128, 128, 128, 0.3);
     padding: 0.5rem 0.9rem;
