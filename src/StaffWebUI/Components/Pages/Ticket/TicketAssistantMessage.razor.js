@@ -5,9 +5,13 @@
     elem.textContent = elem.fullText;
 
     // Hide any citation markup
-    const citeStartPos = elem.textContent.indexOf('<cite ');
-    if (citeStartPos >= 0) {
-        const citeEndPos = elem.textContent.indexOf('</cite>');
+    while (true) {
+        const citeStartPos = elem.textContent.indexOf('<cite ');
+        if (citeStartPos < 0) {
+            break;
+        }
+
+        const citeEndPos = elem.textContent.indexOf('</cite>', citeStartPos);
         if (citeEndPos >= 0) {
             elem.textContent = elem.textContent.substring(0, citeStartPos) + elem.textContent.substring(citeEndPos + 7);
         } else {

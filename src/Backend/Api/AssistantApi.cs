@@ -57,9 +57,9 @@ public static class AssistantApi
             chatHistory.AddSystemMessage($$"""
             ALWAYS justify your answer by citing the most relevant one of the above search results. Do this by including this syntax in your reply:
             <cite searchResultId=number>shortVerbatimQuote</cite>
-            shortVerbatimQuote must be a very short, EXACT verbatim quote from whichever search result is the factual basis for your answer. Try
-            to pick a quote that doesn't include any special punctuation such as quote symbols.
-            Always give a citation because this is important to the business.
+            shortVerbatimQuote must be a very short, EXACT literal verbatim quote (max 10 words) from whichever search result is the factual basis for your answer. Try
+            to pick a quote that doesn't include any special punctuation such as quote symbols. Do not rephrase this quote in any way - it must be an exact substring
+            of the search result text. Always give a citation because this is important to the business.
             """);
         }
 
@@ -111,6 +111,8 @@ public static class AssistantApi
               { "needMoreInfo": true, "searchPhrase": string }.
             3. If the context already gives enough information to answer the agent's question, reply
               { "needMoreInfo": false } but DO NOT ACTUALLY ANSWER THE QUESTION. Your response must NOT have any other information than this single boolean value.
+
+            If this is a question about the product, ALWAYS set needMoreInfo to true and search the product manual.
             """);
 
         var toolOutputs = new List<ChatMessageContent>();
