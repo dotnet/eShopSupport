@@ -57,9 +57,8 @@ public static class AssistantApi
             chatHistory.AddSystemMessage($$"""
             ALWAYS justify your answer by citing the most relevant one of the above search results. Do this by including this syntax in your reply:
             <cite searchResultId=number>shortVerbatimQuote</cite>
-            shortVerbatimQuote must be a very short, EXACT literal verbatim quote (max 10 words) from whichever search result is the factual basis for your answer. Try
-            to pick a quote that doesn't include any special punctuation such as quote symbols. Do not rephrase this quote in any way - it must be an exact substring
-            of the search result text. Always give a citation because this is important to the business.
+            shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
+            Only give one citation per answer. Always give a citation because this is important to the business.
             """);
         }
 

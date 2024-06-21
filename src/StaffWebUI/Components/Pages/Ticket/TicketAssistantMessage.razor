@@ -127,6 +127,7 @@ else
                 && searchResults.FirstOrDefault(s => s.SearchResultId == searchResultId) is { } searchResult)
             {
                 citationQuote = match.Groups[2].Value;
+                citationQuote = citationQuote.Trim('.', ',', ' ', '\n', '\r', '\t', '"', '\'');
                 citationUrl = $"manual.html?file={searchResult.SearchResultProductId}.pdf&page={searchResult.SearchResultPageNumber}&search={HttpUtility.UrlEncode(citationQuote)}";
                 State.Message.Text = State.Message.Text[0..match.Index] + State.Message.Text[(match.Index + match.Length)..];
             }
