@@ -83,11 +83,11 @@
                 ticket.LongSummary,
                 ticket.Messages.LastOrDefault(m => m.IsCustomerMessage)?.MessageText,
                 messages.Select(m => m.Message).ToList());
-            var responseTask = Backend.AssistantChatAsync(request, cancellationToken);
+            var responseItems = Backend.AssistantChatAsync(request, cancellationToken);
 
             // Add the assistant's reply to the UI
             var reply = new AssistantChatRequestMessage { IsAssistant = true, Text = string.Empty };
-            messages.Add(new MessageState(reply, responseTask, cancellationToken));
+            messages.Add(new MessageState(reply, responseItems, cancellationToken));
         }
     }
 
@@ -117,5 +117,5 @@
         SendMessage();
     }
 
-    public record MessageState(AssistantChatRequestMessage Message, Task<Stream>? ResponseTask, CancellationToken CancellationToken);
+    public record MessageState(AssistantChatRequestMessage Message, IAsyncEnumerable<AssistantChatReplyItem>? ResponseItems, CancellationToken CancellationToken);
 }
