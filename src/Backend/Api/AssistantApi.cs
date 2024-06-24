@@ -152,12 +152,12 @@ public static class AssistantApi
         return toolOutputs;
     }
 
-    private static async Task<AssistantReply?> GetNextAction(IChatCompletionService chatService, ChatHistory chatHistory, CancellationToken cancellationToken)
+    private static async Task<NextActionReply?> GetNextAction(IChatCompletionService chatService, ChatHistory chatHistory, CancellationToken cancellationToken)
     {
         var executionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object", Seed = 0, Temperature = 0 };
         var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         chatHistory.Add(response);
-        return TryParseReply(response.ToString(), out var reply) ? reply : null;
+        return TryParseNextActionReply(response.ToString(), out var reply) ? reply : null;
     }
 
     private static int? GetProductId(MemoryQueryResult result)
@@ -172,11 +172,11 @@ public static class AssistantApi
         return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
 
-    private static bool TryParseReply(string reply, [NotNullWhen(true)] out AssistantReply? assistantReply)
+    private static bool TryParseNextActionReply(string reply, [NotNullWhen(true)] out NextActionReply? assistantReply)
     {
         try
         {
-            assistantReply = JsonSerializer.Deserialize<AssistantReply>(reply, _jsonOptions)!;
+            assistantReply = JsonSerializer.Deserialize<NextActionReply>(reply, _jsonOptions)!;
             return true;
         }
         catch
@@ -186,9 +186,8 @@ public static class AssistantApi
         }
     }
 
-    public class AssistantReply
+    public class NextActionReply
     {
-        public string? Answer { get; set; }
         public int? SearchProductId { get; set; }
         public string? SearchPhrase { get; set; }
     }

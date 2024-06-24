@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
-using eShopSupport.Backend.Api;
 using eShopSupport.Evaluator;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.Extensions.Configuration;
@@ -146,21 +146,26 @@ async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuest
     try
     {
         Console.WriteLine($"Asking question {question.QuestionId}...");
-        var responseStream = await backend.AssistantChatAsync(new AssistantChatRequest(
+        var responseItems = backend.AssistantChatAsync(new AssistantChatRequest(
             question.ProductId,
             null,
             null,
             null,
             [new() { IsAssistant = true, Text = question.Question }]),
             CancellationToken.None);
-        var reader = new StreamReader(responseStream);
-        var responseJson = await reader.ReadToEndAsync();
+        var answerBuilder = new StringBuilder();
+        await foreach (var item in responseItems)
+        {
+            if (item.Type == AssistantChatReplyItemType.AnswerChunk)
+            {
+                answerBuilder.Append(item.Text);
+            }
+        }
+
         var duration = DateTime.Now - startTime;
-        var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-        var responseParsed = JsonSerializer.Deserialize<AssistantApi.AssistantReply[]>(responseJson, jsonOptions)!;
-        var finalAnswer = responseParsed.LastOrDefault(a => !string.IsNullOrEmpty(a.Answer))?.Answer;
+        var finalAnswer = answerBuilder.ToString();
         Console.WriteLine($"Received answer to question {question.QuestionId}");
-        return (finalAnswer ?? "No answer provided", duration);
+        return (string.IsNullOrWhiteSpace(finalAnswer) ? "No answer provided" : finalAnswer, duration);
     }
     catch (Exception ex)
     {
