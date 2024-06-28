@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Experimental.AI.LanguageModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
@@ -61,7 +58,7 @@ public static class AssistantApi
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
         var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
 
-        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual to find information about a given phrase", async (int productId, string searchPhrase) =>
+        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.", async (int? productId, string searchPhrase) =>
         {
             await httpContext.Response.WriteAsync(",\n");
             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
@@ -123,56 +120,6 @@ public static class AssistantApi
         public bool IsAddressedByNameToCustomer { get; set; }
     }
 
-    /*
-    private static async Task<IReadOnlyList<ChatMessage>> RunRetrievalLoopUntilReadyToAnswer(HttpResponse httpResponse, IChatService chatService, ProductManualSemanticSearch manualSearch, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
-    {
-        var toolOutputs = new List<ChatMessage>();
-        for (var iteration = 0; iteration < 3; iteration++)
-        {
-            var action = await GetNextAction(chatService, chatHistory, cancellationToken);
-            if (string.IsNullOrWhiteSpace(action?.SearchPhrase))
-            {
-                break;
-            }
-
-            await httpResponse.WriteAsync(",\n");
-            await httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, action.SearchPhrase)));
-
-            var searchResults = await manualSearch.SearchAsync(action.SearchProductId, action.SearchPhrase);
-            var toolOutputMessage = new ChatMessage(ChatMessageRole.System, $"""
-                The assistant performed a search with term "{action.SearchPhrase}" on the user manual,
-                which returned the following results:
-                {string.Join("\n", searchResults.Select(r => $"<search_result productId=\"{GetProductId(r)}\" searchResultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
-
-                Based on this, decide again how to proceed using the same rules as before.
-                """);
-            chatHistory.Add(toolOutputMessage);
-            toolOutputs.Add(toolOutputMessage);
-
-            foreach (var r in searchResults)
-            {
-                await httpResponse.WriteAsync(",\n");
-                await httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
-                    AssistantChatReplyItemType.SearchResult,
-                    string.Empty,
-                    int.Parse(r.Metadata.Id),
-                    GetProductId(r),
-                    GetPageNumber(r))));
-            }
-        }
-
-        return toolOutputs;
-    }
-
-    private static async Task<NextActionReply?> GetNextAction(IChatService chatService, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
-    {
-        var options = new ChatOptions { ResponseFormat = ChatResponseFormat.JsonObject, Seed = 0, Temperature = 0 };
-        var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
-        chatHistory.Add(response);
-        return TryParseNextActionReply(response.Content, out var reply) ? reply : null;
-    }
-    */
-
     private static int? GetProductId(MemoryQueryResult result)
     {
         var match = Regex.Match(result.Metadata.ExternalSourceName, @"productid:(\d+)");
@@ -183,25 +130,5 @@ public static class AssistantApi
     {
         var match = Regex.Match(result.Metadata.AdditionalMetadata, @"pagenumber:(\d+)");
         return match.Success ? int.Parse(match.Groups[1].Value) : null;
-    }
-
-    private static bool TryParseNextActionReply(string reply, [NotNullWhen(true)] out NextActionReply? assistantReply)
-    {
-        try
-        {
-            assistantReply = JsonSerializer.Deserialize<NextActionReply>(reply, _jsonOptions)!;
-            return true;
-        }
-        catch
-        {
-            assistantReply = null;
-            return false;
-        }
-    }
-
-    public class NextActionReply
-    {
-        public int? SearchProductId { get; set; }
-        public string? SearchPhrase { get; set; }
     }
 }

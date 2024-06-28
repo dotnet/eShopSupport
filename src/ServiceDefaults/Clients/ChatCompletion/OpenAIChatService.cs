@@ -187,7 +187,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                     productId = new
                     {
                         type = "number",
-                        description = "ID for the product whose manual to search",
+                        description = "ID for the product whose manual to search. Omit this if you need to search all manuals.",
                     },
                     searchPhrase = new
                     {
@@ -195,7 +195,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                         description = "A phrase to use when searching the manual",
                     },
                 },
-                required = new string[] { "productId", "searchPhrase" },
+                required = new string[] { "searchPhrase" },
             });
 
             return new OpenAIChatFunction(name, description, @delegate, new ChatCompletionsFunctionToolDefinition(definition));
@@ -205,7 +205,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         {
             // TODO: So much error handling
             var parameters = _delegate.Method.GetParameters();
-            var argsInOrder = parameters.Select(p => MapParameterType(p.ParameterType, args[p.Name!]));
+            var argsInOrder = parameters.Select(p => args.ContainsKey(p.Name!) ? MapParameterType(p.ParameterType, args[p.Name!]) : null);
             var result = _delegate.DynamicInvoke(argsInOrder.ToArray());
             if (result is Task task)
             {
@@ -224,6 +224,14 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             if (targetType == typeof(int) && receivedValue.ValueKind == JsonValueKind.Number)
             {
                 return receivedValue.GetInt32();
+            }
+            else if (targetType == typeof(int?) && receivedValue.ValueKind == JsonValueKind.Number)
+            {
+                return receivedValue.GetInt32();
+            }
+            else if (Nullable.GetUnderlyingType(targetType) is not null && (receivedValue.ValueKind == JsonValueKind.Null || receivedValue.ValueKind == JsonValueKind.Undefined))
+            {
+                return null;
             }
             else if (targetType == typeof(string) && receivedValue.ValueKind == JsonValueKind.String)
             {
