@@ -17,8 +17,9 @@ public class ChatMessage(ChatMessageRole role, string content)
 
 public abstract class ChatMessageToolCall { }
 
-public class ChatMessageChunk(string content)
+public class ChatMessageChunk(ChatMessageRole role, string content)
 {
+    public ChatMessageRole Role => role;
     public string Content => content;
 }
 

@@ -14,7 +14,7 @@ public static class ChatCompletionServiceExtensions
         var implementationType = builder.Configuration[$"{name}:Type"];
         if (implementationType == "ollama")
         {
-            throw new NotImplementedException("TODO: Add Ollama implementation of IChatService");
+            builder.AddOllamaChatCompletionService(name);
         }
         else
         {

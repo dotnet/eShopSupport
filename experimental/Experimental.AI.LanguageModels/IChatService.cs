@@ -24,7 +24,8 @@ public interface IChatService
     // The IChatService implementation can use either reflection or a source generator to map the .NET delegate to its own schema.
     //
     // Similarly, the core abstraction doesn't force any particular algorithm for calling functions. It's up to the IChatService
-    // implementation to have its own tool-execution logic based on how the underlying LLM indicates its tool-calling intent.
+    // implementation to have its own tool-execution logic based on how the underlying LLM indicates its tool-calling intent,
+    // and any other backend-specific rules about how to represent the tool call in the chat history (e.g., with IDs).
     // If they want to let the developer customize the rules (e.g., how many calls are allowed) they have to do that in their
     // own concrete API, e.g., via an "options" passed to the constructor.
     //

@@ -2,13 +2,11 @@
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-internal class OllamaChatCompletionService : IChatCompletionService
+internal class OllamaChatCompletionService : IChatService
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;
@@ -23,33 +21,39 @@ internal class OllamaChatCompletionService : IChatCompletionService
         _modelName = modelName;
     }
 
-    public IReadOnlyDictionary<string, object?> Attributes => throw new NotImplementedException();
-
-    public async Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/chat");
-        request.Content = PrepareChatRequestContent(chatHistory, executionSettings, false, out var json);
+        request.Content = PrepareChatRequestContent(messages, options, false);
+        var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var responseText = "ERROR: The configured model isn't available. Perhaps it's still downloading.";
-            return [new ChatMessageContent(AuthorRole.Assistant, json ? JsonSerializer.Serialize(responseText) : responseText)];
+            return [new ChatMessage(ChatMessageRole.Assistant, json ? JsonSerializer.Serialize(responseText) : responseText)];
         }
 
         var responseContent = await response.Content.ReadFromJsonAsync<OllamaResponseStreamEntry>(_jsonSerializerOptions, cancellationToken);
-        return [new ChatMessageContent(AuthorRole.Assistant, responseContent!.Message!.Content)];
+        return [new ChatMessage(ChatMessageRole.Assistant, responseContent!.Message!.Content)];
     }
 
-    public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/chat");
-        request.Content = PrepareChatRequestContent(chatHistory, executionSettings, true, out var json);
+        request.Content = PrepareChatRequestContent(messages, options, true);
+        var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var responseText = "ERROR: The configured model isn't available. Perhaps it's still downloading.";
-            yield return new StreamingChatMessageContent(AuthorRole.Assistant, json ? JsonSerializer.Serialize(responseText) : responseText);
+            yield return new ChatMessageChunk(ChatMessageRole.Assistant, json ? JsonSerializer.Serialize(responseText) : responseText);
             yield break;
         }
 
@@ -65,7 +69,7 @@ internal class OllamaChatCompletionService : IChatCompletionService
             }
             else if (entry is { Message: { } message })
             {
-                yield return new StreamingChatMessageContent(FromOllamaRole(message.Role), message.Content);
+                yield return new ChatMessageChunk(FromOllamaRole(message.Role), message.Content);
             }
             else
             {
@@ -74,41 +78,39 @@ internal class OllamaChatCompletionService : IChatCompletionService
         }
     }
 
-    private JsonContent PrepareChatRequestContent(ChatHistory chatHistory, PromptExecutionSettings? executionSettings, bool streaming, out bool json)
+    private JsonContent PrepareChatRequestContent(IReadOnlyList<ChatMessage> messages, ChatOptions options, bool streaming)
     {
-        var openAiPromptExecutionSettings = executionSettings as OpenAIPromptExecutionSettings;
-        json = openAiPromptExecutionSettings?.ResponseFormat is "json_object";
         return JsonContent.Create(new
         {
             Model = _modelName,
-            Messages = chatHistory.Select(m => new
+            Messages = messages.Select(m => new
             {
                 Role = ToOllamaRole(m.Role),
-                Content = m.ToString(),
+                Content = m.Content,
             }),
-            Format = json ? "json" : null,
+            Format = options.ResponseFormat == ChatResponseFormat.JsonObject ? "json" : null,
             Options = new
             {
-                Temperature = openAiPromptExecutionSettings?.Temperature ?? 0.5,
-                NumPredict = openAiPromptExecutionSettings?.MaxTokens ?? null,
-                TopP = openAiPromptExecutionSettings?.TopP ?? 1.0,
-                Stop = openAiPromptExecutionSettings?.StopSequences,
+                Temperature = options.Temperature ?? 0.5,
+                NumPredict = options.MaxTokens,
+                TopP = options.TopP ?? 1.0,
+                Stop = options.StopSequences,
             },
             Stream = streaming,
         }, options: _jsonSerializerOptions);
     }
 
-    private static string ToOllamaRole(AuthorRole role)
+    private static string ToOllamaRole(ChatMessageRole role)
     {
-        if (role == AuthorRole.Assistant)
+        if (role == ChatMessageRole.Assistant)
         {
             return "assistant";
         }
-        else if (role == AuthorRole.User)
+        else if (role == ChatMessageRole.User)
         {
             return "user";
         }
-        else if (role == AuthorRole.System)
+        else if (role == ChatMessageRole.System)
         {
             return "system";
         }
@@ -118,13 +120,18 @@ internal class OllamaChatCompletionService : IChatCompletionService
         }
     }
 
-    private static AuthorRole FromOllamaRole(string role) => role switch
+    private static ChatMessageRole FromOllamaRole(string role) => role switch
     {
-        "assistant" => AuthorRole.Assistant,
-        "user" => AuthorRole.User,
-        "system" => AuthorRole.System,
-        _ => new AuthorRole(role),
+        "assistant" => ChatMessageRole.Assistant,
+        "user" => ChatMessageRole.User,
+        "system" => ChatMessageRole.System,
+        _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
+
+    public ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+        => new OllamaChatFunction(name, description);
+
+    private class OllamaChatFunction(string name, string description) : ChatFunction(name, description) { }
 
     private class OllamaResponseStreamEntry
     {

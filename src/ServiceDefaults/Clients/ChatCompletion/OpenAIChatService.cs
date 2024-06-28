@@ -28,7 +28,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             var contentBuilder = default(StringBuilder);
             var functionToolName = default(string);
             var functionToolArgs = default(StringBuilder);
-            var toolCallId  = default(string);
+            var toolCallId = default(string);
             var finishReason = default(CompletionsFinishReason);
 
             // Process and capture chunks until the end of the current message
@@ -38,7 +38,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                 {
                     contentBuilder ??= new();
                     contentBuilder.Append(chunk.ContentUpdate);
-                    yield return new ChatMessageChunk(chunk.ContentUpdate);
+                    yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate);
                 }
                 else if (chunk.ToolCallUpdate is StreamingFunctionToolCallUpdate { ToolCallIndex: 0 } toolCallUpdate)
                 {
@@ -92,7 +92,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                 ChatResponseFormat.JsonObject => ChatCompletionsResponseFormat.JsonObject,
                 _ => default
             },
-            Temperature = options.Temperature,
+            Temperature = (float?)options.Temperature,
             Seed = options.Seed,
         };
 
@@ -176,7 +176,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             OpenAIDefinition = definition;
         }
 
-        public static OpenAIChatFunction Create<T>(string name, string description, T @delegate) where T: Delegate
+        public static OpenAIChatFunction Create<T>(string name, string description, T @delegate) where T : Delegate
         {
             // Use reflection for now, but could use a source generator
             var definition = new FunctionDefinition(name);
