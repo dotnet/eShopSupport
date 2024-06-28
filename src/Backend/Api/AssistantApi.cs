@@ -5,9 +5,7 @@ using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Experimental.AI.LanguageModels;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
@@ -21,7 +19,7 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         await httpContext.Response.WriteAsync("[null");
 
@@ -29,9 +27,9 @@ public static class AssistantApi
             ? await dbContext.Products.FindAsync(request.ProductId.Value)
             : null;
 
-        var chatHistory = new ChatHistory();
+        var chatHistory = new List<ChatMessage>();
 
-        chatHistory.AddSystemMessage($$"""
+        chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
             You are a helpful AI assistant called 'Assistant' whose job is to help customer service agents working for AdventureWorks, an online retailer.
             The customer service agent is currently handling the following ticket:
                 
@@ -43,45 +41,46 @@ public static class AssistantApi
             The most recent message from the customer is this:
             <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
             However, that is only provided for context. You are not answering that question directly. The real question will be asked by the user below.
-            """);
+            """));
 
-        chatHistory.AddRange(request.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
+        chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatMessageRole.Assistant : ChatMessageRole.User, m.Text)));
 
-        var toolOutputs = await RunRetrievalLoopUntilReadyToAnswer(httpContext.Response, chatService, manualSearch, new ChatHistory(chatHistory), cancellationToken);
+        var chatHistoryCopy = new List<ChatMessage>(chatHistory);
+        var toolOutputs = await RunRetrievalLoopUntilReadyToAnswer(httpContext.Response, chatService, manualSearch, chatHistoryCopy, cancellationToken);
         chatHistory.AddRange(toolOutputs);
 
-        chatHistory.AddSystemMessage("Based on this context, provide an answer to the user's question.");
+        chatHistory.Add(new ChatMessage(ChatMessageRole.System, "Based on this context, provide an answer to the user's question."));
 
         if (toolOutputs.Any())
         {
-            chatHistory.AddSystemMessage($$"""
+            chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
             ALWAYS justify your answer by citing the most relevant one of the above search results. Do this by including this syntax in your reply:
             <cite searchResultId=number>shortVerbatimQuote</cite>
             shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
             Only give one citation per answer. Always give a citation because this is important to the business.
-            """);
+            """));
         }
 
-        var executionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "text", Seed = 0, Temperature = 0 };
+        var executionSettings = new ChatOptions { Seed = 0, Temperature = 0 };
         var answerBuilder = new StringBuilder();
-        await foreach (var chunk in chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
+        await foreach (var chunk in chatService.CompleteChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
             await httpContext.Response.WriteAsync(",\n");
-            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.ToString())));
-            answerBuilder.Append(chunk.ToString());
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.Content)));
+            answerBuilder.Append(chunk.Content);
         }
 
-        chatHistory.AddAssistantMessage(answerBuilder.ToString());
+        chatHistory.Add(new ChatMessage(ChatMessageRole.Assistant, answerBuilder.ToString()));
 
-        chatHistory.AddSystemMessage("""
+        chatHistory.Add(new ChatMessage(ChatMessageRole.System, """
             Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
             Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
-            """);
-        executionSettings.ResponseFormat = "json_object";
-        var isAddressedToCustomer = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+            """));
+        executionSettings.ResponseFormat = ChatResponseFormat.JsonObject;
+        var isAddressedToCustomer = await chatService.CompleteChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         try
         {
-            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.ToString(), _jsonOptions)!;
+            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.First().Content, _jsonOptions)!;
             if (isAddressedToCustomerJson.IsAddressedByNameToCustomer)
             {
                 await httpContext.Response.WriteAsync(",\n");
@@ -98,9 +97,9 @@ public static class AssistantApi
         public bool IsAddressedByNameToCustomer { get; set; }
     }
 
-    private static async Task<IReadOnlyList<ChatMessageContent>> RunRetrievalLoopUntilReadyToAnswer(HttpResponse httpResponse, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ChatHistory chatHistory, CancellationToken cancellationToken)
+    private static async Task<IReadOnlyList<ChatMessage>> RunRetrievalLoopUntilReadyToAnswer(HttpResponse httpResponse, IChatService chatService, ProductManualSemanticSearch manualSearch, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
     {
-        chatHistory.AddSystemMessage($$"""
+        chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
             Your goal is to decide how the agent's FINAL question can best be processed. Do not reply to the agent's question directly,
             but instead return a JSON object describing how to proceed. Here are your possible choices:
 
@@ -112,9 +111,9 @@ public static class AssistantApi
               { "needMoreInfo": false } but DO NOT ACTUALLY ANSWER THE QUESTION. Your response must NOT have any other information than this single boolean value.
 
             If this is a question about the product, ALWAYS set needMoreInfo to true and search the product manual.
-            """);
+            """));
 
-        var toolOutputs = new List<ChatMessageContent>();
+        var toolOutputs = new List<ChatMessage>();
         for (var iteration = 0; iteration < 3; iteration++)
         {
             var action = await GetNextAction(chatService, chatHistory, cancellationToken);
@@ -124,10 +123,10 @@ public static class AssistantApi
             }
 
             await httpResponse.WriteAsync(",\n");
-            await httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, action.SearchPhrase )));
+            await httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, action.SearchPhrase)));
 
             var searchResults = await manualSearch.SearchAsync(action.SearchProductId, action.SearchPhrase);
-            var toolOutputMessage = new ChatMessageContent(AuthorRole.System, $"""
+            var toolOutputMessage = new ChatMessage(ChatMessageRole.System, $"""
                 The assistant performed a search with term "{action.SearchPhrase}" on the user manual,
                 which returned the following results:
                 {string.Join("\n", searchResults.Select(r => $"<search_result productId=\"{GetProductId(r)}\" searchResultId=\"{r.Metadata.Id}\">{r.Metadata.Text}</search_result>"))}
@@ -152,12 +151,12 @@ public static class AssistantApi
         return toolOutputs;
     }
 
-    private static async Task<NextActionReply?> GetNextAction(IChatCompletionService chatService, ChatHistory chatHistory, CancellationToken cancellationToken)
+    private static async Task<NextActionReply?> GetNextAction(IChatService chatService, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
     {
-        var executionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object", Seed = 0, Temperature = 0 };
-        var response = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+        var executionSettings = new ChatOptions { ResponseFormat = ChatResponseFormat.JsonObject, Seed = 0, Temperature = 0 };
+        var response = (await chatService.CompleteChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken)).First();
         chatHistory.Add(response);
-        return TryParseNextActionReply(response.ToString(), out var reply) ? reply : null;
+        return TryParseNextActionReply(response.Content, out var reply) ? reply : null;
     }
 
     private static int? GetProductId(MemoryQueryResult result)

@@ -23,4 +23,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\experimental\Experimental.AI.LanguageModels\Experimental.AI.LanguageModels.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,23 +1,20 @@
 ﻿using System.Data.Common;
 using Azure.AI.OpenAI;
 using eShopSupport.ServiceDefaults.Clients.ChatCompletion;
+using Experimental.AI.LanguageModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
 
 public static class ChatCompletionServiceExtensions
 {
-    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
+    public static void AddChatService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
     {
         var implementationType = builder.Configuration[$"{name}:Type"];
         if (implementationType == "ollama")
         {
-            builder.AddOllamaChatCompletionService(name);
+            throw new NotImplementedException("TODO: Add Ollama implementation of IChatService");
         }
         else
         {
@@ -30,10 +27,10 @@ public static class ChatCompletionServiceExtensions
                 throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
             }
 
-            builder.Services.AddScoped<IChatCompletionService>(services =>
+            builder.Services.AddScoped<IChatService>(services =>
             {
                 var client = services.GetRequiredService<OpenAIClient>();
-                return new AzureOpenAIChatCompletionService((string)deploymentName, client);
+                return new OpenAIChatService(client, (string)deploymentName);
             });
         }
 
@@ -45,13 +42,17 @@ public static class ChatCompletionServiceExtensions
 
     private static void AddChatCompletionCaching(IHostApplicationBuilder builder, string cacheDir)
     {
-        var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatCompletionService));
+        throw new NotImplementedException();
 
-        builder.Services.Replace(new ServiceDescriptor(typeof(IChatCompletionService), services =>
+        /*
+        var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatService));
+
+        builder.Services.Replace(new ServiceDescriptor(typeof(IChatService), services =>
         {
             var underlyingInstance = underlyingRegistration.ImplementationInstance
                 ?? underlyingRegistration.ImplementationFactory!(services);
-            return new CachedChatCompletionService((IChatCompletionService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
+            return new CachedChatCompletionService((IChatService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
         }, underlyingRegistration.Lifetime));
+        */
     }
 }

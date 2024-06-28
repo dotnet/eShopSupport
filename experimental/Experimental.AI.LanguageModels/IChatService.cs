@@ -54,10 +54,14 @@ public interface IChatFunctionFilter
 
 public class ChatOptions
 {
-    public string? ResponseFormat { get; set; } // TODO: Enum
+    public ChatResponseFormat ResponseFormat { get; set; } = ChatResponseFormat.Text;
     public string? ToolExecutionMode { get; set; } // TODO: Enum
     public List<ChatTool> Tools { get; } = new List<ChatTool>();
+    public int Seed { get; set; }
+    public int Temperature { get; set; }
 }
+
+public enum ChatResponseFormat { Text, JsonObject };
 
 public abstract class ChatTool(string name, string description)
 {
@@ -80,8 +84,12 @@ internal class ReflectionChatFunction<T>(string name, string description, T @del
     }
 }
 
-public class ChatMessage
+public class ChatMessage(ChatMessageRole role, string content)
 {
+    public ChatMessageRole Role => role;
+    public string Content => content;
+    public string? ToolCallId { get; set; }
+
     // Should also contain stats about token usage, duration, etc. Ollama will return that.
     // (and in the case of streaming, that info is on the final chunk).
 
@@ -89,7 +97,9 @@ public class ChatMessage
         => throw new NotImplementedException();
 }
 
-public class ChatMessageChunk
+public class ChatMessageChunk(string content)
 {
-
+    public string Content => content;
 }
+
+public enum ChatMessageRole { User, Assistant, System, Tool };

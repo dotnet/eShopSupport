@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure;
 using eShopSupport.Backend.Data;
+using Experimental.AI.LanguageModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -29,7 +30,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var redisConnection = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>();
-            var chatCompletion = scope.ServiceProvider.GetRequiredService<IChatCompletionService>();
+            var chatCompletion = scope.ServiceProvider.GetRequiredService<IChatService>();
 
             var ticket = await db.Tickets
                 .Include(t => t.Product)
@@ -85,18 +86,21 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                     }
                     """;
 
-                var chatHistory = new ChatHistory();
-                chatHistory.AddUserMessage(prompt);
-                var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, new OpenAIPromptExecutionSettings
+                var chatHistory = new List<ChatMessage>
                 {
-                    ResponseFormat = "json_object",
+                    new (ChatMessageRole.User, prompt)
+                };
+
+                var response = (await chatCompletion.CompleteChatAsync(chatHistory, new ChatOptions
+                {
+                    ResponseFormat = ChatResponseFormat.JsonObject,
                     Seed = 0,
-                });
+                })).First();
 
                 // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
                 // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).
                 // As a workaround, just read the first complete JSON object from the response.
-                var responseString = response.ToString();
+                var responseString = response.Content;
                 var parsed = ReadAndDeserializeSingleValue<Response>(responseString, SerializerOptions)!;
 
                 var shortSummary = parsed.ShortSummary;
