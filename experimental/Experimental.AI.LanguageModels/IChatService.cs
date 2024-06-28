@@ -56,7 +56,7 @@ public class ChatOptions
 {
     public ChatResponseFormat ResponseFormat { get; set; } = ChatResponseFormat.Text;
     public string? ToolExecutionMode { get; set; } // TODO: Enum
-    public List<ChatTool> Tools { get; } = new List<ChatTool>();
+    public List<ChatTool>? Tools { get; set; }
     public int Seed { get; set; }
     public int Temperature { get; set; }
 }
@@ -71,23 +71,15 @@ public abstract class ChatTool(string name, string description)
 
 public abstract class ChatFunction(string name, string description) : ChatTool(name, description)
 {
-    public abstract Task<object> InvokeAsync(IReadOnlyDictionary<string, object> args);
-}
-
-internal class ReflectionChatFunction<T>(string name, string description, T @delegate)
-    : ChatFunction(name, description) where T : Delegate
-{
-    public override Task<object> InvokeAsync(IReadOnlyDictionary<string, object> args)
-    {
-        // Obviously not right
-        return (Task<object>)@delegate.DynamicInvoke(args.Values)!;
-    }
+    //public abstract Task<object> InvokeAsync(IReadOnlyDictionary<string, object> args);
 }
 
 public class ChatMessage(ChatMessageRole role, string content)
 {
     public ChatMessageRole Role => role;
     public string Content => content;
+
+    public IReadOnlyList<ChatMessageToolCall>? ToolCalls { get; set; }
     public string? ToolCallId { get; set; }
 
     // Should also contain stats about token usage, duration, etc. Ollama will return that.
@@ -96,6 +88,8 @@ public class ChatMessage(ChatMessageRole role, string content)
     public static ChatMessage FromChunks(IEnumerable<ChatMessageChunk> chunks)
         => throw new NotImplementedException();
 }
+
+public abstract class ChatMessageToolCall { }
 
 public class ChatMessageChunk(string content)
 {

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -6,6 +7,7 @@ using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Experimental.AI.LanguageModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
@@ -45,23 +47,47 @@ public static class AssistantApi
 
         chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatMessageRole.Assistant : ChatMessageRole.User, m.Text)));
 
-        var chatHistoryCopy = new List<ChatMessage>(chatHistory);
-        var toolOutputs = await RunRetrievalLoopUntilReadyToAnswer(httpContext.Response, chatService, manualSearch, chatHistoryCopy, cancellationToken);
-        chatHistory.AddRange(toolOutputs);
+        chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
+            Your goal is to answer the agent's FINAL question. If relevant, use the provided tools to help you find the answer.
 
-        chatHistory.Add(new ChatMessage(ChatMessageRole.System, "Based on this context, provide an answer to the user's question."));
+            If this is a question about the product, ALWAYS search the product manual.
 
-        if (toolOutputs.Any())
-        {
-            chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
-            ALWAYS justify your answer by citing the most relevant one of the above search results. Do this by including this syntax in your reply:
+            ALWAYS justify your answer by citing a search result. Do this by including this syntax in your reply:
             <cite searchResultId=number>shortVerbatimQuote</cite>
             shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
             Only give one citation per answer. Always give a citation because this is important to the business.
             """));
-        }
 
-        var executionSettings = new ChatOptions { Seed = 0, Temperature = 0 };
+        var options = new ChatOptions { Seed = 0, Temperature = 0 };
+        var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
+
+        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual to find information about a given phrase", async (int productId, string searchPhrase) =>
+        {
+            await httpContext.Response.WriteAsync(",\n");
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
+
+            var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
+
+            foreach (var r in searchResults)
+            {
+                await httpContext.Response.WriteAsync(",\n");
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
+                    AssistantChatReplyItemType.SearchResult,
+                    string.Empty,
+                    int.Parse(r.Metadata.Id),
+                    GetProductId(r),
+                    GetPageNumber(r))));
+            }
+
+            return searchResults.Select(r => new
+            {
+                ProductId = GetProductId(r),
+                SearchResultId = r.Metadata.Id,
+                r.Metadata.Text,
+            });
+        });
+
+        var executionSettings = new ChatOptions { Seed = 0, Temperature = 0, Tools = [searchManualTool] };
         var answerBuilder = new StringBuilder();
         await foreach (var chunk in chatService.CompleteChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
@@ -97,22 +123,9 @@ public static class AssistantApi
         public bool IsAddressedByNameToCustomer { get; set; }
     }
 
+    /*
     private static async Task<IReadOnlyList<ChatMessage>> RunRetrievalLoopUntilReadyToAnswer(HttpResponse httpResponse, IChatService chatService, ProductManualSemanticSearch manualSearch, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
     {
-        chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
-            Your goal is to decide how the agent's FINAL question can best be processed. Do not reply to the agent's question directly,
-            but instead return a JSON object describing how to proceed. Here are your possible choices:
-
-            1. If more information from a single product manual would be needed to answer the agent's question, reply
-              { "needMoreInfo": true, "searchProductId": number, "searchPhrase": string }.
-            2. If more information from ALL product manuals would be needed to answer the agent's question, reply
-              { "needMoreInfo": true, "searchPhrase": string }.
-            3. If the context already gives enough information to answer the agent's question, reply
-              { "needMoreInfo": false } but DO NOT ACTUALLY ANSWER THE QUESTION. Your response must NOT have any other information than this single boolean value.
-
-            If this is a question about the product, ALWAYS set needMoreInfo to true and search the product manual.
-            """));
-
         var toolOutputs = new List<ChatMessage>();
         for (var iteration = 0; iteration < 3; iteration++)
         {
@@ -153,11 +166,12 @@ public static class AssistantApi
 
     private static async Task<NextActionReply?> GetNextAction(IChatService chatService, List<ChatMessage> chatHistory, CancellationToken cancellationToken)
     {
-        var executionSettings = new ChatOptions { ResponseFormat = ChatResponseFormat.JsonObject, Seed = 0, Temperature = 0 };
-        var response = (await chatService.CompleteChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken)).First();
+        var options = new ChatOptions { ResponseFormat = ChatResponseFormat.JsonObject, Seed = 0, Temperature = 0 };
+        var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
         chatHistory.Add(response);
         return TryParseNextActionReply(response.Content, out var reply) ? reply : null;
     }
+    */
 
     private static int? GetProductId(MemoryQueryResult result)
     {
