@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
@@ -58,32 +59,35 @@ public static class AssistantApi
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
         var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
 
-        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.", async (int? productId, string searchPhrase) =>
-        {
-            // If you're going to support parallel tool calls, be sure to do some locking or similar around these HTTP response writes.
-            await httpContext.Response.WriteAsync(",\n");
-            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
-
-            var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
-
-            foreach (var r in searchResults)
+        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
+            async (
+                [Description("A phrase to use when searching the manual")] string searchPhrase,
+                [Description("ID for the product whose manual to search. Omit this if you have been EXPLICITLY TOLD to search for other products.")] int? productId = null) =>
             {
+                // If you're going to support parallel tool calls, be sure to do some locking or similar around these HTTP response writes.
                 await httpContext.Response.WriteAsync(",\n");
-                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
-                    AssistantChatReplyItemType.SearchResult,
-                    string.Empty,
-                    int.Parse(r.Metadata.Id),
-                    GetProductId(r),
-                    GetPageNumber(r))));
-            }
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
 
-            return searchResults.Select(r => new
-            {
-                ProductId = GetProductId(r),
-                SearchResultId = r.Metadata.Id,
-                r.Metadata.Text,
+                var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
+
+                foreach (var r in searchResults)
+                {
+                    await httpContext.Response.WriteAsync(",\n");
+                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
+                        AssistantChatReplyItemType.SearchResult,
+                        string.Empty,
+                        int.Parse(r.Metadata.Id),
+                        GetProductId(r),
+                        GetPageNumber(r))));
+                }
+
+                return searchResults.Select(r => new
+                {
+                    ProductId = GetProductId(r),
+                    SearchResultId = r.Metadata.Id,
+                    r.Metadata.Text,
+                });
             });
-        });
 
         var executionSettings = new ChatOptions { Seed = 0, Temperature = 0, Tools = [searchManualTool] };
         var answerBuilder = new StringBuilder();

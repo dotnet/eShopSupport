@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System.ComponentModel;
+using System.Data;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -179,26 +181,43 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             // Use reflection for now, but could use a source generator
             var definition = new FunctionDefinition(name);
             definition.Description = description;
+
+            var delegateParameters = @delegate.Method.GetParameters();
+
             definition.Parameters = BinaryData.FromObjectAsJson(new
             {
                 type = "object",
-                properties = new
-                {
-                    productId = new
-                    {
-                        type = "number",
-                        description = "ID for the product whose manual to search. Omit this if you need to search all manuals.",
-                    },
-                    searchPhrase = new
-                    {
-                        type = "string",
-                        description = "A phrase to use when searching the manual",
-                    },
-                },
-                required = new string[] { "searchPhrase" },
+                properties = delegateParameters.ToDictionary(p => p.Name!, p => ToParameterSchema(p)),
+                required = delegateParameters.Where(p => !p.IsOptional).Select(p => p.Name!),
             });
 
             return new OpenAIChatFunction(name, description, @delegate, new ChatCompletionsFunctionToolDefinition(definition));
+        }
+
+        private static object ToParameterSchema(ParameterInfo parameter) => new
+        {
+            type = ToParameterType(parameter.ParameterType),
+            description = GetParameterDescription(parameter),
+        };
+
+        private static string? GetParameterDescription(ParameterInfo parameter)
+            => parameter.GetCustomAttribute<DescriptionAttribute>()?.Description;
+
+        private static string ToParameterType(Type parameterType)
+        {
+            parameterType = Nullable.GetUnderlyingType(parameterType) ?? parameterType;
+            if (parameterType == typeof(int))
+            {
+                return "number";
+            }
+            else if (parameterType == typeof(string))
+            {
+                return "string";
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported parameter type {parameterType}");
+            }
         }
 
         public async Task<object> InvokeAsync(Dictionary<string, JsonElement> args)
