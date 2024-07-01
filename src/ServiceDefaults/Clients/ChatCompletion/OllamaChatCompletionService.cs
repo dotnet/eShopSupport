@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -8,7 +7,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Experimental.AI.LanguageModels;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
@@ -135,6 +133,14 @@ internal class OllamaChatCompletionService : IChatService
 
                 if (isProcessingToolCalls)
                 {
+                    if (chunkText.StartsWith('\n'))
+                    {
+                        // Tool call blocks can't include newlines because they would be escaped for JSON.
+                        // This must signal the end of the tool call. Note that Mistral 0.3 might occasionally
+                        // emit [/TOOL_CALLS] but it more often ends the tool call with a pair of newlines.
+                        yield break;
+                    }
+
                     yield return OllamaStreamingChunk.Tool(chunkText);
                 }
                 else
@@ -163,7 +169,7 @@ internal class OllamaChatCompletionService : IChatService
                 Temperature = options.Temperature ?? 0.5,
                 NumPredict = options.MaxTokens,
                 TopP = options.TopP ?? 1.0,
-                Stop = (options.StopSequences ?? Enumerable.Empty<string>()).Concat(["\n\n", "[/TOOL_CALLS]"]),
+                Stop = (options.StopSequences ?? Enumerable.Empty<string>()).Concat(["[/TOOL_CALLS]"]),
             },
             Raw = true,
             Stream = streaming,
@@ -292,8 +298,8 @@ internal class OllamaChatCompletionService : IChatService
         //   }
         // }
 
-        public ToolDescriptor Tool { get; private set; }
-        public Delegate Delegate { get; private set; }
+        public required ToolDescriptor Tool { get; init; }
+        public required Delegate Delegate { get; init; }
 
         public record ToolDescriptor(string Type, FunctionDescriptor Function);
         public record FunctionDescriptor(string Name, string Description, FunctionParameters Parameters);

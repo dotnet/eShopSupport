@@ -109,7 +109,7 @@ public static class AssistantApi
         var isAddressedToCustomer = await chatService.CompleteChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         try
         {
-            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.First().Content, _jsonOptions)!;
+            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.First().Content ?? string.Empty, _jsonOptions)!;
             if (isAddressedToCustomerJson.IsAddressedByNameToCustomer)
             {
                 await httpContext.Response.WriteAsync(",\n");
