@@ -79,10 +79,10 @@ internal class OllamaChatCompletionService : IChatService
             var toolCalls = JsonSerializer.Deserialize<OllamaChatMessageToolCall[]>(toolCallsJson, _jsonSerializerOptions)!;
             foreach (var toolCall in toolCalls)
             {
-                var function = options.Tools?.FirstOrDefault(t => t.Name == toolCall.Name);
+                var function = options.Tools?.FirstOrDefault(t => t.Name == toolCall.name);
                 if (function is OllamaChatFunction ollamaChatFunction)
                 {
-                    toolCall.Result = await ReflectionChatFunction.InvokeAsync(ollamaChatFunction.Delegate, toolCall.Arguments);
+                    toolCall.result = await ReflectionChatFunction.InvokeAsync(ollamaChatFunction.Delegate, toolCall.arguments);
                 }
             }
 
@@ -241,8 +241,10 @@ internal class OllamaChatCompletionService : IChatService
                 case ChatMessageRole.Tool:
                     if (message.ToolCalls is not null)
                     {
+                        // Note that when JSON-serializing here, we don't use any property name conversions
+                        // because the "result" property names are defined by the app developer, not us.
                         sb.Append("[TOOL_CALLS] ");
-                        sb.Append(JsonSerializer.Serialize(message.ToolCalls.OfType<OllamaChatMessageToolCall>(), _jsonSerializerOptions));
+                        sb.Append(JsonSerializer.Serialize(message.ToolCalls.OfType<OllamaChatMessageToolCall>()));
                         sb.Append(" [/TOOL_CALLS]\n\n");
                     }
                     break;
@@ -384,9 +386,12 @@ internal class OllamaChatCompletionService : IChatService
 
     private class OllamaChatMessageToolCall : ChatMessageToolCall
     {
-        public required string Name { get; set; }
-        public required Dictionary<string, JsonElement> Arguments { get; set; }
-        public object? Result { get; set; }
+        // Use of lowercase names here is because when we serialize this, we need "result" to be serialized with
+        // its property names unchanged, as they are defined by the app developer, whereas name/argument/results
+        // need to be lowercase to match Mistral's expectations.
+        public required string name { get; set; }
+        public required Dictionary<string, JsonElement> arguments { get; set; }
+        public object? result { get; set; }
     }
 
     private record struct OllamaStreamingChunk(string? ContentUpdate, string? ToolUpdate)

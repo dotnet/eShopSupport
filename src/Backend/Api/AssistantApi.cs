@@ -41,13 +41,6 @@ public static class AssistantApi
             The most recent message from the customer is this:
             <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
             However, that is only provided for context. You are not answering that question directly. The real question will be asked by the user below.
-            """));
-
-        chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatMessageRole.Assistant : ChatMessageRole.User, m.Text)));
-
-        /*
-        chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
-            Your goal is to answer the agent's FINAL question. If relevant, use the provided tools to help you find the answer.
 
             If this is a question about the product, ALWAYS search the product manual.
 
@@ -56,7 +49,8 @@ public static class AssistantApi
             shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
             Only give one citation per answer. Always give a citation because this is important to the business.
             """));
-        */
+
+        chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatMessageRole.Assistant : ChatMessageRole.User, m.Text)));
 
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
 
