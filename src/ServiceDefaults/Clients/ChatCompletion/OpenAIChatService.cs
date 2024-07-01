@@ -165,7 +165,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         }
     }
 
-    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value, string result) : ChatMessageToolCall
+    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value, string result) : ChatToolCall
     {
         public ChatCompletionsToolCall Value => value;
         public string Result => result;

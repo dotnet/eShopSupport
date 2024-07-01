@@ -7,7 +7,7 @@ public class ChatMessage(ChatMessageRole role, string? content)
     public ChatMessageRole Role => role;
     public string? Content => content;
 
-    public IReadOnlyList<ChatMessageToolCall>? ToolCalls { get; set; }
+    public IReadOnlyList<ChatToolCall>? ToolCalls { get; set; }
 
     // Should also contain stats about token usage, duration, etc. Ollama will return that.
     // (and in the case of streaming, that info is on the final chunk).
@@ -40,13 +40,3 @@ public class ChatMessage(ChatMessageRole role, string? content)
         }
     }
 }
-
-public abstract class ChatMessageToolCall { }
-
-public class ChatMessageChunk(ChatMessageRole role, string content)
-{
-    public ChatMessageRole Role => role;
-    public string Content => content;
-}
-
-public enum ChatMessageRole { User, Assistant, System };

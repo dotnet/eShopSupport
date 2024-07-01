@@ -385,7 +385,7 @@ internal class OllamaChatCompletionService : IChatService
         public string? Response { get; set; }
     }
 
-    private class OllamaChatMessageToolCall : ChatMessageToolCall
+    private class OllamaChatMessageToolCall : ChatToolCall
     {
         // Use of lowercase names here is because when we serialize this, we need "result" to be serialized with
         // its property names unchanged, as they are defined by the app developer, whereas name/argument/results
