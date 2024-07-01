@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -63,7 +64,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                 var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolName);
                 if (function is OpenAIChatFunction openAiFunction)
                 {
-                    var callResult = await openAiFunction.InvokeAsync(args);
+                    var callResult = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
                     var toolCall = new OpenAiFunctionToolCall(new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString));
                     messages = new List<ChatMessage>(messages)
                     {
@@ -167,12 +168,12 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
 
     private class OpenAIChatFunction : ChatFunction
     {
-        private readonly Delegate _delegate;
+        public Delegate Delegate { get; }
         public ChatCompletionsFunctionToolDefinition OpenAIDefinition { get; }
 
         private OpenAIChatFunction(string name, string description, Delegate @delegate, ChatCompletionsFunctionToolDefinition definition) : base(name, description)
         {
-            _delegate = @delegate;
+            Delegate = @delegate;
             OpenAIDefinition = definition;
         }
 
@@ -218,46 +219,6 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             {
                 throw new NotSupportedException($"Unsupported parameter type {parameterType}");
             }
-        }
-
-        public async Task<object> InvokeAsync(Dictionary<string, JsonElement> args)
-        {
-            // TODO: So much error handling
-            var parameters = _delegate.Method.GetParameters();
-            var argsInOrder = parameters.Select(p => args.ContainsKey(p.Name!) ? MapParameterType(p.ParameterType, args[p.Name!]) : null);
-            var result = _delegate.DynamicInvoke(argsInOrder.ToArray());
-            if (result is Task task)
-            {
-                await task;
-                var resultProperty = task.GetType().GetProperty("Result");
-                return resultProperty?.GetValue(task)!;
-            }
-            else
-            {
-                return Task.FromResult(result);
-            }
-        }
-
-        private object? MapParameterType(Type targetType, JsonElement receivedValue)
-        {
-            if (targetType == typeof(int) && receivedValue.ValueKind == JsonValueKind.Number)
-            {
-                return receivedValue.GetInt32();
-            }
-            else if (targetType == typeof(int?) && receivedValue.ValueKind == JsonValueKind.Number)
-            {
-                return receivedValue.GetInt32();
-            }
-            else if (Nullable.GetUnderlyingType(targetType) is not null && (receivedValue.ValueKind == JsonValueKind.Null || receivedValue.ValueKind == JsonValueKind.Undefined))
-            {
-                return null;
-            }
-            else if (targetType == typeof(string) && receivedValue.ValueKind == JsonValueKind.String)
-            {
-                return receivedValue.GetString();
-            }
-
-            throw new InvalidOperationException($"JSON value of kind {receivedValue.ValueKind} cannot be converted to {targetType}");
         }
     }
 }

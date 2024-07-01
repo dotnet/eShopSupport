@@ -45,6 +45,7 @@ public static class AssistantApi
 
         chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatMessageRole.Assistant : ChatMessageRole.User, m.Text)));
 
+        /*
         chatHistory.Add(new ChatMessage(ChatMessageRole.System, $$"""
             Your goal is to answer the agent's FINAL question. If relevant, use the provided tools to help you find the answer.
 
@@ -55,9 +56,9 @@ public static class AssistantApi
             shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
             Only give one citation per answer. Always give a citation because this is important to the business.
             """));
+        */
 
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
-        var response = (await chatService.CompleteChatAsync(chatHistory, options, cancellationToken: cancellationToken)).First();
 
         var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
             async (
