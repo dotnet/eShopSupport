@@ -88,7 +88,7 @@ internal class OllamaChatCompletionService : IChatService
 
             messages = new List<ChatMessage>(messages)
             {
-                new ChatMessage(ChatMessageRole.Tool, null) { ToolCalls = toolCalls },
+                new ChatMessage(ChatMessageRole.Assistant, null) { ToolCalls = toolCalls },
             };
         }
     }
@@ -235,10 +235,11 @@ internal class OllamaChatCompletionService : IChatService
                     sb.Append(" [/INST]");
                     break;
                 case ChatMessageRole.Assistant:
-                    sb.Append(message.Content);
-                    sb.Append("</s> "); // That's right, there's no matching <s>. See https://discuss.huggingface.co/t/skew-between-mistral-prompt-in-docs-vs-chat-template/66674/2
-                    break;
-                case ChatMessageRole.Tool:
+                    if (!string.IsNullOrWhiteSpace(message.Content))
+                    {
+                        sb.Append(message.Content);
+                        sb.Append("</s> "); // That's right, there's no matching <s>. See https://discuss.huggingface.co/t/skew-between-mistral-prompt-in-docs-vs-chat-template/66674/2
+                    }
                     if (message.ToolCalls is not null)
                     {
                         // Note that when JSON-serializing here, we don't use any property name conversions

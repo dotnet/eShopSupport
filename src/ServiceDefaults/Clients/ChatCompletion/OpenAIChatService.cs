@@ -65,11 +65,12 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                 if (function is OpenAIChatFunction openAiFunction)
                 {
                     var callResult = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
-                    var toolCall = new OpenAiFunctionToolCall(new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString));
+                    var toolCall = new OpenAiFunctionToolCall(
+                        new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString),
+                        JsonSerializer.Serialize(callResult));
                     messages = new List<ChatMessage>(messages)
                     {
                         new ChatMessage(ChatMessageRole.Assistant, contentBuilder?.ToString() ?? string.Empty) { ToolCalls = [toolCall] },
-                        new ChatMessage(ChatMessageRole.Tool, JsonSerializer.Serialize(callResult)) { ToolCallId = toolCallId },
                     };
                 }
 
@@ -85,7 +86,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
 
     private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options, bool allowTools)
     {
-        var result = new ChatCompletionsOptions(deploymentName, messages.Select(ToChatRequestMessage))
+        var result = new ChatCompletionsOptions(deploymentName, messages.SelectMany(ToChatRequestMessages))
         {
             ResponseFormat = options.ResponseFormat switch
             {
@@ -129,24 +130,19 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         {
             return ChatMessageRole.System;
         }
-        else if (role == ChatRole.Tool)
-        {
-            return ChatMessageRole.Tool;
-        }
         else
         {
             throw new NotSupportedException($"Unknown message role: {role}");
         }
     }
 
-    private static ChatRequestMessage ToChatRequestMessage(ChatMessage message)
+    private static IEnumerable<ChatRequestMessage> ToChatRequestMessages(ChatMessage message)
     {
         ChatRequestMessage result = message switch
         {
             { Role: ChatMessageRole.User } => new ChatRequestUserMessage(message.Content),
             { Role: ChatMessageRole.Assistant } => new ChatRequestAssistantMessage(message.Content),
             { Role: ChatMessageRole.System } => new ChatRequestSystemMessage(message.Content),
-            { Role: ChatMessageRole.Tool } => new ChatRequestToolMessage(message.Content, message.ToolCallId),
             _ => throw new NotSupportedException($"Unknown message role '{message.Role}'")
         };
 
@@ -156,14 +152,23 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             {
                 assistantMessage.ToolCalls.Add(toolCall.Value);
             }
-        }
 
-        return result;
+            yield return assistantMessage;
+            foreach (var toolCall in message.ToolCalls.Cast<OpenAiFunctionToolCall>())
+            {
+                yield return new ChatRequestToolMessage(toolCall.Result, toolCall.Value.Id);
+            }
+        }
+        else
+        {
+            yield return result;
+        }
     }
 
-    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value) : ChatMessageToolCall
+    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value, string result) : ChatMessageToolCall
     {
         public ChatCompletionsToolCall Value => value;
+        public string Result => result;
     }
 
     private class OpenAIChatFunction : ChatFunction
