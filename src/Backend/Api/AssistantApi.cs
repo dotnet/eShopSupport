@@ -63,7 +63,7 @@ public static class AssistantApi
         var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
             async (
                 [Description("A phrase to use when searching the manual")] string searchPhrase,
-                [Description("ID for the product whose manual to search. Omit this if you have been EXPLICITLY TOLD to search for other products.")] int? productId = null) =>
+                [Description("ID for the product whose manual to search")] int productId) =>
             {
                 // If you're going to support parallel tool calls, be sure to do some locking or similar around these HTTP response writes.
                 await httpContext.Response.WriteAsync(",\n");

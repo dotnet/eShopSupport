@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Experimental.AI.LanguageModels;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
@@ -33,7 +35,7 @@ internal class OllamaChatCompletionService : IChatService
     {
         // We have to use the "generate" endpoint, not "chat", because function calling requires raw mode
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/generate");
-        request.Content = PrepareChatRequestContent(messages, options, false);
+        request.Content = PrepareChatRequestContent(messages, options, false, allowTools: true);
         var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
@@ -51,22 +53,72 @@ internal class OllamaChatCompletionService : IChatService
         ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        const int MaxIterations = 3;
+        for (var iteration = 1; iteration <= MaxIterations; iteration++)
+        {
+            var toolCallBuilder = default(StringBuilder);
+            var allowTools = iteration < MaxIterations;
+            await foreach (var chunk in ProcessStreamingMessagesAsync(messages, options, allowTools, cancellationToken))
+            {
+                if (chunk.ContentUpdate is { } contentUpdate)
+                {
+                    yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate);
+                }
+                else if (chunk.ToolUpdate is { } toolUpdate)
+                {
+                    toolCallBuilder ??= new();
+                    toolCallBuilder.Append(toolUpdate);
+                }
+            }
+
+            var didCallTool = toolCallBuilder is { Length: > 0 };
+            if (!didCallTool)
+            {
+                break;
+            }
+
+            var toolCallsJson = toolCallBuilder!.ToString().Substring("[TOOL_CALLS]".Length).Trim();
+            var toolCalls = JsonSerializer.Deserialize<OllamaChatMessageToolCall[]>(toolCallsJson, _jsonSerializerOptions)!;
+            foreach (var toolCall in toolCalls)
+            {
+                var function = options.Tools?.FirstOrDefault(t => t.Name == toolCall.Name);
+                if (function is OllamaChatFunction ollamaChatFunction)
+                {
+                    toolCall.Result = await ReflectionChatFunction.InvokeAsync(ollamaChatFunction.Delegate, toolCall.Arguments);
+                }
+            }
+
+            messages = new List<ChatMessage>(messages)
+            {
+                new ChatMessage(ChatMessageRole.Tool, null) { ToolCalls = toolCalls },
+            };
+        }
+    }
+
+    private async IAsyncEnumerable<OllamaStreamingChunk> ProcessStreamingMessagesAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        bool allowTools,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
         // We have to use the "generate" endpoint, not "chat", because function calling requires raw mode
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/generate");
-        request.Content = PrepareChatRequestContent(messages, options, true);
+        request.Content = PrepareChatRequestContent(messages, options, true, allowTools);
         var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
 
         var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var responseText = "ERROR: The configured model isn't available. Perhaps it's still downloading.";
-            yield return new ChatMessageChunk(ChatMessageRole.Assistant, json ? JsonSerializer.Serialize(responseText) : responseText);
+            yield return OllamaStreamingChunk.Content(json ? JsonSerializer.Serialize(responseText) : responseText);
             yield break;
         }
 
         var responseStream = await response.Content.ReadAsStreamAsync();
         using var streamReader = new StreamReader(responseStream);
         var line = (string?)null;
+        var isProcessingToolCalls = false;
+        var isFirst = true;
         while ((line = await streamReader.ReadLineAsync()) is not null)
         {
             var entry = JsonSerializer.Deserialize<OllamaResponseStreamEntry>(line, _jsonSerializerOptions);
@@ -76,7 +128,21 @@ internal class OllamaChatCompletionService : IChatService
             }
             else if (entry is { Response: { } chunkText })
             {
-                yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunkText);
+                if (isFirst && chunkText.StartsWith("[TOOL_CALLS]"))
+                {
+                    isProcessingToolCalls = true;
+                }
+
+                if (isProcessingToolCalls)
+                {
+                    yield return OllamaStreamingChunk.Tool(chunkText);
+                }
+                else
+                {
+                    yield return OllamaStreamingChunk.Content(chunkText);
+                }
+
+                isFirst = false;
             }
             else
             {
@@ -85,12 +151,12 @@ internal class OllamaChatCompletionService : IChatService
         }
     }
 
-    private JsonContent PrepareChatRequestContent(IReadOnlyList<ChatMessage> messages, ChatOptions options, bool streaming)
+    private JsonContent PrepareChatRequestContent(IReadOnlyList<ChatMessage> messages, ChatOptions options, bool streaming, bool allowTools)
     {
         return JsonContent.Create(new
         {
             Model = _modelName,
-            Prompt = FormatRawPrompt(messages, options.Tools),
+            Prompt = FormatRawPrompt(messages, allowTools ? options.Tools : null),
             Format = options.ResponseFormat == ChatResponseFormat.JsonObject ? "json" : null,
             Options = new
             {
@@ -147,7 +213,7 @@ internal class OllamaChatCompletionService : IChatService
                     {
                         sb.Append("[TOOL_CALLS] ");
                         sb.Append(JsonSerializer.Serialize(message.ToolCalls.OfType<OllamaChatMessageToolCall>(), _jsonSerializerOptions));
-                        sb.Append(" [/TOOL_CALLS]");
+                        sb.Append(" [/TOOL_CALLS]\n\n");
                     }
                     break;
             }
@@ -226,7 +292,8 @@ internal class OllamaChatCompletionService : IChatService
         //   }
         // }
 
-        public required ToolDescriptor Tool { get; set; }
+        public ToolDescriptor Tool { get; private set; }
+        public Delegate Delegate { get; private set; }
 
         public record ToolDescriptor(string Type, FunctionDescriptor Function);
         public record FunctionDescriptor(string Name, string Description, FunctionParameters Parameters);
@@ -235,11 +302,12 @@ internal class OllamaChatCompletionService : IChatService
 
         public static OllamaChatFunction Create<T>(string name, string description, T @delegate) where T : Delegate
             => new OllamaChatFunction(name, description)
-            { 
-                Tool = new ToolDescriptor("function", new FunctionDescriptor(name, description, ToFunctionParameters(@delegate)))
+            {
+                Tool = new ToolDescriptor("function", new FunctionDescriptor(name, description, ToFunctionParameters(@delegate))),
+                Delegate = @delegate,
             };
 
-        private static FunctionParameters ToFunctionParameters<T>(T @delegate) where T: Delegate
+        private static FunctionParameters ToFunctionParameters<T>(T @delegate) where T : Delegate
         {
             var parameters = @delegate.Method.GetParameters();
             return new FunctionParameters(
@@ -287,7 +355,13 @@ internal class OllamaChatCompletionService : IChatService
     private class OllamaChatMessageToolCall : ChatMessageToolCall
     {
         public required string Name { get; set; }
-        public required object[] Arguments { get; set; }
+        public required Dictionary<string, JsonElement> Arguments { get; set; }
         public object? Result { get; set; }
+    }
+
+    private record struct OllamaStreamingChunk(string? ContentUpdate, string? ToolUpdate)
+    {
+        public static OllamaStreamingChunk Content(string text) => new OllamaStreamingChunk(text, null);
+        public static OllamaStreamingChunk Tool(string text) => new OllamaStreamingChunk(null, text);
     }
 }

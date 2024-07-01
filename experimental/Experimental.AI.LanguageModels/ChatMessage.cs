@@ -1,9 +1,9 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
-public class ChatMessage(ChatMessageRole role, string content)
+public class ChatMessage(ChatMessageRole role, string? content)
 {
     public ChatMessageRole Role => role;
-    public string Content => content;
+    public string? Content => content;
 
     public IReadOnlyList<ChatMessageToolCall>? ToolCalls { get; set; }
     public string? ToolCallId { get; set; }
