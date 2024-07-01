@@ -75,7 +75,7 @@ internal class OllamaChatCompletionService : IChatService
                 break;
             }
 
-            var toolCallsJson = toolCallBuilder!.ToString().Substring("[TOOL_CALLS]".Length).Trim();
+            var toolCallsJson = toolCallBuilder!.ToString().Trim();
             var toolCalls = JsonSerializer.Deserialize<OllamaChatMessageToolCall[]>(toolCallsJson, _jsonSerializerOptions)!;
             foreach (var toolCall in toolCalls)
             {
@@ -116,7 +116,7 @@ internal class OllamaChatCompletionService : IChatService
         using var streamReader = new StreamReader(responseStream);
         var line = (string?)null;
         var isProcessingToolCalls = false;
-        var isFirst = true;
+        var capturingLeadingChunks = string.Empty;
         while ((line = await streamReader.ReadLineAsync()) is not null)
         {
             var entry = JsonSerializer.Deserialize<OllamaResponseStreamEntry>(line, _jsonSerializerOptions);
@@ -126,12 +126,32 @@ internal class OllamaChatCompletionService : IChatService
             }
             else if (entry is { Response: { } chunkText })
             {
-                if (isFirst && chunkText.StartsWith("[TOOL_CALLS]"))
+                if (capturingLeadingChunks is not null)
                 {
-                    isProcessingToolCalls = true;
+                    capturingLeadingChunks += chunkText;
+                    const string explicitToolCallPrefix = "[TOOL_CALLS]";
+                    if (capturingLeadingChunks.StartsWith(explicitToolCallPrefix))
+                    {
+                        isProcessingToolCalls = true;
+                        yield return OllamaStreamingChunk.Tool(capturingLeadingChunks.Substring(explicitToolCallPrefix.Length));
+                        capturingLeadingChunks = null;
+                    }
+                    else if (capturingLeadingChunks.TrimStart().StartsWith("[{\"name\":\"") && options.ResponseFormat != ChatResponseFormat.JsonObject)
+                    {
+                        // Mistral often forgets to prefix the tool call with [TOOL_CALLS], but it's still
+                        // recognizable as one if it starts with this JSON when we didn't ask for JSON
+                        isProcessingToolCalls = true;
+                        yield return OllamaStreamingChunk.Tool(capturingLeadingChunks);
+                        capturingLeadingChunks = null;
+                    }
+                    else if (capturingLeadingChunks.Length > 15)
+                    {
+                        // Give up on capturing the leading chunks. If it was going to be a tool call, we'd know by now.
+                        yield return OllamaStreamingChunk.Content(capturingLeadingChunks);
+                        capturingLeadingChunks = null;
+                    }
                 }
-
-                if (isProcessingToolCalls)
+                else if (isProcessingToolCalls)
                 {
                     if (chunkText.StartsWith('\n'))
                     {
@@ -147,13 +167,17 @@ internal class OllamaChatCompletionService : IChatService
                 {
                     yield return OllamaStreamingChunk.Content(chunkText);
                 }
-
-                isFirst = false;
             }
             else
             {
                 throw new InvalidOperationException("Invalid response entry from Ollama");
             }
+        }
+
+        // If the response is so short we were still capturing leading chunks, yield them now
+        if (capturingLeadingChunks is not null)
+        {
+            yield return OllamaStreamingChunk.Content(capturingLeadingChunks);
         }
     }
 
