@@ -25,16 +25,22 @@ public interface IChatService
     //
     // Similarly, the core abstraction doesn't force any particular algorithm for calling functions. It's up to the IChatService
     // implementation to have its own tool-execution logic based on how the underlying LLM indicates its tool-calling intent,
-    // and any other backend-specific rules about how to represent the tool call in the chat history (e.g., with IDs).
+    // and any other backend-specific rules about how to represent the tool call in the chat history (e.g., with IDs, how call
+    // results should be formatted, and so on).
     // If they want to let the developer customize the rules (e.g., how many calls are allowed) they have to do that in their
     // own concrete API, e.g., via an "options" passed to the constructor.
     //
     // This also means we don't have a single place from which we can trigger before/after call filters or logging. Each
     // IChatService implementation either does that itself or doesn't do it at all. Arguably that should be enough because it
     // follows the same pattern as other Aspire components, in that each of them is expected to do its own telemetry etc.
-    // But is that enough? What are the use cases for function invocation filters? If there are clear reasons why someone consuming
-    // an IChatService would need to attach them regardless of the backend, we need to either:
-    //  - Extend the IChatService interface to support them
-    //  - Or, define some further interface like IChatFunctionFilters that the concrete type can implement if it wants to participate in this
+    // To retain SK's functionality around filters, it can either:
+    // - ... be the implementor of IChatService, and hence entirely control how functions are called
+    //       (optionally as a wrapper around some other IChatService backend that gets passed in)
+    // - ... or, to work with an arbitrary IChatService supplied from outside, have some Kernel method like
+    //   kernel.GetChatFunctions(chatService) that works by calling chatService.CreateChatFunction for each function
+    //   to get a version that has the filters on the inside, plus they could be pre-attached to other SK kernel facilities.
+    // 
+    // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
+    // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
     ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
 }

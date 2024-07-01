@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
@@ -85,15 +84,15 @@ public static class AssistantApi
             });
 
         var executionSettings = new ChatOptions { Seed = 0, Temperature = 0, Tools = [searchManualTool] };
-        var answerBuilder = new StringBuilder();
+        var answerChunks = new List<ChatMessageChunk>();
         await foreach (var chunk in chatService.CompleteChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
             await httpContext.Response.WriteAsync(",\n");
             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.Content)));
-            answerBuilder.Append(chunk.Content);
+            answerChunks.Add(chunk);
         }
 
-        chatHistory.Add(new ChatMessage(ChatMessageRole.Assistant, answerBuilder.ToString()));
+        chatHistory.AddRange(ChatMessage.FromChunks(answerChunks));
 
         chatHistory.Add(new ChatMessage(ChatMessageRole.System, """
             Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
