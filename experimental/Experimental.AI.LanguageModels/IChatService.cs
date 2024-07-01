@@ -1,5 +1,26 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
+// Main principles:
+// - Statelessness. While it's initially nice to think about having a single ChatContext that tracks
+//   the message history, options, attached functions, etc., this makes it hard/impossible for people
+//   to use the technique of wrapping one IChatService in another, because the developer writing the
+//   wrapper needs to know about all possible mutations that happen on storage in the outer layer, and
+//   somehow reflect them to the inner layer. Hence IChatService being an interface not a base class.
+// - Prior art.
+//   - HttpClient/HttpClientFactory/HttpMessageHandler
+//     is a good example of a way to preconfigure default clients at the DI layer while being able to
+//     further configure them at the consumption site, plus have a fairly small API surface for backend
+//     implementors. If IChatService was going to be stateful (including having some kind of registry
+//     of middleware/filters), it would make sense to copy this pattern.
+//     However, we can't afford to be anywhere near as opinionated as HttpClient because what we're
+//     modelling is nowhere near as mature and standardized as HTTP requests (HTTP is actually a true
+//     spec and as such the backends vary very little in features). As much as possible, IChatService
+//     needs to avoid having baked-in logic for anything.
+//   - IDistributedCache
+//     is more similar to IChatService in that it abstracts over a true variety of backends and has to
+//     be unopinionated. 
+//   - ILogger/ILoggerFactory/ILoggerProvider
+
 public interface IChatService
 {
     Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
@@ -12,7 +33,22 @@ public interface IChatService
         ChatOptions options,
         CancellationToken cancellationToken = default);
 
-    // This saves us from having to define a schema for functions (which could involve arbitrarily deep parameter types).
+    // We could define a model for middleware or pre/post function filters, but it's unclear we should bake that in
+    // to the core abstraction. What would be the use cases? Wanting to control that through IChatService implies
+    // doing so on arbitrary backends. But use cases around logging/telemetry would are more typically handled inside
+    // each concrete implementation, since they actually know what they are doing, and the backend-specific logic
+    // for function calling. And so that can be configured at the DI level when registering the implementation.
+    // If it's for SK to do anything pre/post function calls, it can do that in the way it maps its Kernel functions
+    // into ChatFunctions.
+    // Commonly, e.g., in IDistributedCache or Aspire components, we expect cross-cutting concerns like logging to
+    // be handled in each concrete implementation, not as extra API surface on the core abstraction.
+    // If we do want to add a middleware concept to the core IChatService, we can do so but then we also need some kind
+    // of factory you can control at the DI level to add middleware globally. And then we need universal logic for
+    // how the middleware gets called. It's doable but forces quite a bit more opinionation.
+
+    // ---
+
+    // The following saves us from having to define a schema for functions (which could involve arbitrarily deep parameter types).
     // OpenAI uses JSON schemas; Gemini uses OpenAPI schemas.
     //
     // We want there to be a common API by which any IChatService consumer can attach functions, but we don't want to
