@@ -100,7 +100,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                 // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
                 // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).
                 // As a workaround, just read the first complete JSON object from the response.
-                var responseString = response.Content;
+                var responseString = response.Content!;
                 var parsed = ReadAndDeserializeSingleValue<Response>(responseString, SerializerOptions)!;
 
                 var shortSummary = parsed.ShortSummary;
