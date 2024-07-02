@@ -21,7 +21,7 @@
 
         @for (var i = 0; i < messages.Count; i++)
         {
-            var id = @$"message{i}";
+            var id = $"message{i}";
             var state = messages[i]!;
             <TicketAssistantMessage @key="@id" State="@state" OnCompleted="@HandleResponseCompleted" OnSuggestedReply="@OnSuggestedReply" />
         }
