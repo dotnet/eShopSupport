@@ -79,4 +79,11 @@ public interface IChatService
     // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
     // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
     ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+    // This delegate overload should probably be an extension method wrapping an underlying method that
+    // takes structured metadata
+}
+
+public interface IChatServiceWithFunctions : IChatService
+{
+    Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options);
 }

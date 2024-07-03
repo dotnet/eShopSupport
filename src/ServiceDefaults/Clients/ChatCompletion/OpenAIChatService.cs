@@ -9,69 +9,18 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName) : IChatService
+public class OpenAIChatService(OpenAIClient client, string deploymentName) : IChatServiceWithFunctions
 {
     public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
     {
-        var completionOptions = BuildCompletionOptions(deploymentName, messages, options, allowTools: false);
+        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var result = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
     public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        const int maxIterations = 3;
-        for (var iteration = 1; iteration <= maxIterations; iteration++)
-        {
-            var allowTools = iteration < maxIterations;
-            var toolCalls = new List<ChatToolCall>();
-            await foreach (var chunk in CompleteChatStreamingCoreAsync(messages, options, allowTools, cancellationToken))
-            {
-                if (chunk.ToolCall is { } toolCall)
-                {
-                    toolCalls.Add(toolCall);
-                }
-                else if (chunk.Content is not null)
-                {
-                    yield return chunk;
-                }
-            }
-
-            if (toolCalls.Any())
-            {
-                foreach (var toolCall in toolCalls)
-                {
-                    await ExecuteToolCallAsync(toolCall, options);
-                }
-
-                messages = new List<ChatMessage>(messages)
-                {
-                    new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
-                };
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-
-    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
-    {
-        var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
-        var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;
-        var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(functionToolCall.Arguments)!;
-        var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolCall.Name);
-        if (function is OpenAIChatFunction openAiFunction)
-        {
-            toolCall.Result = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
-        }
-    }
-
-    // Just invokes the backend. Doesn't invoke tools.
-    private async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingCoreAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, bool allowTools, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        var completionOptions = BuildCompletionOptions(deploymentName, messages, options, allowTools);
+        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
         var contentBuilder = default(StringBuilder);
         var functionToolName = default(string);
@@ -113,10 +62,22 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         }
     }
 
+    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
+    {
+        var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
+        var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;
+        var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(functionToolCall.Arguments)!;
+        var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolCall.Name);
+        if (function is OpenAIChatFunction openAiFunction)
+        {
+            toolCall.Result = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
+        }
+    }
+
     public ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate
         => OpenAIChatFunction.Create(name, description, @delegate);
 
-    private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options, bool allowTools)
+    private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options)
     {
         var result = new ChatCompletionsOptions(deploymentName, messages.SelectMany(ToChatRequestMessages))
         {
@@ -130,7 +91,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             Seed = options.Seed,
         };
 
-        if (allowTools && options.Tools is not null)
+        if (options.Tools is { Count: > 0 })
         {
             foreach (var tool in options.Tools)
             {

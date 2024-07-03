@@ -1,6 +1,6 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
-public class ChatOptions
+public record ChatOptions
 {
     public ChatResponseFormat ResponseFormat { get; set; } = ChatResponseFormat.Text;
     public string? ToolExecutionMode { get; set; } // TODO: Enum
