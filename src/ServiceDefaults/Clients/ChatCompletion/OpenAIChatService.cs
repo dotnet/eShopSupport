@@ -24,10 +24,10 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         for (var iteration = 1; iteration <= maxIterations; iteration++)
         {
             var allowTools = iteration < maxIterations;
-            var toolCalls = new List<OpenAiFunctionToolCall>();
+            var toolCalls = new List<ChatToolCall>();
             await foreach (var chunk in CompleteChatStreamingCoreAsync(messages, options, allowTools, cancellationToken))
             {
-                if (chunk.ToolCall is OpenAiFunctionToolCall toolCall)
+                if (chunk.ToolCall is { } toolCall)
                 {
                     toolCalls.Add(toolCall);
                 }
@@ -37,24 +37,13 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
                 }
             }
 
-            var didCallTool = false;
-
-            foreach (var toolCall in toolCalls)
+            if (toolCalls.Any())
             {
-                var functionToolCall = (ChatCompletionsFunctionToolCall)toolCall.Value;
-                var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(functionToolCall.Arguments)!;
-                var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolCall.Name);
-                if (function is OpenAIChatFunction openAiFunction)
+                foreach (var toolCall in toolCalls)
                 {
-                    var callResult = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
-                    var callResultString = JsonSerializer.Serialize(callResult);
-                    toolCall.Result = callResultString;
-                    didCallTool = true;
+                    await ExecuteToolCallAsync(toolCall, options);
                 }
-            }
 
-            if (didCallTool)
-            {
                 messages = new List<ChatMessage>(messages)
                 {
                     new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
@@ -64,6 +53,18 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             {
                 break;
             }
+        }
+    }
+
+    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
+    {
+        var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
+        var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;
+        var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(functionToolCall.Arguments)!;
+        var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolCall.Name);
+        if (function is OpenAIChatFunction openAiFunction)
+        {
+            toolCall.Result = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
         }
     }
 
@@ -187,7 +188,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
             yield return assistantMessage;
             foreach (var toolCall in message.ToolCalls.Cast<OpenAiFunctionToolCall>())
             {
-                yield return new ChatRequestToolMessage(toolCall.Result, toolCall.Value.Id);
+                yield return new ChatRequestToolMessage(JsonSerializer.Serialize(toolCall.Result), toolCall.Value.Id);
             }
         }
         else
@@ -199,7 +200,6 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
     private class OpenAiFunctionToolCall(ChatCompletionsToolCall value) : ChatToolCall
     {
         public ChatCompletionsToolCall Value => value;
-        public string? Result { get; set; }
     }
 
     private class OpenAIChatFunction : ChatFunction

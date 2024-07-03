@@ -13,4 +13,6 @@ public abstract class ChatToolCall
     // - Arguments (as dictionary of string->JsonElement, or just a JsonObject)
     // - Return value (as string, since it has to get injected into the prompt as a string ultimately))
     // - AdditionalData (e.g., as JsonObject, for example so that OpenAI can track its ToolCallId data
+
+    public object? Result { get; set; }
 }
