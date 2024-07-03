@@ -284,7 +284,7 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
         _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
 
-    public override ChatFunction CreateChatFunction<T>(string name, string description, T @delegate)
+    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
         => OllamaChatFunction.Create(name, description, @delegate);
 
     public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)

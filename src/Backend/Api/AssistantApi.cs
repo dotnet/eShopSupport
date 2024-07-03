@@ -53,7 +53,7 @@ public static class AssistantApi
 
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
 
-        var searchManualTool = chatService.CreateChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
+        var searchManualTool = chatService.DefineChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
             async (
                 [Description("A phrase to use when searching the manual")] string searchPhrase,
                 [Description("ID for the product whose manual to search")] int productId) =>

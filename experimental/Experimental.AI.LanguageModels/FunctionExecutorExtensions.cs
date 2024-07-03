@@ -70,7 +70,7 @@ public static class FunctionExecutorExtensions
             }
         }
 
-        public override ChatFunction CreateChatFunction<T>(string name, string description, T @delegate)
-            => underlying.CreateChatFunction(name, description, @delegate);
+        public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
+            => underlying.DefineChatFunction(name, description, @delegate);
     }
 }

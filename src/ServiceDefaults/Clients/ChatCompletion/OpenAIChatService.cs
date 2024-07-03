@@ -74,7 +74,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : Cha
         }
     }
 
-    public override ChatFunction CreateChatFunction<T>(string name, string description, T @delegate)
+    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
         => OpenAIChatFunction.Create(name, description, @delegate);
 
     private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options)

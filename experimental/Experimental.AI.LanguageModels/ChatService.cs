@@ -21,6 +21,8 @@
 //     be unopinionated. 
 //   - ILogger/ILoggerFactory/ILoggerProvider
 
+// You might even want to have an IChatService interface this implements, and not have middleware be on
+// the interface. Then you have a distinction between building/configuring and consuming.
 public abstract class ChatService
 {
     public abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
@@ -78,7 +80,7 @@ public abstract class ChatService
     // 
     // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
     // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
-    public abstract ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+    public abstract ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
     // This delegate overload should probably be an extension method wrapping an underlying method that
     // takes structured metadata
 }
