@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -24,60 +23,92 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         const int maxIterations = 3;
         for (var iteration = 1; iteration <= maxIterations; iteration++)
         {
-            var completionOptions = BuildCompletionOptions(deploymentName, messages, options, allowTools: iteration < maxIterations);
-            var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
-            var contentBuilder = default(StringBuilder);
-            var functionToolName = default(string);
-            var functionToolArgs = default(StringBuilder);
-            var toolCallId = default(string);
-            var finishReason = default(CompletionsFinishReason);
-
-            // Process and capture chunks until the end of the current message
-            await foreach (var chunk in chunks)
+            var allowTools = iteration < maxIterations;
+            var toolCalls = new List<OpenAiFunctionToolCall>();
+            await foreach (var chunk in CompleteChatStreamingCoreAsync(messages, options, allowTools, cancellationToken))
             {
-                if (chunk is { ChoiceIndex: 0, ContentUpdate: { Length: > 0 } })
+                if (chunk.ToolCall is OpenAiFunctionToolCall toolCall)
                 {
-                    contentBuilder ??= new();
-                    contentBuilder.Append(chunk.ContentUpdate);
-                    yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate);
+                    toolCalls.Add(toolCall);
                 }
-                else if (chunk.ToolCallUpdate is StreamingFunctionToolCallUpdate { ToolCallIndex: 0 } toolCallUpdate)
+                else if (chunk.Content is not null)
                 {
-                    // TODO: Handle parallel tool calls
-                    toolCallId ??= toolCallUpdate.Id;
-                    functionToolName ??= toolCallUpdate.Name;
-                    functionToolArgs ??= new();
-                    functionToolArgs.Append(toolCallUpdate.ArgumentsUpdate);
-                }
-
-                if (chunk.FinishReason is { } finishReasonValue)
-                {
-                    finishReason = finishReasonValue;
+                    yield return chunk;
                 }
             }
 
-            // Now decide whether to loop again or just stop here
-            if (finishReason == CompletionsFinishReason.ToolCalls && functionToolArgs is not null)
+            var didCallTool = false;
+
+            foreach (var toolCall in toolCalls)
             {
-                var argsString = functionToolArgs.ToString();
-                var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(argsString)!;
-                var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolName);
+                var functionToolCall = (ChatCompletionsFunctionToolCall)toolCall.Value;
+                var args = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(functionToolCall.Arguments)!;
+                var function = options.Tools?.FirstOrDefault(t => t.Name == functionToolCall.Name);
                 if (function is OpenAIChatFunction openAiFunction)
                 {
                     var callResult = await ReflectionChatFunction.InvokeAsync(openAiFunction.Delegate, args);
-                    var toolCall = new OpenAiFunctionToolCall(
-                        new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString),
-                        JsonSerializer.Serialize(callResult));
-                    messages = new List<ChatMessage>(messages)
-                    {
-                        new ChatMessage(ChatMessageRole.Assistant, contentBuilder?.ToString() ?? string.Empty) { ToolCalls = [toolCall] },
-                    };
+                    var callResultString = JsonSerializer.Serialize(callResult);
+                    toolCall.Result = callResultString;
+                    didCallTool = true;
                 }
-
-                continue;
             }
 
-            break;
+            if (didCallTool)
+            {
+                messages = new List<ChatMessage>(messages)
+                {
+                    new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
+                };
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    // Just invokes the backend. Doesn't invoke tools.
+    private async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingCoreAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, bool allowTools, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var completionOptions = BuildCompletionOptions(deploymentName, messages, options, allowTools);
+        var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
+        var contentBuilder = default(StringBuilder);
+        var functionToolName = default(string);
+        var functionToolArgs = default(StringBuilder);
+        var toolCallId = default(string);
+        var finishReason = default(CompletionsFinishReason);
+
+        // Process and capture chunks until the end of the current message
+        await foreach (var chunk in chunks)
+        {
+            if (chunk is { ChoiceIndex: 0, ContentUpdate: { Length: > 0 } })
+            {
+                contentBuilder ??= new();
+                contentBuilder.Append(chunk.ContentUpdate);
+                yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate, null);
+            }
+            else if (chunk.ToolCallUpdate is StreamingFunctionToolCallUpdate { ToolCallIndex: 0 } toolCallUpdate)
+            {
+                // TODO: Handle parallel tool calls
+                toolCallId ??= toolCallUpdate.Id;
+                functionToolName ??= toolCallUpdate.Name;
+                functionToolArgs ??= new();
+                functionToolArgs.Append(toolCallUpdate.ArgumentsUpdate);
+            }
+
+            if (chunk.FinishReason is { } finishReasonValue)
+            {
+                finishReason = finishReasonValue;
+            }
+        }
+
+        // Emit any tool calls
+        if (finishReason == CompletionsFinishReason.ToolCalls && functionToolArgs is not null)
+        {
+            var argsString = functionToolArgs.ToString();
+            var toolCall = new OpenAiFunctionToolCall(
+                new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString));
+            yield return new ChatMessageChunk(ChatMessageRole.Assistant, null, toolCall);
         }
     }
 
@@ -165,10 +196,10 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         }
     }
 
-    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value, string result) : ChatToolCall
+    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value) : ChatToolCall
     {
         public ChatCompletionsToolCall Value => value;
-        public string Result => result;
+        public string? Result { get; set; }
     }
 
     private class OpenAIChatFunction : ChatFunction

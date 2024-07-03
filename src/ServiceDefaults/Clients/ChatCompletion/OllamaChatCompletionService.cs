@@ -60,7 +60,7 @@ internal class OllamaChatCompletionService : IChatService
             {
                 if (chunk.ContentUpdate is { } contentUpdate)
                 {
-                    yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate);
+                    yield return new ChatMessageChunk(ChatMessageRole.Assistant, chunk.ContentUpdate, null);
                 }
                 else if (chunk.ToolUpdate is { } toolUpdate)
                 {
