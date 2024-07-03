@@ -30,7 +30,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var redisConnection = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>();
-            var chatCompletion = scope.ServiceProvider.GetRequiredService<IChatService>();
+            var chatCompletion = scope.ServiceProvider.GetRequiredService<ChatService>();
 
             var ticket = await db.Tickets
                 .Include(t => t.Product)

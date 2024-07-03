@@ -14,7 +14,7 @@ public static class OllamaChatCompletionBuilderExtensions
             throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
         }
 
-        builder.Services.AddScoped<IChatService>(services =>
+        builder.Services.AddScoped<ChatService>(services =>
         {
             var httpClient = services.GetRequiredService<HttpClient>();
             httpClient.BaseAddress = new Uri($"http://{name}");

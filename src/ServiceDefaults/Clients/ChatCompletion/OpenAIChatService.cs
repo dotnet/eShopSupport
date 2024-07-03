@@ -9,16 +9,16 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName) : IChatServiceWithFunctions
+public class OpenAIChatService(OpenAIClient client, string deploymentName) : ChatService, IChatServiceWithFunctions
 {
-    public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
+    public async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
     {
         var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var result = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
-    public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
@@ -74,7 +74,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : ICh
         }
     }
 
-    public ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+    public override ChatFunction CreateChatFunction<T>(string name, string description, T @delegate)
         => OpenAIChatFunction.Create(name, description, @delegate);
 
     private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options)

@@ -21,14 +21,14 @@
 //     be unopinionated. 
 //   - ILogger/ILoggerFactory/ILoggerProvider
 
-public interface IChatService
+public abstract class ChatService
 {
-    Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+    public abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default);
 
-    IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    public abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default);
@@ -78,12 +78,12 @@ public interface IChatService
     // 
     // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
     // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
-    ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+    public abstract ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
     // This delegate overload should probably be an extension method wrapping an underlying method that
     // takes structured metadata
 }
 
-public interface IChatServiceWithFunctions : IChatService
+public interface IChatServiceWithFunctions
 {
     Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options);
 }

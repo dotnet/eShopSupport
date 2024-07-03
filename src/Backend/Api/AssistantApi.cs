@@ -18,7 +18,7 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, ChatService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         await httpContext.Response.WriteAsync("[null");
 
@@ -87,9 +87,12 @@ public static class AssistantApi
         var answerChunks = new List<ChatMessageChunk>();
         await foreach (var chunk in chatService.CompleteChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
-            await httpContext.Response.WriteAsync(",\n");
-            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.Content)));
-            answerChunks.Add(chunk);
+            if (chunk.Content is { Length: > 0 })
+            {
+                await httpContext.Response.WriteAsync(",\n");
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.Content)));
+                answerChunks.Add(chunk);
+            }
         }
 
         chatHistory.AddRange(ChatMessage.FromChunks(answerChunks));

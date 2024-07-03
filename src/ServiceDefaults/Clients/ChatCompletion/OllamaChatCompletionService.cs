@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -10,7 +11,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-internal class OllamaChatCompletionService : IChatServiceWithFunctions
+internal class OllamaChatCompletionService : ChatService, IChatServiceWithFunctions
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;
@@ -26,7 +27,7 @@ internal class OllamaChatCompletionService : IChatServiceWithFunctions
         _modelName = modelName;
     }
 
-    public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+    public async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
@@ -46,7 +47,7 @@ internal class OllamaChatCompletionService : IChatServiceWithFunctions
         return [new ChatMessage(ChatMessageRole.Assistant, responseContent!.Response!)];
     }
 
-    public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    public async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -283,7 +284,7 @@ internal class OllamaChatCompletionService : IChatServiceWithFunctions
         _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
 
-    public ChatFunction CreateChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+    public override ChatFunction CreateChatFunction<T>(string name, string description, T @delegate)
         => OllamaChatFunction.Create(name, description, @delegate);
 
     public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
