@@ -18,7 +18,7 @@ public static class OllamaChatCompletionBuilderExtensions
         {
             var httpClient = services.GetRequiredService<HttpClient>();
             httpClient.BaseAddress = new Uri($"http://{name}");
-            return new OllamaChatCompletionService(httpClient, modelName);
+            return new OllamaChatCompletionService(httpClient, modelName).WithStandardFunctionExecution();
         });
     }
 }
