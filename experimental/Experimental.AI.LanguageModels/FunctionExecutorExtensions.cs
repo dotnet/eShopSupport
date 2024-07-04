@@ -36,10 +36,8 @@ namespace Experimental.AI.LanguageModels;
 
 public static class FunctionExecutorExtensions
 {
-    public static void UseStandardFunctionExecution(this ChatClient chatService)
-    {
-        chatService.Handler = new StandardFunctionExecutionHandler(chatService.Handler);
-    }
+    public static ChatCompletionHandler WithStandardFunctionExecution(this ChatCompletionHandler handler)
+        => new StandardFunctionExecutionHandler(handler);
 
     private class StandardFunctionExecutionHandler(ChatCompletionHandler innerHandler)
         : ChatCompletionHandler(innerHandler)

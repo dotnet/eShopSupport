@@ -31,9 +31,7 @@ public static class ChatCompletionServiceExtensions
             {
                 var client = services.GetRequiredService<OpenAIClient>();
                 var handler = new OpenAIChatCompletionHandler(client, (string)deploymentName);
-                var service = new ChatClient(handler);
-                service.UseStandardFunctionExecution();
-                return service;
+                return new ChatClient(handler.WithStandardFunctionExecution());
             });
         }
 
