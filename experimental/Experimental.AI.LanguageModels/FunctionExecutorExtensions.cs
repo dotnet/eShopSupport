@@ -24,11 +24,11 @@ public static class FunctionExecutorExtensions
 
     private class ChatServiceWithFunctions<TChatService>(TChatService underlying) : ChatService where TChatService : ChatService, IChatServiceWithFunctions
     {
-        public override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
+        protected override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
             // TOOD: Add tool execution
-            => underlying.CompleteChatAsync(messages, options, cancellationToken);
+            => underlying.ChatAsync(messages, options, cancellationToken);
 
-        public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        protected override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             const int maxIterations = 3;
             for (var iteration = 1; iteration <= maxIterations; iteration++)
@@ -39,7 +39,7 @@ public static class FunctionExecutorExtensions
                 }
 
                 var toolCalls = new List<ChatToolCall>();
-                await foreach (var chunk in underlying.CompleteChatStreamingAsync(messages, options, cancellationToken))
+                await foreach (var chunk in underlying.ChatStreamingAsync(messages, options, cancellationToken))
                 {
                     if (chunk.ToolCall is { } toolCall)
                     {

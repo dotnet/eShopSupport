@@ -11,14 +11,14 @@ namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
 public class OpenAIChatService(OpenAIClient client, string deploymentName) : ChatService, IChatServiceWithFunctions
 {
-    public async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
+    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
     {
         var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var result = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
-    public async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);

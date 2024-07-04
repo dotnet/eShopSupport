@@ -91,7 +91,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                     new (ChatMessageRole.User, prompt)
                 };
 
-                var response = (await chatCompletion.CompleteChatAsync(chatHistory, new ChatOptions
+                var response = (await chatCompletion.ChatAsync(chatHistory, new ChatOptions
                 {
                     ResponseFormat = ChatResponseFormat.JsonObject,
                     Seed = 0,

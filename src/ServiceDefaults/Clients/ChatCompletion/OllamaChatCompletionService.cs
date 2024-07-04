@@ -27,7 +27,7 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
         _modelName = modelName;
     }
 
-    public async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
@@ -47,7 +47,7 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
         return [new ChatMessage(ChatMessageRole.Assistant, responseContent!.Response!)];
     }
 
-    public async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)

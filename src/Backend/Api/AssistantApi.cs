@@ -85,7 +85,7 @@ public static class AssistantApi
 
         var executionSettings = new ChatOptions { Seed = 0, Temperature = 0, Tools = [searchManualTool] };
         var answerChunks = new List<ChatMessageChunk>();
-        await foreach (var chunk in chatService.CompleteChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
+        await foreach (var chunk in chatService.ChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
             if (chunk.Content is { Length: > 0 })
             {
@@ -102,7 +102,7 @@ public static class AssistantApi
             Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
             """));
         executionSettings.ResponseFormat = ChatResponseFormat.JsonObject;
-        var isAddressedToCustomer = await chatService.CompleteChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+        var isAddressedToCustomer = await chatService.ChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         try
         {
             var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.First().Content ?? string.Empty, _jsonOptions)!;

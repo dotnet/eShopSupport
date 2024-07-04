@@ -25,12 +25,24 @@
 // the interface. Then you have a distinction between building/configuring and consuming.
 public abstract class ChatService
 {
-    public abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+    public Task<IReadOnlyList<ChatMessage>> ChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
+        => CompleteChatAsync(messages, options, cancellationToken);
+
+    public IAsyncEnumerable<ChatMessageChunk> ChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
+        => CompleteChatStreamingAsync(messages, options, cancellationToken);
+
+    protected abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default);
 
-    public abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    protected abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default);
@@ -80,7 +92,8 @@ public abstract class ChatService
     // 
     // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
     // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
-    public abstract ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+    public virtual ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+        => throw new NotSupportedException($"{GetType().FullName} does not support defining chat functions.");
     // This delegate overload should probably be an extension method wrapping an underlying method that
     // takes structured metadata
 }
