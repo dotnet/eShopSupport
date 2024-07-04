@@ -14,6 +14,26 @@ namespace Experimental.AI.LanguageModels;
 // could have each concrete type accept "middleware" as a ctor param and be expected to call it, though that
 // impacts application code and is weird.
 
+// This middleware concept is fine but does point to value in splitting the backend "handler" from the frontend
+// consumer API. The backend handler could be a pure interface to make it easier to retrofit onto existing
+// chat service implementations. Then instead of middleware, the frontend could simply allow you to replace
+// its handler with another that wraps the original. To retain the ability for app developers to upcast the
+// instance to an implementation-specific type, the frontend type could be a subclass that sets up the default
+// handler and optionally exposes any custom APIs around it.
+// Swapping the handler is better than middleware because then you can wrap *anything* on the handler (e.g.,
+// function call execution), not just specific chat completion methods. Hence it's usable if you want to attach
+// logging of both completion inputs/outputs and function calls.
+
+// Possible naming:
+//  - IChatCompletionHandler (analogous to HttpMessageHandler)
+//    - Can be exactly equivalent to IChatCompletionService
+//    - With IChatFunctionsHandler being a further optional interface you can implement
+//      and adds DefineChatFunction and ExecuteChatFunctionAsync methods
+//  - ChatClient (analogous to HttpClient)
+//    - This could hold ChatOptions as a property so at DI level you can preconfigure it,
+//      though that means you can't change it per-request (e.g., in an extension method that
+//      accepts an SK kernel and attaches its plugins as functions)
+
 public static class FunctionExecutorExtensions
 {
     public static void UseStandardFunctionExecution<T>(this T chatService)
