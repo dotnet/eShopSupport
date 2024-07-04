@@ -18,7 +18,7 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, ChatService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, ChatClient chatClient, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         await httpContext.Response.WriteAsync("[null");
 
@@ -53,7 +53,7 @@ public static class AssistantApi
 
         var options = new ChatOptions { Seed = 0, Temperature = 0 };
 
-        var searchManualTool = chatService.DefineChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
+        var searchManualTool = chatClient.DefineChatFunction("searchManual", "Searches the specified product manual, or all product manuals, to find information about a given phrase.",
             async (
                 [Description("A phrase to use when searching the manual")] string searchPhrase,
                 [Description("ID for the product whose manual to search")] int productId) =>
@@ -85,7 +85,7 @@ public static class AssistantApi
 
         var executionSettings = new ChatOptions { Seed = 0, Temperature = 0, Tools = [searchManualTool] };
         var answerChunks = new List<ChatMessageChunk>();
-        await foreach (var chunk in chatService.ChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
+        await foreach (var chunk in chatClient.ChatStreamingAsync(chatHistory, executionSettings, cancellationToken: cancellationToken))
         {
             if (chunk.Content is { Length: > 0 })
             {
@@ -102,7 +102,7 @@ public static class AssistantApi
             Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
             """));
         executionSettings.ResponseFormat = ChatResponseFormat.JsonObject;
-        var isAddressedToCustomer = await chatService.ChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+        var isAddressedToCustomer = await chatClient.ChatAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         try
         {
             var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.First().Content ?? string.Empty, _jsonOptions)!;

@@ -1,5 +1,38 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
+public abstract class ChatCompletionHandler(ChatCompletionHandler? innerHandler = null)
+{
+    protected ChatCompletionHandler? InnerHandler => innerHandler;
+
+    public virtual Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
+        => innerHandler is null
+        ? throw new NotSupportedException($"{GetType()} does not support {nameof(CompleteChatAsync)}, and no inner handler is defined.")
+        : innerHandler.CompleteChatAsync(messages, options, cancellationToken);
+
+    public virtual IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
+        => innerHandler is null
+        ? throw new NotSupportedException($"{GetType()} does not support {nameof(CompleteChatStreamingAsync)}, and no inner handler is defined.")
+        : innerHandler.CompleteChatStreamingAsync(messages, options, cancellationToken);
+
+    // This delegate overload should probably be an extension method wrapping an underlying method that
+    // takes structured metadata
+    public virtual ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+        => innerHandler is null
+        ? throw new NotSupportedException($"{GetType()} does not support {nameof(DefineChatFunction)}, and no inner handler is defined.")
+        : innerHandler.DefineChatFunction(name, description, @delegate);
+
+    public virtual Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+        => innerHandler is null
+        ? throw new NotSupportedException($"{GetType()} does not support {nameof(ExecuteChatFunctionAsync)}, and no inner handler is defined.")
+        : innerHandler.ExecuteChatFunctionAsync(toolCall, options);
+}
+
 // Main principles:
 // - Statelessness. While it's initially nice to think about having a single ChatContext that tracks
 //   the message history, options, attached functions, etc., this makes it hard/impossible for people
@@ -23,34 +56,29 @@
 
 // You might even want to have an IChatService interface this implements, and not have middleware be on
 // the interface. Then you have a distinction between building/configuring and consuming.
-public abstract class ChatService
+public class ChatClient
 {
-    private Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> _streamingMiddleware;
-
-    public ChatService()
+    public ChatClient(ChatCompletionHandler handler)
     {
-        _streamingMiddleware = CompleteChatStreamingAsync;
+        Handler = handler;
     }
+
+    public ChatCompletionHandler Handler { get; set; }
 
     public Task<IReadOnlyList<ChatMessage>> ChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => CompleteChatAsync(new ChatContext(messages, options), cancellationToken);
+        => Handler.CompleteChatAsync(messages, options, cancellationToken);
 
     public IAsyncEnumerable<ChatMessageChunk> ChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => _streamingMiddleware(new ChatContext(messages, options), cancellationToken);
+        => Handler.CompleteChatStreamingAsync(messages, options, cancellationToken);
 
-    protected abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
-        ChatContext context,
-        CancellationToken cancellationToken = default);
-
-    protected abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
-        ChatContext context,
-        CancellationToken cancellationToken = default);
+    public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+        => Handler.DefineChatFunction(name, description, @delegate);
 
     // We could define a model for middleware or pre/post function filters, but it's unclear we should bake that in
     // to the core abstraction. What would be the use cases? Wanting to control that through IChatService implies
@@ -97,23 +125,4 @@ public abstract class ChatService
     // 
     // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
     // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
-    public virtual ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
-        => throw new NotSupportedException($"{GetType().FullName} does not support defining chat functions.");
-    // This delegate overload should probably be an extension method wrapping an underlying method that
-    // takes structured metadata
-
-    public void UseMiddleware(StreamingChatMiddleware middleware)
-    {
-        var next = _streamingMiddleware;
-        _streamingMiddleware = (context, cancellationToken) => middleware(context, cancellationToken, next);
-    }
 }
-
-public interface IChatServiceWithFunctions
-{
-    Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options);
-}
-
-public record ChatContext(IReadOnlyList<ChatMessage> Messages, ChatOptions Options);
-
-public delegate IAsyncEnumerable<ChatMessageChunk> StreamingChatMiddleware(ChatContext context, CancellationToken cancellationToken, Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> next);

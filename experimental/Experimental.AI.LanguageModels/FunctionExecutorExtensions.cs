@@ -36,59 +36,55 @@ namespace Experimental.AI.LanguageModels;
 
 public static class FunctionExecutorExtensions
 {
-    public static void UseStandardFunctionExecution<T>(this T chatService)
-        where T : ChatService, IChatServiceWithFunctions
+    public static void UseStandardFunctionExecution(this ChatClient chatService)
     {
-        chatService.UseMiddleware((context, cancellationToken, next) =>
-            StandardFunctionExecutionMiddleware(chatService, context, cancellationToken, next));
+        chatService.Handler = new StandardFunctionExecutionHandler(chatService.Handler);
     }
 
-    private static async IAsyncEnumerable<ChatMessageChunk> StandardFunctionExecutionMiddleware(
-        IChatServiceWithFunctions chatService,
-        ChatContext context,
-        [EnumeratorCancellation] CancellationToken cancellationToken,
-        Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> next)
+    private class StandardFunctionExecutionHandler(ChatCompletionHandler innerHandler)
+        : ChatCompletionHandler(innerHandler)
     {
-        const int maxIterations = 3;
-        for (var iteration = 1; iteration <= maxIterations; iteration++)
+        public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+            IReadOnlyList<ChatMessage> messages,
+            ChatOptions options,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var childContext = iteration < maxIterations
-                ? context
-                : context with
-                {
-                    Options = context.Options with { Tools = null },
-                };
-
-            var toolCalls = new List<ChatToolCall>();
-            await foreach (var chunk in next(context, cancellationToken))
+            const int maxIterations = 3;
+            for (var iteration = 1; iteration <= maxIterations; iteration++)
             {
-                if (chunk.ToolCall is { } toolCall)
-                {
-                    toolCalls.Add(toolCall);
-                }
-                else if (chunk.Content is not null)
-                {
-                    yield return chunk;
-                }
-            }
+                var childOptions = iteration < maxIterations
+                    ? options
+                    : options with { Tools = null };
 
-            if (toolCalls.Any())
-            {
-                foreach (var toolCall in toolCalls)
+                var toolCalls = new List<ChatToolCall>();
+                await foreach (var chunk in InnerHandler!.CompleteChatStreamingAsync(messages, childOptions, cancellationToken))
                 {
-                    await chatService.ExecuteToolCallAsync(toolCall, context.Options);
+                    if (chunk.ToolCall is { } toolCall)
+                    {
+                        toolCalls.Add(toolCall);
+                    }
+                    else if (chunk.Content is not null)
+                    {
+                        yield return chunk;
+                    }
                 }
 
-                context = context with {
-                    Messages = new List<ChatMessage>(context.Messages)
+                if (toolCalls.Any())
+                {
+                    foreach (var toolCall in toolCalls)
+                    {
+                        await InnerHandler!.ExecuteChatFunctionAsync(toolCall, options);
+                    }
+
+                    messages = new List<ChatMessage>(messages)
                     {
                         new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
-                    }
-                };
-            }
-            else
-            {
-                break;
+                    };
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }
