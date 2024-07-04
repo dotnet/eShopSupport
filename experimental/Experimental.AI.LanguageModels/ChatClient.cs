@@ -25,6 +25,75 @@
 // the interface. Then you have a distinction between building/configuring and consuming.
 public class ChatClient
 {
+    // This approach of setting the handler in the constructor and being readonly thereafter is just
+    // like HttpClient, and it's good that it distinguishes the "building" phase from the "usage" phase,
+    // keeping it immutable once built.
+    // However it doesn't comply with the goal of having subclasses of ChatClient that people can just
+    // instantiate directly without knowing anything about handlers. Ideally you'd have things like
+    // "new OpenAiChatClient()" that sets up a correspondingly-typed handler. But then who decides which
+    // kind of function execution logic to attach to it? We want a sensible function execution mechanism
+    // by default, but still allow SK or others to swap it for their own implementation.
+    //
+    // If your goal is to enable this pattern:
+    //
+    // var chatClient = new OpenAiChatClient(...);
+    // var result = await chatClient.ChatAsync(messages, options, kernel, cancellationToken);
+    // (extension method provided by SK that calls in the context of the supplied kernel)
+    //
+    // ... then you need to be able to attach the function execution logic on a per-call basis, most likely
+    // as a property on ChatOptions (so the above extension can use "options with { ... }").
+    // Technically it would suffice to expose Handler as a gettable property on ChatClient and a get/set
+    // property on ChatOptions (and if left as null by default, uses the Handler from the ChatClient).
+    //
+    // Actually, is any of this even needed? SK's extension method could already wrap everything in its
+    // own function-calling logic. It just needs a way to suppress the default function execution logic.
+    // You still need to be able to suppress that even if could wrap the handler on a per-call basis.
+    //
+    // What if ChatClient was abstract and had a mutable DefaultOptions property?
+    // - We want the subclass to be able to set up default function execution logic for itself
+    // - But we want to be able to override that on a per-completion-call basis
+    // - ... and we need this to be hard to get wrong. For example when defining "default function execution logic",
+    //   we do not want the service author to just hardcode something specific to their backend without implementing
+    //   ExecuteChatFunctionAsync properly, because then you wouldn't be able to swap out that logic.
+    // It would be OK to have FunctionExecutor property that people can default to "new StandardFunctionExecutor()"
+    // as it will save them time to do this properly instead of hardcode their own thing. In fact ChatOptions could
+    // globally default to "FunctionExecutor = StandardFunctionExecutor.Instance" so in docs we don't even say you
+    // have to think about that - you just implement DefineFunction and ExecuteFunctionAsync.
+    // But this can't be a middleware system in general as it wouldn't be correct to replace *or* wrap middleware
+    // in general (replacing is losing functionality, wrapping would duplicate the function execution logic).
+    // So rethink this without middleware and just as a FunctionExecutor concept on ChatOptions.
+    //
+    // A deeper problem though: what even makes it legitimate for SK to override the function calling logic
+    // inside a particular chat service implementation? Can't a service implementation have additional requirements
+    // around function calling that SK doesn't know about? The only reason that's not a problem today is that all
+    // the concrete service implementations are built for and by SK. It simply doesn't make sense if you think the
+    // service implementations work independently of SK.
+    // - So I think you need to re-examine what SK is doing in its function calling implementations and to what
+    //   extent it's what a service implementation would just naturally do anyway.
+    // - Also look at what something else like Rystem.OpenAI does. Is it equivalent?
+    //   - I did look into this and what Rystem.OpenAI seems to do is hardcode logic that it follows up on each
+    //     tool call by invoking it, then making exactly one further chat completion request (which does not actually
+    //     appear to be recursive but I might be misreading it).
+    //   - So it's very much not equivalent but also doesn't really look right in general.
+    //   - https://github.com/KeyserDSoze/Rystem.OpenAi/blob/8a2fa5ed9da4f0e6754f5565fa4a4304a0741f65/src/Rystem.OpenAi.Api/Endpoints/Chat/Builder/ChatRequestBuilder.cs#L59
+    //
+    // I think there's a bit of a fundamental mismatch here then:
+    // 1. There could be backend-specific requirements about how function execution should be structured
+    // 2. People (or SK) may want to implement their own function execution logic that works with all backends
+    // The resolutions I can think of are:
+    // * Like SK today, hardcode the execution flow separately in each backend, in such a way that it does precisely
+    //   what SK (and nothing else) wants it to do
+    // * Or, assert that no, there can't be backend-specific requirements around function execution, and it's
+    //   the job of each backend to:
+    //   - Have CompleteChatAsync/etc translate the LLM output into a series of ChatMessage instances that represent
+    //     desired tool calls
+    //   - Have CompleteChatAsync/etc translate the supplied "messages" list (including tool calls with results)
+    //     into whatever format the LLM expects, which may be multiple "messages" per tool call in the case of OpenAI
+    // TBH I think the latter is the only way it will be viable to have a common abstraction and implementations that
+    // can work with SK as well as other frontends.
+    //
+    // So if that is the case, go back to your idea above about having FunctionCallResolver as a property on ChatOptions.
+
     public ChatClient(ChatCompletionHandler handler)
     {
         Handler = handler;
