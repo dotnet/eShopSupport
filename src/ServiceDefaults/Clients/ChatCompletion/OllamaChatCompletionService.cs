@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Json;
 using System.Reflection;
@@ -28,14 +27,13 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
     }
 
     protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
-        IReadOnlyList<ChatMessage> messages,
-        ChatOptions options,
+        ChatContext context,
         CancellationToken cancellationToken = default)
     {
         // We have to use the "generate" endpoint, not "chat", because function calling requires raw mode
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/generate");
-        request.Content = PrepareChatRequestContent(messages, options, false);
-        var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
+        request.Content = PrepareChatRequestContent(context.Messages, context.Options, false);
+        var json = context.Options.ResponseFormat == ChatResponseFormat.JsonObject;
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -48,12 +46,11 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
     }
 
     protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
-        IReadOnlyList<ChatMessage> messages,
-        ChatOptions options,
+        ChatContext context,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var toolCallBuilder = default(StringBuilder);
-        await foreach (var chunk in ProcessStreamingMessagesAsync(messages, options, cancellationToken))
+        await foreach (var chunk in ProcessStreamingMessagesAsync(context.Messages, context.Options, cancellationToken))
         {
             if (chunk.ContentUpdate is { } contentUpdate)
             {

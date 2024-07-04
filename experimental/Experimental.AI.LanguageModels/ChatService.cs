@@ -25,26 +25,31 @@
 // the interface. Then you have a distinction between building/configuring and consuming.
 public abstract class ChatService
 {
+    private Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> _streamingMiddleware;
+
+    public ChatService()
+    {
+        _streamingMiddleware = CompleteChatStreamingAsync;
+    }
+
     public Task<IReadOnlyList<ChatMessage>> ChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => CompleteChatAsync(messages, options, cancellationToken);
+        => CompleteChatAsync(new ChatContext(messages, options), cancellationToken);
 
     public IAsyncEnumerable<ChatMessageChunk> ChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => CompleteChatStreamingAsync(messages, options, cancellationToken);
+        => _streamingMiddleware(new ChatContext(messages, options), cancellationToken);
 
     protected abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
-        IReadOnlyList<ChatMessage> messages,
-        ChatOptions options,
+        ChatContext context,
         CancellationToken cancellationToken = default);
 
     protected abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
-        IReadOnlyList<ChatMessage> messages,
-        ChatOptions options,
+        ChatContext context,
         CancellationToken cancellationToken = default);
 
     // We could define a model for middleware or pre/post function filters, but it's unclear we should bake that in
@@ -96,9 +101,19 @@ public abstract class ChatService
         => throw new NotSupportedException($"{GetType().FullName} does not support defining chat functions.");
     // This delegate overload should probably be an extension method wrapping an underlying method that
     // takes structured metadata
+
+    public void UseMiddleware(StreamingChatMiddleware middleware)
+    {
+        var next = _streamingMiddleware;
+        _streamingMiddleware = (context, cancellationToken) => middleware(context, cancellationToken, next);
+    }
 }
 
 public interface IChatServiceWithFunctions
 {
     Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options);
 }
+
+public record ChatContext(IReadOnlyList<ChatMessage> Messages, ChatOptions Options);
+
+public delegate IAsyncEnumerable<ChatMessageChunk> StreamingChatMiddleware(ChatContext context, CancellationToken cancellationToken, Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> next);

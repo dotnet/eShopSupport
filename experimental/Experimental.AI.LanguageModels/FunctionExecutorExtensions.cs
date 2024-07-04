@@ -16,61 +16,60 @@ namespace Experimental.AI.LanguageModels;
 
 public static class FunctionExecutorExtensions
 {
-    public static ChatService WithStandardFunctionExecution<T>(this T chatService)
+    public static void UseStandardFunctionExecution<T>(this T chatService)
         where T : ChatService, IChatServiceWithFunctions
     {
-        return new ChatServiceWithFunctions<T>(chatService);
+        chatService.UseMiddleware((context, cancellationToken, next) =>
+            StandardFunctionExecutionMiddleware(chatService, context, cancellationToken, next));
     }
 
-    private class ChatServiceWithFunctions<TChatService>(TChatService underlying) : ChatService where TChatService : ChatService, IChatServiceWithFunctions
+    private static async IAsyncEnumerable<ChatMessageChunk> StandardFunctionExecutionMiddleware(
+        IChatServiceWithFunctions chatService,
+        ChatContext context,
+        [EnumeratorCancellation] CancellationToken cancellationToken,
+        Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> next)
     {
-        protected override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
-            // TOOD: Add tool execution
-            => underlying.ChatAsync(messages, options, cancellationToken);
-
-        protected override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        const int maxIterations = 3;
+        for (var iteration = 1; iteration <= maxIterations; iteration++)
         {
-            const int maxIterations = 3;
-            for (var iteration = 1; iteration <= maxIterations; iteration++)
+            var childContext = iteration < maxIterations
+                ? context
+                : context with
+                {
+                    Options = context.Options with { Tools = null },
+                };
+
+            var toolCalls = new List<ChatToolCall>();
+            await foreach (var chunk in next(context, cancellationToken))
             {
-                if (iteration == maxIterations)
+                if (chunk.ToolCall is { } toolCall)
                 {
-                    options = options with { Tools = null };
+                    toolCalls.Add(toolCall);
                 }
-
-                var toolCalls = new List<ChatToolCall>();
-                await foreach (var chunk in underlying.ChatStreamingAsync(messages, options, cancellationToken))
+                else if (chunk.Content is not null)
                 {
-                    if (chunk.ToolCall is { } toolCall)
-                    {
-                        toolCalls.Add(toolCall);
-                    }
-                    else if (chunk.Content is not null)
-                    {
-                        yield return chunk;
-                    }
-                }
-
-                if (toolCalls.Any())
-                {
-                    foreach (var toolCall in toolCalls)
-                    {
-                        await underlying.ExecuteToolCallAsync(toolCall, options);
-                    }
-
-                    messages = new List<ChatMessage>(messages)
-                    {
-                        new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
-                    };
-                }
-                else
-                {
-                    break;
+                    yield return chunk;
                 }
             }
-        }
 
-        public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
-            => underlying.DefineChatFunction(name, description, @delegate);
+            if (toolCalls.Any())
+            {
+                foreach (var toolCall in toolCalls)
+                {
+                    await chatService.ExecuteToolCallAsync(toolCall, context.Options);
+                }
+
+                context = context with {
+                    Messages = new List<ChatMessage>(context.Messages)
+                    {
+                        new ChatMessage(ChatMessageRole.Assistant, string.Empty) { ToolCalls = toolCalls },
+                    }
+                };
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 }
