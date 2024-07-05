@@ -30,8 +30,7 @@ public static class ChatCompletionServiceExtensions
             builder.Services.AddScoped<ChatClient>(services =>
             {
                 var client = services.GetRequiredService<OpenAIClient>();
-                var handler = new OpenAIChatCompletionHandler(client, (string)deploymentName);
-                return new ChatClient(handler.WithStandardFunctionExecution());
+                return new OpenAIChatClient(client, (string)deploymentName);
             });
         }
 

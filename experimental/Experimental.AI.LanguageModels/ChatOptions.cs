@@ -2,6 +2,7 @@
 
 public record ChatOptions
 {
+    public IChatOrchestrator FunctionCallOrchestrator { get; set; } = StandardFunctionCallOrchestrator.Instance;
     public ChatResponseFormat ResponseFormat { get; set; } = ChatResponseFormat.Text;
     public string? ToolExecutionMode { get; set; } // TODO: Enum
     public List<ChatTool>? Tools { get; set; }

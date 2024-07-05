@@ -23,7 +23,7 @@
 
 // You might even want to have an IChatService interface this implements, and not have middleware be on
 // the interface. Then you have a distinction between building/configuring and consuming.
-public class ChatClient
+public abstract class ChatClient
 {
     // This approach of setting the handler in the constructor and being readonly thereafter is just
     // like HttpClient, and it's good that it distinguishes the "building" phase from the "usage" phase,
@@ -94,27 +94,32 @@ public class ChatClient
     //
     // So if that is the case, go back to your idea above about having FunctionCallResolver as a property on ChatOptions.
 
-    public ChatClient(ChatCompletionHandler handler)
-    {
-        Handler = handler;
-    }
-
-    private ChatCompletionHandler Handler { get; }
-
     public Task<IReadOnlyList<ChatMessage>> ChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => Handler.CompleteChatAsync(messages, options, cancellationToken);
+        => options.FunctionCallOrchestrator.ChatAsync(this, messages, options, cancellationToken);
 
     public IAsyncEnumerable<ChatMessageChunk> ChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => Handler.CompleteChatStreamingAsync(messages, options, cancellationToken);
+        => options.FunctionCallOrchestrator.ChatStreamingAsync(this, messages, options, cancellationToken);
 
-    public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
-        => Handler.DefineChatFunction(name, description, @delegate);
+    public abstract ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+
+    // TODO: Obviously these should not be public. Maybe I have to define a handler concept.
+    public abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default);
+
+    public abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default);
+
+    public abstract Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options);
 
     // We could define a model for middleware or pre/post function filters, but it's unclear we should bake that in
     // to the core abstraction. What would be the use cases? Wanting to control that through IChatService implies

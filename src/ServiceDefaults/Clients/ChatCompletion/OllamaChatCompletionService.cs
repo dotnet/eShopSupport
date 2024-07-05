@@ -10,7 +10,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OllamaChatCompletionHandler(HttpClient httpClient, string modelName) : ChatCompletionHandler
+public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatClient
 {
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {

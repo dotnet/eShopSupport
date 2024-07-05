@@ -9,7 +9,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatCompletionHandler(OpenAIClient client, string deploymentName) : ChatCompletionHandler
+public class OpenAIChatClient(OpenAIClient client, string deploymentName) : ChatClient
 {
     public override async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
     {
