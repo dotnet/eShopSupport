@@ -10,7 +10,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-internal class OllamaChatCompletionService : ChatService, IChatServiceWithFunctions
+internal class OllamaChatCompletionService : ChatService
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;
@@ -20,20 +20,22 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public OllamaChatCompletionService(HttpClient httpClient, string modelName)
+    public OllamaChatCompletionService(HttpClient httpClient, string modelName, Action<ChatMiddlewareBuilder> builder)
+        : base(builder)
     {
         _httpClient = httpClient;
         _modelName = modelName;
     }
 
     protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
-        ChatContext context,
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
         CancellationToken cancellationToken = default)
     {
         // We have to use the "generate" endpoint, not "chat", because function calling requires raw mode
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/generate");
-        request.Content = PrepareChatRequestContent(context.Messages, context.Options, false);
-        var json = context.Options.ResponseFormat == ChatResponseFormat.JsonObject;
+        request.Content = PrepareChatRequestContent(messages, options, false);
+        var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
         var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -46,11 +48,12 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
     }
 
     protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
-        ChatContext context,
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var toolCallBuilder = default(StringBuilder);
-        await foreach (var chunk in ProcessStreamingMessagesAsync(context.Messages, context.Options, cancellationToken))
+        await foreach (var chunk in ProcessStreamingMessagesAsync(messages, options, cancellationToken))
         {
             if (chunk.ContentUpdate is { } contentUpdate)
             {
@@ -281,10 +284,10 @@ internal class OllamaChatCompletionService : ChatService, IChatServiceWithFuncti
         _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
 
-    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
+    protected override ChatFunction DefineChatFunctionCore<T>(string name, string description, T @delegate)
         => OllamaChatFunction.Create(name, description, @delegate);
 
-    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
+    protected override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
     {
         if (toolCall is not OllamaChatMessageToolCall ollamaToolCall)
         {

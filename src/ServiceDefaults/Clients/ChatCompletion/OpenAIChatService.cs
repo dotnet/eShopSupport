@@ -9,18 +9,24 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName) : ChatService, IChatServiceWithFunctions
+public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatMiddlewareBuilder> builder) : ChatService(builder)
 {
-    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(ChatContext context, CancellationToken cancellationToken = default)
+    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken = default)
     {
-        var completionOptions = BuildCompletionOptions(deploymentName, context.Messages, context.Options);
+        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var result = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
-    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(ChatContext context, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var completionOptions = BuildCompletionOptions(deploymentName, context.Messages, context.Options);
+        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
         var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
         var contentBuilder = default(StringBuilder);
         var functionToolName = default(string);
@@ -62,7 +68,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : Cha
         }
     }
 
-    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
+    protected override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
     {
         var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
         var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;
@@ -74,7 +80,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName) : Cha
         }
     }
 
-    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
+    protected override ChatFunction DefineChatFunctionCore<T>(string name, string description, T @delegate)
         => OpenAIChatFunction.Create(name, description, @delegate);
 
     private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options)

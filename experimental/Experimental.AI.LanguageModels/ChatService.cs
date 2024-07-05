@@ -1,5 +1,81 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
+public abstract class ChatMiddleware
+{
+    public virtual Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IChatMiddlewareCallable next,
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken)
+        => next.CompleteChatAsync(messages, options, cancellationToken);
+
+    public virtual IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IChatMiddlewareCallable next,
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken)
+        => next.CompleteChatStreamingAsync(messages, options, cancellationToken);
+
+    public virtual ChatFunction DefineChatFunction<T>(IChatMiddlewareCallable next, string name, string description, T @delegate) where T : Delegate
+        => next.DefineChatFunction(name, description, @delegate);
+
+    public virtual Task ExecuteChatFunctionAsync(IChatMiddlewareCallable next, ChatToolCall toolCall, ChatOptions options)
+        => next.ExecuteChatFunctionAsync(toolCall, options);
+}
+
+public interface IChatMiddlewareCallable
+{
+    Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken);
+
+    IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken);
+
+    ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate;
+
+    Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options);
+}
+
+public class ChatMiddlewareBuilder(IChatMiddlewareCallable innerMiddleware)
+{
+    IChatMiddlewareCallable outer = innerMiddleware;
+
+    public IChatMiddlewareCallable Build() => outer;
+
+    public void Use(ChatMiddleware middleware)
+    {
+        outer = Wrap(middleware, outer);
+    }
+
+    private IChatMiddlewareCallable Wrap(ChatMiddleware middleware, IChatMiddlewareCallable next)
+        => new WrappedMiddleware(middleware, next);
+
+    private class WrappedMiddleware(ChatMiddleware middleware, IChatMiddlewareCallable next) : IChatMiddlewareCallable
+    {
+        public Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+            IReadOnlyList<ChatMessage> messages,
+            ChatOptions options,
+            CancellationToken cancellationToken)
+            => middleware.CompleteChatAsync(next, messages, options, cancellationToken);
+
+        public IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+            IReadOnlyList<ChatMessage> messages,
+            ChatOptions options,
+            CancellationToken cancellationToken)
+            => middleware.CompleteChatStreamingAsync(next, messages, options, cancellationToken);
+
+        public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+            => middleware.DefineChatFunction(next, name, description, @delegate);
+
+        public Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+            => middleware.ExecuteChatFunctionAsync(next, toolCall, options);
+    }
+}
+
 // Main principles:
 // - Statelessness. While it's initially nice to think about having a single ChatContext that tracks
 //   the message history, options, attached functions, etc., this makes it hard/impossible for people
@@ -23,97 +99,63 @@
 
 // You might even want to have an IChatService interface this implements, and not have middleware be on
 // the interface. Then you have a distinction between building/configuring and consuming.
-public abstract class ChatService
+public abstract class ChatService : IChatMiddlewareCallable
 {
-    private Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> _streamingMiddleware;
+    private IChatMiddlewareCallable _middleware;
 
-    public ChatService()
+    public ChatService(Action<ChatMiddlewareBuilder> builder)
     {
-        _streamingMiddleware = CompleteChatStreamingAsync;
+        var middlewareBuilder = new ChatMiddlewareBuilder(this);
+        builder(middlewareBuilder);
+        _middleware = middlewareBuilder.Build();
     }
 
     public Task<IReadOnlyList<ChatMessage>> ChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => CompleteChatAsync(new ChatContext(messages, options), cancellationToken);
+    {
+        return _middleware.CompleteChatAsync(messages, options, cancellationToken);
+    }
 
     public IAsyncEnumerable<ChatMessageChunk> ChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
-        => _streamingMiddleware(new ChatContext(messages, options), cancellationToken);
+        => _middleware.CompleteChatStreamingAsync(messages, options, cancellationToken);
+
+    public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
+        => _middleware.DefineChatFunction(name, description, @delegate);
 
     protected abstract Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
-        ChatContext context,
-        CancellationToken cancellationToken = default);
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken);
 
     protected abstract IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
-        ChatContext context,
-        CancellationToken cancellationToken = default);
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken);
 
-    // We could define a model for middleware or pre/post function filters, but it's unclear we should bake that in
-    // to the core abstraction. What would be the use cases? Wanting to control that through IChatService implies
-    // doing so on arbitrary backends. But use cases around logging/telemetry would are more typically handled inside
-    // each concrete implementation, since they actually know what they are doing, and the backend-specific logic
-    // for function calling. And so that can be configured at the DI level when registering the implementation.
-    // If it's for SK to do anything pre/post function calls, it can do that in the way it maps its Kernel functions
-    // into ChatFunctions.
-    // Commonly, e.g., in IDistributedCache or Aspire components, we expect cross-cutting concerns like logging to
-    // be handled in each concrete implementation, not as extra API surface on the core abstraction.
-    // If we do want to add a middleware concept to the core IChatService, we can do so but then we also need some kind
-    // of factory you can control at the DI level to add middleware globally. And then we need universal logic for
-    // how the middleware gets called. It's doable but forces quite a bit more opinionation.
+    protected abstract ChatFunction DefineChatFunctionCore<T>(string name, string description, T @delegate) where T: Delegate;
 
-    // ---
+    protected abstract Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options);
 
-    // The following saves us from having to define a schema for functions (which could involve arbitrarily deep parameter types).
-    // OpenAI uses JSON schemas; Gemini uses OpenAPI schemas.
-    //
-    // We want there to be a common API by which any IChatService consumer can attach functions, but we don't want to
-    // model functions themselves or determine how .NET delegates map to them. So, we let each IChatService implementation
-    // have its own way to represent functions internally and decide how they map to .NET delegates and parameter types.
-    // We don't keep track of what functions exist either: it's up to the developer to attach whatever functions they want
-    // on a per-call basis.
-    // The following is the common API by which the consumer can construct a ChatFunction that makes sense to this IChatService.
-    // The IChatService implementation can use either reflection or a source generator to map the .NET delegate to its own schema.
-    //
-    // Similarly, the core abstraction doesn't force any particular algorithm for calling functions. It's up to the IChatService
-    // implementation to have its own tool-execution logic based on how the underlying LLM indicates its tool-calling intent,
-    // and any other backend-specific rules about how to represent the tool call in the chat history (e.g., with IDs, how call
-    // results should be formatted, and so on).
-    // If they want to let the developer customize the rules (e.g., how many calls are allowed) they have to do that in their
-    // own concrete API, e.g., via an "options" passed to the constructor.
-    //
-    // This also means we don't have a single place from which we can trigger before/after call filters or logging. Each
-    // IChatService implementation either does that itself or doesn't do it at all. Arguably that should be enough because it
-    // follows the same pattern as other Aspire components, in that each of them is expected to do its own telemetry etc.
-    // To retain SK's functionality around filters, it can either:
-    // - ... be the implementor of IChatService, and hence entirely control how functions are called
-    //       (optionally as a wrapper around some other IChatService backend that gets passed in)
-    // - ... or, to work with an arbitrary IChatService supplied from outside, have some Kernel method like
-    //   kernel.GetChatFunctions(chatService) that works by calling chatService.CreateChatFunction for each function
-    //   to get a version that has the filters on the inside, plus they could be pre-attached to other SK kernel facilities.
-    // 
-    // This latter approach is almost identical to what SK already does today (when calling IChatCompletionService.GetCompletionAsync,
-    // you optionally pass in a "kernel" parameter - this would just change to passing in the kernelFunctions object that is returned).
-    public virtual ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
-        => throw new NotSupportedException($"{GetType().FullName} does not support defining chat functions.");
-    // This delegate overload should probably be an extension method wrapping an underlying method that
-    // takes structured metadata
+    Task<IReadOnlyList<ChatMessage>> IChatMiddlewareCallable.CompleteChatAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken)
+        => CompleteChatAsync(messages, options, cancellationToken);
 
-    public void UseMiddleware(StreamingChatMiddleware middleware)
-    {
-        var next = _streamingMiddleware;
-        _streamingMiddleware = (context, cancellationToken) => middleware(context, cancellationToken, next);
-    }
+    IAsyncEnumerable<ChatMessageChunk> IChatMiddlewareCallable.CompleteChatStreamingAsync(
+        IReadOnlyList<ChatMessage> messages,
+        ChatOptions options,
+        CancellationToken cancellationToken)
+        => CompleteChatStreamingAsync(messages, options, cancellationToken);
+
+    ChatFunction IChatMiddlewareCallable.DefineChatFunction<T>(string name, string description, T @delegate)
+        => DefineChatFunctionCore(name, description, @delegate);
+
+    Task IChatMiddlewareCallable.ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+        => ExecuteChatFunctionAsync(toolCall, options);
 }
-
-public interface IChatServiceWithFunctions
-{
-    Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options);
-}
-
-public record ChatContext(IReadOnlyList<ChatMessage> Messages, ChatOptions Options);
-
-public delegate IAsyncEnumerable<ChatMessageChunk> StreamingChatMiddleware(ChatContext context, CancellationToken cancellationToken, Func<ChatContext, CancellationToken, IAsyncEnumerable<ChatMessageChunk>> next);
