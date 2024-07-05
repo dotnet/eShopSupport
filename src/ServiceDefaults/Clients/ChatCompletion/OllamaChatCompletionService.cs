@@ -10,7 +10,12 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-internal class OllamaChatCompletionService : ChatService
+public class OllamaChatService(HttpClient httpClient, string modelName, Action<ChatHandlerBuilder> builder)
+    : ChatService(new OllamaChatHandler(httpClient, modelName), builder)
+{
+}
+
+internal class OllamaChatHandler : IChatHandler
 {
     private readonly HttpClient _httpClient;
     private readonly string _modelName;
@@ -20,14 +25,13 @@ internal class OllamaChatCompletionService : ChatService
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public OllamaChatCompletionService(HttpClient httpClient, string modelName, Action<ChatMiddlewareBuilder> builder)
-        : base(builder)
+    public OllamaChatHandler(HttpClient httpClient, string modelName)
     {
         _httpClient = httpClient;
         _modelName = modelName;
     }
 
-    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+    public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
@@ -47,7 +51,7 @@ internal class OllamaChatCompletionService : ChatService
         return [new ChatMessage(ChatMessageRole.Assistant, responseContent!.Response!)];
     }
 
-    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -284,10 +288,10 @@ internal class OllamaChatCompletionService : ChatService
         _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
 
-    protected override ChatFunction DefineChatFunctionCore<T>(string name, string description, T @delegate)
+    public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T: Delegate
         => OllamaChatFunction.Create(name, description, @delegate);
 
-    protected override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+    public async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
     {
         if (toolCall is not OllamaChatMessageToolCall ollamaToolCall)
         {

@@ -36,7 +36,7 @@ namespace Experimental.AI.LanguageModels;
 
 public static class FunctionExecutorExtensions
 {
-    public static void UseStandardFunctionExecution(this ChatMiddlewareBuilder builder)
+    public static void UseStandardFunctionExecution(this ChatHandlerBuilder builder)
     {
         builder.Use(StandardFunctionExecutionMiddleware.Instance);
     }
@@ -45,7 +45,7 @@ public static class FunctionExecutorExtensions
     {
         public static StandardFunctionExecutionMiddleware Instance { get; } = new();
 
-        public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IChatMiddlewareCallable next, IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IChatHandler next, IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             const int maxIterations = 3;
             for (var iteration = 1; iteration <= maxIterations; iteration++)

@@ -9,9 +9,14 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatMiddlewareBuilder> builder) : ChatService(builder)
+public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatHandlerBuilder> builder)
+    : ChatService(new OpenAIChatHandler(client, deploymentName), builder)
 {
-    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+}
+
+public class OpenAIChatHandler(OpenAIClient client, string deploymentName) : IChatHandler
+{
+    public async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         CancellationToken cancellationToken = default)
@@ -21,7 +26,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName, Actio
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
-    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+    public async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -68,7 +73,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName, Actio
         }
     }
 
-    protected override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+    public async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
     {
         var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
         var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;
@@ -80,7 +85,7 @@ public class OpenAIChatService(OpenAIClient client, string deploymentName, Actio
         }
     }
 
-    protected override ChatFunction DefineChatFunctionCore<T>(string name, string description, T @delegate)
+    public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T: Delegate
         => OpenAIChatFunction.Create(name, description, @delegate);
 
     private static ChatCompletionsOptions BuildCompletionOptions(string deploymentName, IReadOnlyList<ChatMessage> messages, ChatOptions options)
