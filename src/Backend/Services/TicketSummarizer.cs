@@ -1,8 +1,13 @@
 ﻿using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Azure;
 using eShopSupport.Backend.Data;
 using Experimental.AI.LanguageModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Npgsql.Internal;
 using StackExchange.Redis;
 
 namespace eShopSupport.Backend.Services;
@@ -25,7 +30,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var redisConnection = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>();
-            var chatCompletion = scope.ServiceProvider.GetRequiredService<ChatClient>();
+            var chatCompletion = scope.ServiceProvider.GetRequiredService<ChatService>();
 
             var ticket = await db.Tickets
                 .Include(t => t.Product)

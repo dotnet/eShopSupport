@@ -9,18 +9,18 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatClient(OpenAIClient client, string deploymentName) : ChatClient
+public class OpenAIChatService(OpenAIClient client, string deploymentName) : ChatService, IChatServiceWithFunctions
 {
-    public override async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
+    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(ChatContext context, CancellationToken cancellationToken = default)
     {
-        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
+        var completionOptions = BuildCompletionOptions(deploymentName, context.Messages, context.Options);
         var result = await client.GetChatCompletionsAsync(completionOptions, cancellationToken);
         return result.Value.Choices.Select(m => new ChatMessage(MapOpenAIRole(m.Message.Role), m.Message.Content)).ToList();
     }
 
-    public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(ChatContext context, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var completionOptions = BuildCompletionOptions(deploymentName, messages, options);
+        var completionOptions = BuildCompletionOptions(deploymentName, context.Messages, context.Options);
         var chunks = await client.GetChatCompletionsStreamingAsync(completionOptions, cancellationToken);
         var contentBuilder = default(StringBuilder);
         var functionToolName = default(string);
@@ -62,7 +62,7 @@ public class OpenAIChatClient(OpenAIClient client, string deploymentName) : Chat
         }
     }
 
-    public override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
+    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
     {
         var openAiChatToolCall = (OpenAiFunctionToolCall)toolCall;
         var functionToolCall = (ChatCompletionsFunctionToolCall)openAiChatToolCall.Value;

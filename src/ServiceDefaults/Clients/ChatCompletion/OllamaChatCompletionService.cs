@@ -10,21 +10,31 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatClient
+internal class OllamaChatCompletionService : ChatService, IChatServiceWithFunctions
 {
+    private readonly HttpClient _httpClient;
+    private readonly string _modelName;
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
-    public override async Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, CancellationToken cancellationToken = default)
+    public OllamaChatCompletionService(HttpClient httpClient, string modelName)
+    {
+        _httpClient = httpClient;
+        _modelName = modelName;
+    }
+
+    protected async override Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
+        ChatContext context,
+        CancellationToken cancellationToken = default)
     {
         // We have to use the "generate" endpoint, not "chat", because function calling requires raw mode
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/generate");
-        request.Content = PrepareChatRequestContent(messages, options, false);
-        var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
-        var response = await httpClient.SendAsync(request, cancellationToken);
+        request.Content = PrepareChatRequestContent(context.Messages, context.Options, false);
+        var json = context.Options.ResponseFormat == ChatResponseFormat.JsonObject;
+        var response = await _httpClient.SendAsync(request, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var responseText = "ERROR: The configured model isn't available. Perhaps it's still downloading.";
@@ -35,10 +45,12 @@ public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatCli
         return [new ChatMessage(ChatMessageRole.Assistant, responseContent!.Response!)];
     }
 
-    public override async IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(IReadOnlyList<ChatMessage> messages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    protected async override IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
+        ChatContext context,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var toolCallBuilder = default(StringBuilder);
-        await foreach (var chunk in ProcessStreamingMessagesAsync(messages, options, cancellationToken))
+        await foreach (var chunk in ProcessStreamingMessagesAsync(context.Messages, context.Options, cancellationToken))
         {
             if (chunk.ContentUpdate is { } contentUpdate)
             {
@@ -62,23 +74,6 @@ public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatCli
         }
     }
 
-    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
-        => OllamaChatFunction.Create(name, description, @delegate);
-
-    public override async Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
-    {
-        if (toolCall is not OllamaChatMessageToolCall ollamaToolCall)
-        {
-            throw new NotSupportedException($"Unsupported tool call type: {toolCall.GetType()}");
-        }
-
-        var function = options.Tools?.FirstOrDefault(t => t.Name == ollamaToolCall.Name);
-        if (function is OllamaChatFunction ollamaChatFunction)
-        {
-            toolCall.Result = await ReflectionChatFunction.InvokeAsync(ollamaChatFunction.Delegate, ollamaToolCall.Arguments);
-        }
-    }
-
     private async IAsyncEnumerable<OllamaStreamingChunk> ProcessStreamingMessagesAsync(
         IReadOnlyList<ChatMessage> messages,
         ChatOptions options,
@@ -89,7 +84,7 @@ public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatCli
         request.Content = PrepareChatRequestContent(messages, options, true);
         var json = options.ResponseFormat == ChatResponseFormat.JsonObject;
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             var responseText = "ERROR: The configured model isn't available. Perhaps it's still downloading.";
@@ -170,7 +165,7 @@ public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatCli
     {
         return JsonContent.Create(new
         {
-            Model = modelName,
+            Model = _modelName,
             Prompt = FormatRawPrompt(messages, options.Tools),
             Format = options.ResponseFormat == ChatResponseFormat.JsonObject ? "json" : null,
             Options = new
@@ -285,6 +280,23 @@ public class OllamaChatClient(HttpClient httpClient, string modelName) : ChatCli
         "system" => ChatMessageRole.System,
         _ => throw new NotSupportedException($"Unsupported message role: {role}"),
     };
+
+    public override ChatFunction DefineChatFunction<T>(string name, string description, T @delegate)
+        => OllamaChatFunction.Create(name, description, @delegate);
+
+    public async Task ExecuteToolCallAsync(ChatToolCall toolCall, ChatOptions options)
+    {
+        if (toolCall is not OllamaChatMessageToolCall ollamaToolCall)
+        {
+            throw new NotSupportedException($"Unsupported tool call type: {toolCall.GetType()}");
+        }
+
+        var function = options.Tools?.FirstOrDefault(t => t.Name == ollamaToolCall.Name);
+        if (function is OllamaChatFunction ollamaChatFunction)
+        {
+            toolCall.Result = await ReflectionChatFunction.InvokeAsync(ollamaChatFunction.Delegate, ollamaToolCall.Arguments);
+        }
+    }
 
     private class OllamaChatFunction(string name, string description) : ChatFunction(name, description)
     {

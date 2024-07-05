@@ -14,11 +14,13 @@ public static class OllamaChatCompletionBuilderExtensions
             throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
         }
 
-        builder.Services.AddScoped<ChatClient>(services =>
+        builder.Services.AddScoped<ChatService>(services =>
         {
             var httpClient = services.GetRequiredService<HttpClient>();
             httpClient.BaseAddress = new Uri($"http://{name}");
-            return new OllamaChatClient(httpClient, modelName);
+            var service = new OllamaChatCompletionService(httpClient, modelName);
+            service.UseStandardFunctionExecution();
+            return service;
         });
     }
 }
