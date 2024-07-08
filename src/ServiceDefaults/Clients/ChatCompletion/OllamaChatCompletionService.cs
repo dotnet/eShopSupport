@@ -10,7 +10,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OllamaChatService(HttpClient httpClient, string modelName, Action<ChatHandlerBuilder> builder)
+public class OllamaChatService(HttpClient httpClient, string modelName, Action<ChatHandlerBuilder>? builder = null)
     : ChatService(new OllamaChatHandler(httpClient, modelName), builder)
 {
 }

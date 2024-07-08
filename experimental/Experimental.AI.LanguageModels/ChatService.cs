@@ -40,39 +40,58 @@ public interface IChatHandler
     Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options);
 }
 
-public class ChatHandlerBuilder(IChatHandler innerMiddleware)
+public class ChatHandlerBuilder
 {
-    IChatHandler outer = innerMiddleware;
+    MiddlewareAsHandler? first, last;
 
-    public IChatHandler Build() => outer;
+    public IChatHandler Build(IChatHandler innerHandler)
+    {
+        if (last is null)
+        {
+            return innerHandler;
+        }
+        else
+        {
+            last.Next = innerHandler;
+            return first!;
+        }
+    }
 
     public void Use(ChatMiddleware middleware)
     {
-        outer = Wrap(middleware, outer);
+        var newHandler = new MiddlewareAsHandler(middleware);
+        if (last is null)
+        {
+            first = last = newHandler;
+        }
+        else
+        {
+            last.Next = newHandler;
+            last = newHandler;
+        }
     }
 
-    private IChatHandler Wrap(ChatMiddleware middleware, IChatHandler next)
-        => new MiddlewareAsHandler(middleware, next);
-
-    private class MiddlewareAsHandler(ChatMiddleware middleware, IChatHandler next) : IChatHandler
+    private class MiddlewareAsHandler(ChatMiddleware middleware) : IChatHandler
     {
+        public IChatHandler? Next { get; set; } // It's always nonnull by the time the pipeline is built
+
         public Task<IReadOnlyList<ChatMessage>> CompleteChatAsync(
             IReadOnlyList<ChatMessage> messages,
             ChatOptions options,
             CancellationToken cancellationToken)
-            => middleware.CompleteChatAsync(next, messages, options, cancellationToken);
+            => middleware.CompleteChatAsync(Next!, messages, options, cancellationToken);
 
         public IAsyncEnumerable<ChatMessageChunk> CompleteChatStreamingAsync(
             IReadOnlyList<ChatMessage> messages,
             ChatOptions options,
             CancellationToken cancellationToken)
-            => middleware.CompleteChatStreamingAsync(next, messages, options, cancellationToken);
+            => middleware.CompleteChatStreamingAsync(Next!, messages, options, cancellationToken);
 
         public ChatFunction DefineChatFunction<T>(string name, string description, T @delegate) where T : Delegate
-            => middleware.DefineChatFunction(next, name, description, @delegate);
+            => middleware.DefineChatFunction(Next!, name, description, @delegate);
 
         public Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options)
-            => middleware.ExecuteChatFunctionAsync(next, toolCall, options);
+            => middleware.ExecuteChatFunctionAsync(Next!, toolCall, options);
     }
 }
 
@@ -103,11 +122,18 @@ public abstract class ChatService
 {
     private IChatHandler _handler;
 
-    public ChatService(IChatHandler defaultHandler, Action<ChatHandlerBuilder> builder)
+    public ChatService(IChatHandler defaultHandler, Action<ChatHandlerBuilder>? builder = null)
     {
-        var handlerBuilder = new ChatHandlerBuilder(defaultHandler);
-        builder(handlerBuilder);
-        _handler = handlerBuilder.Build();
+        if (builder is not null)
+        {
+            var handlerBuilder = new ChatHandlerBuilder();
+            builder(handlerBuilder);
+            _handler = handlerBuilder.Build(defaultHandler);
+        }
+        else
+        {
+            _handler = defaultHandler;
+        }
     }
 
     public Task<IReadOnlyList<ChatMessage>> ChatAsync(
