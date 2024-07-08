@@ -27,11 +27,12 @@ public static class ChatCompletionServiceExtensions
                 throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
             }
 
+            var chatBuilder = new ChatHandlerBuilder().UseStandardFunctionExecution();
+
             builder.Services.AddScoped<ChatService>(services =>
             {
                 var client = services.GetRequiredService<OpenAIClient>();
-                return new OpenAIChatService(client, (string)deploymentName, builder =>
-                    builder.UseStandardFunctionExecution());
+                return new OpenAIChatService(client, (string)deploymentName, chatBuilder);
             });
         }
 

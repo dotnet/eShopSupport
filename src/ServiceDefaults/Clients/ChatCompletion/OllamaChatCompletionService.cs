@@ -10,9 +10,14 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OllamaChatService(HttpClient httpClient, string modelName, Action<ChatHandlerBuilder> builder)
-    : ChatService(new OllamaChatHandler(httpClient, modelName), builder)
+public class OllamaChatService(HttpClient httpClient, string modelName, ChatHandlerBuilder? builder = null)
+    : ChatService(CreateHandler(httpClient, modelName, builder))
 {
+    private static IChatHandler CreateHandler(HttpClient httpClient, string modelName, ChatHandlerBuilder? builder)
+    {
+        var handler = new OllamaChatHandler(httpClient, modelName);
+        return builder?.Build(handler) ?? handler;
+    }
 }
 
 internal class OllamaChatHandler : IChatHandler

@@ -36,9 +36,10 @@ namespace Experimental.AI.LanguageModels;
 
 public static class FunctionExecutorExtensions
 {
-    public static void UseStandardFunctionExecution(this ChatHandlerBuilder builder)
+    public static ChatHandlerBuilder UseStandardFunctionExecution(this ChatHandlerBuilder builder)
     {
         builder.Use(StandardFunctionExecutionMiddleware.Instance);
+        return builder;
     }
 
     private class StandardFunctionExecutionMiddleware : ChatMiddleware
