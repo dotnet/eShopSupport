@@ -40,7 +40,7 @@ public interface IChatHandler
     Task ExecuteChatFunctionAsync(ChatToolCall toolCall, ChatOptions options);
 }
 
-public class ChatHandlerBuilder
+public class ChatPipelineBuilder
 {
     MiddlewareAsHandler? first, last;
 
@@ -122,11 +122,11 @@ public abstract class ChatService
 {
     private IChatHandler _handler;
 
-    public ChatService(IChatHandler defaultHandler, Action<ChatHandlerBuilder>? builder = null)
+    public ChatService(IChatHandler defaultHandler, Action<ChatPipelineBuilder>? builder = null)
     {
         if (builder is not null)
         {
-            var handlerBuilder = new ChatHandlerBuilder();
+            var handlerBuilder = new ChatPipelineBuilder();
             builder(handlerBuilder);
             _handler = handlerBuilder.Build(defaultHandler);
         }

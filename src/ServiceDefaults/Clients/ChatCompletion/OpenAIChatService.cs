@@ -9,7 +9,7 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatHandlerBuilder>? builder = null)
+public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatPipelineBuilder>? builder = null)
     : ChatService(new OpenAIChatHandler(client, deploymentName), builder)
 {
 }
