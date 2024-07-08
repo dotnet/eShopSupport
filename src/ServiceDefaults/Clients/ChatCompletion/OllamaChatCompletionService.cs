@@ -391,9 +391,8 @@ internal class OllamaChatHandler : IChatHandler
         public string? Response { get; set; }
     }
 
-    private class OllamaChatMessageToolCall : ChatToolCall
+    private class OllamaChatMessageToolCall(string name) : ChatToolCall(name)
     {
-        public required string Name { get; set; }
         public required Dictionary<string, JsonElement> Arguments { get; set; }
     }
 

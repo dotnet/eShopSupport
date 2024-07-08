@@ -68,6 +68,7 @@ public class OpenAIChatHandler(OpenAIClient client, string deploymentName) : ICh
         {
             var argsString = functionToolArgs.ToString();
             var toolCall = new OpenAiFunctionToolCall(
+                functionToolName!,
                 new ChatCompletionsFunctionToolCall(toolCallId, functionToolName, argsString));
             yield return new ChatMessageChunk(ChatMessageRole.Assistant, null, toolCall);
         }
@@ -169,7 +170,7 @@ public class OpenAIChatHandler(OpenAIClient client, string deploymentName) : ICh
         }
     }
 
-    private class OpenAiFunctionToolCall(ChatCompletionsToolCall value) : ChatToolCall
+    private class OpenAiFunctionToolCall(string name, ChatCompletionsToolCall value) : ChatToolCall(name)
     {
         public ChatCompletionsToolCall Value => value;
     }

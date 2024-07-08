@@ -1,6 +1,6 @@
 ﻿namespace Experimental.AI.LanguageModels;
 
-public abstract class ChatToolCall
+public abstract class ChatToolCall(string toolName)
 {
     // Right now we don't need anything here, because each IChatService implements its
     // own subclass that tracks whatever state it needs to track.
@@ -13,6 +13,8 @@ public abstract class ChatToolCall
     // - Arguments (as dictionary of string->JsonElement, or just a JsonObject)
     // - Return value (as string, since it has to get injected into the prompt as a string ultimately))
     // - AdditionalData (e.g., as JsonObject, for example so that OpenAI can track its ToolCallId data
+
+    public string Name => toolName;
 
     public object? Result { get; set; }
 }

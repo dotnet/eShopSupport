@@ -4,6 +4,7 @@ using eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 using Experimental.AI.LanguageModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -30,8 +31,12 @@ public static class ChatCompletionServiceExtensions
             builder.Services.AddScoped<ChatService>(services =>
             {
                 var client = services.GetRequiredService<OpenAIClient>();
+                var logger = services.GetRequiredService<ILogger<FunctionCallLogger>>();
                 return new OpenAIChatService(client, (string)deploymentName, builder =>
-                    builder.UseStandardFunctionExecution());
+                {
+                    builder.UseStandardFunctionExecution();
+                    builder.Use(new FunctionCallLogger(logger));
+                });
             });
         }
 
