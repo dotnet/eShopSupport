@@ -9,14 +9,9 @@ using Experimental.AI.LanguageModels;
 
 namespace eShopSupport.ServiceDefaults.Clients.ChatCompletion;
 
-public class OpenAIChatService(OpenAIClient client, string deploymentName, ChatHandlerBuilder? builder = null)
-    : ChatService(CreateHandler(client, deploymentName, builder))
+public class OpenAIChatService(OpenAIClient client, string deploymentName, Action<ChatHandlerBuilder> builder)
+    : ChatService(new OpenAIChatHandler(client, deploymentName), builder)
 {
-    private static IChatHandler CreateHandler(OpenAIClient client, string deploymentName, ChatHandlerBuilder? builder)
-    {
-        var handler = new OpenAIChatHandler(client, deploymentName);
-        return builder?.Build(handler) ?? handler;
-    }
 }
 
 public class OpenAIChatHandler(OpenAIClient client, string deploymentName) : IChatHandler
