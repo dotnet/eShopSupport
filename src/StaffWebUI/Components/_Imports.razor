@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -10,3 +11,5 @@
 @using eShopSupport.StaffWebUI.Components
 @using eShopSupport.StaffWebUI.Components.Layout
 @using Microsoft.AspNetCore.Components.Sections
+
+@attribute [Authorize]

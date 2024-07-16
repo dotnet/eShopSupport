@@ -1,5 +1,7 @@
 ﻿using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,28 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddHttpClient<BackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"));
 
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddOpenIdConnect(options =>
+    {
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.Authority = builder.Configuration["Auth:Authority"];
+        options.ClientId = builder.Configuration["Auth:ClientId"];
+        options.ResponseType = "code";
+        options.SaveTokens = true;
+        options.GetClaimsFromUserInfoEndpoint = true;
+        options.RequireHttpsMetadata = false;
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+        options.Scope.Add("email");
+    });
+
 builder.AddRedisClient("redis");
 
 var app = builder.Build();
@@ -27,6 +51,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
