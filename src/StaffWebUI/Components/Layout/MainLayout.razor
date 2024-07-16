@@ -1,6 +1,4 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
 @inherits LayoutComponentBase
 
 <div class="app">
@@ -10,9 +8,7 @@
                 eShopSupport
             </a>
             <SectionOutlet SectionName="PageTitle" />
-            <AuthorizeView>
-                @GetUserDisplayName(context.User)
-            </AuthorizeView>
+            <LoginDisplay />
             <span class="theme-picker">
                 <ThemePicker />
             </span>
@@ -26,8 +22,3 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-
-@code {
-    string GetUserDisplayName(ClaimsPrincipal principal)
-        => principal.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "Unknown name";
-}

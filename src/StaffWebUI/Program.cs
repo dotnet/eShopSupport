@@ -1,5 +1,6 @@
 ﻿using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -67,6 +68,12 @@ app.MapGet("/manual", async (string file, BackendClient backend, CancellationTok
 {
     var result = await backend.ReadManualAsync(file, cancellationToken);
     return result is null ? Results.NotFound() : Results.Stream(result, "application/pdf");
+});
+
+app.MapGet("/user/signout", async (HttpContext httpContext) =>
+{
+    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
 });
 
 app.Run();

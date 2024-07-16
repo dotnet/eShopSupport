@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject NavigationManager Nav
+
+<div class="login-display" tabindex="0">
+    <AuthorizeView>
+        <FluentIcon Value="@(new Icons.Regular.Size20.Person())" />
+        @GetUserDisplayName(context.User)
+    </AuthorizeView>
+    <div class="user-menu">
+        <a href @onclick="@LogOut">Log out</a>
+    </div>
+</div>
+
+@code {
+    string GetUserDisplayName(ClaimsPrincipal principal)
+        => principal.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "Unknown name";
+
+    void LogOut()
+    {
+        Nav.NavigateTo("/user/signout", forceLoad: true);
+    }
+}
