@@ -30,8 +30,8 @@ builder.Services.AddAuthentication(options =>
     .AddOpenIdConnect(options =>
     {
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.Authority = builder.Configuration["Auth:Authority"];
-        options.ClientId = builder.Configuration["Auth:ClientId"];
+        options.Authority = $"{builder.Configuration["services:keycloak:http:0"]}/realms/eshopsupport-realm";
+        options.ClientId = "eshopsupport-client";
         options.ResponseType = "code";
         options.SaveTokens = true;
         options.GetClaimsFromUserInfoEndpoint = true;

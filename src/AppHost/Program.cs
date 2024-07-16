@@ -19,6 +19,14 @@ var vectorDb = builder
     .AddContainer("vector-db", "qdrant/qdrant", "latest")
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
 
+var keycloak = builder.AddContainer("keycloak", "quay.io/keycloak/keycloak", "25.0.1")
+    .WithEnvironment("KEYCLOAK_ADMIN", "admin")
+    .WithEnvironment("KEYCLOAK_ADMIN_PASSWORD", "admin")
+    .WithVolume("eshopsupport-keycloak-data", "/opt/keycloak/data")
+    .WithBindMount(Path.Combine(builder.AppHostDirectory, "Keycloak"), "/opt/keycloak/data/import")
+    .WithArgs("start-dev", "--import-realm")
+    .WithHttpEndpoint(port: 62395, targetPort: 8080);
+
 // Use this if you want to use Ollama
 var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
 
@@ -56,7 +64,8 @@ var backend = builder.AddProject<Backend>("backend")
 builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
     .WithReference(backend)
-    .WithReference(redis);
+    .WithReference(redis)
+    .WithReference(keycloak.GetEndpoint("http"));
 
 builder.AddProject<CustomerWebUI>("customerwebui")
     .WithReference(backend);
