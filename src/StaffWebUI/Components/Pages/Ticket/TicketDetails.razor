@@ -1,6 +1,6 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @using eShopSupport.ServiceDefaults.Clients.Backend
-@inject BackendClient Backend
+@inject StaffBackendClient Backend
 <EditForm EditContext="@editContext" OnValidSubmit="@SaveChangesAsync">
     <div class="details-grid @(editContext.IsModified() ? "modified": "")">
         <div>

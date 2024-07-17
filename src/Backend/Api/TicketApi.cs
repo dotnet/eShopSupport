@@ -13,14 +13,20 @@ public static class TicketApi
 {
     public static void MapTicketApiEndpoints(this WebApplication app)
     {
+        // Staff endpoints. Fallback policy required "staff" role.
         app.MapPost("/tickets", ListTicketsAsync).RequireAuthorization("CustomerApi");
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}/close", CloseTicketAsync);
         app.MapPost("/tickets/create", CreateTicketAsync);
+        
+        // Customer endpoints. These must each take care to restrict access to the customer's own tickets.
+        var customerApiPolicy = "CustomerApi";
+        app.MapGet("/customer/tickets", (HttpContext httpContext, AppDbContext dbContext) =>
+            ListTicketsAsync(dbContext, new(null, null, httpContext.GetCustomerId(), 0, 100, nameof(ListTicketsResultItem.TicketId), false))).RequireAuthorization(customerApiPolicy);
     }
 
-    private static async Task<IResult> ListTicketsAsync(HttpContext httpContext, AppDbContext dbContext, ListTicketsRequest request)
+    private static async Task<IResult> ListTicketsAsync(AppDbContext dbContext, ListTicketsRequest request)
     {
         if (request.MaxResults > 100)
         {
@@ -37,13 +43,7 @@ public static class TicketApi
                 .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
         }
 
-        if (request.FilterByCustomerId.HasValue)
-        {
-            itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == request.FilterByCustomerId);
-        }
-
-        // Public can only see their own tickets
-        if (httpContext.GetCustomerIdIfNotStaff() is int customerId)
+        if (request.FilterByCustomerId is int customerId)
         {
             itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == customerId);
         }

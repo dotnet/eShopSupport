@@ -27,7 +27,7 @@ public class AppHostFixture : IAsyncDisposable
 
         // Don't consider it initialized until we confirm it's finished data seeding
         var backendHttpClient = app.CreateHttpClient("backend");
-        var backendClient = new BackendClient(backendHttpClient);
+        var backendClient = new StaffBackendClient(backendHttpClient);
         var tickets = await backendClient.ListTicketsAsync(new ListTicketsRequest(null, null, null, 0, 1, null, null));
         Assert.NotEmpty(tickets.Items);
 

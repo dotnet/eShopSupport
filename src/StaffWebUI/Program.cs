@@ -17,7 +17,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddFluentUIComponents();
 
-builder.Services.AddHttpClient<BackendClient>(client =>
+builder.Services.AddHttpClient<StaffBackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/")).AddAuthToken();
 
 builder.Services.AddCascadingAuthenticationState();
@@ -71,7 +71,7 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.MapGet("/manual", async (string file, BackendClient backend, CancellationToken cancellationToken) =>
+app.MapGet("/manual", async (string file, StaffBackendClient backend, CancellationToken cancellationToken) =>
 {
     var result = await backend.ReadManualAsync(file, cancellationToken);
     return result is null ? Results.NotFound() : Results.Stream(result, "application/pdf");

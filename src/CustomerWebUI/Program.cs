@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddRazorComponents();
 builder.Services.AddSmartComponents();
-builder.Services.AddHttpClient<BackendClient>(client =>
+builder.Services.AddHttpClient<CustomerBackendClient>(client =>
     client.BaseAddress = new Uri("http://backend/"))
     .AddAuthToken();
 builder.Services.AddCascadingAuthenticationState();
@@ -62,7 +62,7 @@ app.MapRazorComponents<App>();
 
 app.MapSmartComboBox("api/product-search", async request =>
 {
-    var backend = request.HttpContext.RequestServices.GetRequiredService<BackendClient>();
+    var backend = request.HttpContext.RequestServices.GetRequiredService<StaffBackendClient>();
     var results = await backend.FindProductsAsync(request.Query.SearchText);
     return results.Select(r => $"{r.Model} ({r.Brand})");
 });
