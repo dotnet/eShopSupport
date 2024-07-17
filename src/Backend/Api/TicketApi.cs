@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using CustomerWebUI;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -12,14 +13,14 @@ public static class TicketApi
 {
     public static void MapTicketApiEndpoints(this WebApplication app)
     {
-        app.MapPost("/tickets", ListTicketsAsync);
+        app.MapPost("/tickets", ListTicketsAsync).RequireAuthorization("CustomerApi");
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}/close", CloseTicketAsync);
         app.MapPost("/tickets/create", CreateTicketAsync);
     }
 
-    private static async Task<IResult> ListTicketsAsync(AppDbContext dbContext, ListTicketsRequest request)
+    private static async Task<IResult> ListTicketsAsync(HttpContext httpContext, AppDbContext dbContext, ListTicketsRequest request)
     {
         if (request.MaxResults > 100)
         {
@@ -36,7 +37,13 @@ public static class TicketApi
                 .Where(t => request.FilterByCategoryIds.Contains(t.Product!.CategoryId));
         }
 
-        if (request.FilterByCustomerId is int customerId)
+        if (request.FilterByCustomerId.HasValue)
+        {
+            itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == request.FilterByCustomerId);
+        }
+
+        // Public can only see their own tickets
+        if (httpContext.GetCustomerIdIfNotStaff() is int customerId)
         {
             itemsMatchingFilter = itemsMatchingFilter.Where(t => t.CustomerId == customerId);
         }

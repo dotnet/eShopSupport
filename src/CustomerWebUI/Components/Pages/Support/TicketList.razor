@@ -65,11 +65,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContext.GetCustomerId() is int customerId)
-        {
-            var request = new ListTicketsRequest(null, null, customerId, 0, 100, nameof(ListTicketsResultItem.TicketId), false);
-            var result = await Backend.ListTicketsAsync(request);
-            tickets = result.Items;
-        }
+        var request = new ListTicketsRequest(null, null, 0, 0, 100, nameof(ListTicketsResultItem.TicketId), false);
+        var result = await Backend.ListTicketsAsync(request);
+        tickets = result.Items;
     }
 }

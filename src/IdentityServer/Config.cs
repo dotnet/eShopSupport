@@ -21,14 +21,28 @@ public static class Config
     [
         new Client
         {
+            ClientId = "customer-webui",
+            ClientSecrets = { new Secret("customer-webui-secret".Sha256()) },
+
+            AllowedGrantTypes = GrantTypes.Code,
+
+            RedirectUris = { $"{configuration["CustomerWebUIEndpoint"]}/signin-oidc" },
+            PostLogoutRedirectUris = { $"{configuration["CustomerWebUIEndpoint"]}/signout-callback-oidc" },
+
+            AllowedScopes =
+            {
+                IdentityServerConstants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.Profile,
+            },
+        },
+        new Client
+        {
             ClientId = "staff-webui",
             ClientSecrets = { new Secret("staff-webui-secret".Sha256()) },
 
             AllowedGrantTypes = GrantTypes.Code,
 
             RedirectUris = { $"{configuration["StaffWebUIEndpoint"]}/signin-oidc" },
-
-            // where to redirect to after logout
             PostLogoutRedirectUris = { $"{configuration["StaffWebUIEndpoint"]}/signout-callback-oidc" },
 
             AllowedScopes =

@@ -68,7 +68,8 @@ var staffWebUi = builder.AddProject<StaffWebUI>("staffwebui")
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 var customerWebUi = builder.AddProject<CustomerWebUI>("customerwebui")
-    .WithReference(backend);
+    .WithReference(backend)
+    .WithEnvironment("IdentityUrl", identityEndpoint);
 
 // Circular references: IdentityServer needs to know the endpoints of the web UIs
 identityServer
