@@ -3,6 +3,12 @@
 [Collection(AppTestCollection.Name)]
 public class TicketsListTest(AppHostFixture app) : PlaywrightTestBase
 {
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+        await Page.LoginAsTestUserAsync(app);
+    }
+
     [Fact]
     public async Task HasPageTitle()
     {

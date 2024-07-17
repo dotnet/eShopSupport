@@ -9,6 +9,12 @@ public class TicketAssistantTest(AppHostFixture app) : PlaywrightTestBase
     ILocator WriteMessageTextArea => Page.Locator(".assistant .write-message textarea");
     ILocator NthReply(int n) => Page.Locator(".assistant .message.assistant").Nth(n);
 
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+        await Page.LoginAsTestUserAsync(app);
+    }
+
     [Fact]
     public async Task OffersOptionsToCheckManualAndWriteReply()
     {
