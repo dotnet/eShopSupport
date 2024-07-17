@@ -26,6 +26,10 @@ public static class TicketApi
             ListTicketsAsync(dbContext, new(null, null, httpContext.GetRequiredCustomerId(), 0, 100, nameof(ListTicketsResultItem.TicketId), false)))
             .RequireAuthorization(customerApiPolicy);
 
+        app.MapGet("/customer/tickets/{ticketId:int}", (HttpContext httpContext, AppDbContext dbContext, int ticketId) =>
+            GetTicketAsync(dbContext, ticketId, httpContext.GetRequiredCustomerId()))
+            .RequireAuthorization(customerApiPolicy);
+
         app.MapPost("/customer/tickets/create", CreateTicketAsync)
             .RequireAuthorization(customerApiPolicy);
     }
@@ -102,9 +106,10 @@ public static class TicketApi
         return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
     }
 
-    private static async Task<IResult> GetTicketAsync(AppDbContext dbContext, int ticketId)
+    private static async Task<IResult> GetTicketAsync(AppDbContext dbContext, int ticketId, int? restrictToCustomerId)
     {
         var ticket = await dbContext.Tickets
+            .Where(t => restrictToCustomerId == null || t.CustomerId == restrictToCustomerId)
             .Include(t => t.Messages)
             .Include(t => t.Product)
             .Include(t => t.Customer)
