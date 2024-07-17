@@ -105,7 +105,7 @@ public record AssistantChatReplyItem(AssistantChatReplyItemType Type, string Tex
 
 public enum AssistantChatReplyItemType { AnswerChunk, Search, SearchResult, IsAddressedToCustomer };
 
-public record SendTicketMessageRequest(string Text, bool IsCustomerMessage);
+public record SendTicketMessageRequest(string Text);
 
 public record FindCategoriesResult(int CategoryId)
 {

@@ -101,7 +101,7 @@
         var ticketId = TicketDetails.TicketId;
         if (!string.IsNullOrWhiteSpace(NewMessage))
         {
-            await Backend.SendTicketMessageAsync(ticketId, new(NewMessage!, true));
+            await Backend.SendTicketMessageAsync(ticketId, new(NewMessage));
         }
 
         if (Submitter == CloseAction)

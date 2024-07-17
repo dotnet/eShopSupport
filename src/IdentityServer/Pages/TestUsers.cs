@@ -27,7 +27,7 @@ public static class TestUsers
             {
                 new TestUser
                 {
-                    SubjectId = "1",
+                    SubjectId = "10000",
                     Username = "alice",
                     Password = "alice",
                     Claims =
@@ -43,7 +43,7 @@ public static class TestUsers
                 },
                 new TestUser
                 {
-                    SubjectId = "2",
+                    SubjectId = "10001",
                     Username = "bob",
                     Password = "bob",
                     Claims =

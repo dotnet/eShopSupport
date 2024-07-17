@@ -14,8 +14,8 @@ public class CustomerBackendClient(HttpClient http)
     public Task<TicketDetailsResult> GetTicketDetailsAsync(int ticketId)
         => http.GetFromJsonAsync<TicketDetailsResult>($"/customer/tickets/{ticketId}")!;
 
-    public Task SendTicketMessageAsync(int ticketId, SendTicketMessageRequest message)
-        => http.PostAsJsonAsync($"/api/customer/ticket/{ticketId}/message", message);
+    public Task SendTicketMessageAsync(int ticketId, SendTicketMessageRequest request)
+        => http.PostAsJsonAsync($"/api/customer/ticket/{ticketId}/message", request);
 
     public Task CloseTicketAsync(int ticketId)
         => http.PutAsync($"/api/customer/ticket/{ticketId}/close", null);
