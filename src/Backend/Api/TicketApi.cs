@@ -32,6 +32,10 @@ public static class TicketApi
 
         app.MapPost("/customer/tickets/create", CreateTicketAsync)
             .RequireAuthorization(customerApiPolicy);
+
+        app.MapPut("/api/customer/ticket/{ticketId:int}/close", (HttpContext httpContext, AppDbContext dbContext, int ticketId) =>
+            CloseTicketAsync(dbContext, ticketId, httpContext.GetRequiredCustomerId()))
+            .RequireAuthorization(customerApiPolicy);
     }
 
     private static async Task<IResult> ListTicketsAsync(AppDbContext dbContext, ListTicketsRequest request)
@@ -150,9 +154,12 @@ public static class TicketApi
         return Results.Ok();
     }
 
-    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId)
+    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId, int? restrictToCustomerId)
     {
-        var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+        var ticket = await dbContext.Tickets
+            .Where(t => restrictToCustomerId == null || t.CustomerId == restrictToCustomerId)
+            .FirstOrDefaultAsync(t => t.TicketId == ticketId);
+
         if (ticket == null)
         {
             return Results.NotFound();
