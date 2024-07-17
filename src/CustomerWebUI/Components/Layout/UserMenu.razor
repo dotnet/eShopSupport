@@ -8,7 +8,7 @@
             <span class="dropdown-button"><img role="presentation" src="icons/user.svg" /></span>
             <div class="dropdown-content">
                 <a class="dropdown-item" href="support">My support</a>
-                <form class="dropdown-item" method="post" action="user/logout" @formname="logout">
+                <form class="dropdown-item" method="post" action="user/signout" @formname="logout">
                     <AntiforgeryToken />
                     <button type="submit">Log out</button>
                 </form>

@@ -1,6 +1,8 @@
 ﻿using CustomerWebUI.Components;
 using eShopSupport.ServiceDefaults;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -66,5 +68,12 @@ app.MapSmartComboBox("api/product-search", async request =>
     var results = await backend.FindProductsAsync(request.Query.SearchText);
     return results.Select(r => $"{r.Model} ({r.Brand})");
 });
+
+app.MapPost("/user/signout", async (HttpContext httpContext, IAntiforgery antiforgery) =>
+{
+    await antiforgery.ValidateRequestAsync(httpContext);
+    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+}).AllowAnonymous();
 
 app.Run();
