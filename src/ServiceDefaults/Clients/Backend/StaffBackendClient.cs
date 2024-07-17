@@ -45,11 +45,6 @@ public class StaffBackendClient(HttpClient http)
         await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
     }
 
-    public async Task CloseTicketAsync(int ticketId)
-    {
-        await http.PutAsync($"/api/ticket/{ticketId}/close", null);
-    }
-
     public async Task UpdateTicketDetailsAsync(int ticketId, int? productId, TicketType ticketType, TicketStatus ticketStatus)
     {
         await http.PutAsJsonAsync($"/api/ticket/{ticketId}", new UpdateTicketDetailsRequest(productId, ticketType, ticketStatus));

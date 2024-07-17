@@ -17,7 +17,6 @@ public static class TicketApi
         app.MapPost("/tickets", ListTicketsAsync).RequireAuthorization("CustomerApi");
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
-        app.MapPut("/api/ticket/{ticketId:int}/close", CloseTicketAsync);
         
         // Customer endpoints. These must each take care to restrict access to the customer's own tickets.
         var customerApiPolicy = "CustomerApi";
@@ -154,10 +153,10 @@ public static class TicketApi
         return Results.Ok();
     }
 
-    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId, int? restrictToCustomerId)
+    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId, int loggedInCustomerId)
     {
         var ticket = await dbContext.Tickets
-            .Where(t => restrictToCustomerId == null || t.CustomerId == restrictToCustomerId)
+            .Where(t => t.CustomerId == loggedInCustomerId)
             .FirstOrDefaultAsync(t => t.TicketId == ticketId);
 
         if (ticket == null)
