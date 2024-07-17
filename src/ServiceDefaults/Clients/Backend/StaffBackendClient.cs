@@ -129,6 +129,5 @@ public enum TicketType
 }
 
 public record CreateTicketRequest(
-    int CustomerId, 
     string? ProductName,
     string Message);

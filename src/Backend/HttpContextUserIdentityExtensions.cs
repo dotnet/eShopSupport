@@ -4,7 +4,7 @@ namespace CustomerWebUI;
 
 public static class HttpContextUserIdentityExtensions
 {
-    public static int GetCustomerId(this HttpContext httpContext)
+    public static int GetRequiredCustomerId(this HttpContext httpContext)
     {
         if (httpContext.User.IsInRole("staff"))
         {

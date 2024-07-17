@@ -18,12 +18,16 @@ public static class TicketApi
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}/close", CloseTicketAsync);
-        app.MapPost("/tickets/create", CreateTicketAsync);
         
         // Customer endpoints. These must each take care to restrict access to the customer's own tickets.
         var customerApiPolicy = "CustomerApi";
+
         app.MapGet("/customer/tickets", (HttpContext httpContext, AppDbContext dbContext) =>
-            ListTicketsAsync(dbContext, new(null, null, httpContext.GetCustomerId(), 0, 100, nameof(ListTicketsResultItem.TicketId), false))).RequireAuthorization(customerApiPolicy);
+            ListTicketsAsync(dbContext, new(null, null, httpContext.GetRequiredCustomerId(), 0, 100, nameof(ListTicketsResultItem.TicketId), false)))
+            .RequireAuthorization(customerApiPolicy);
+
+        app.MapPost("/customer/tickets/create", CreateTicketAsync)
+            .RequireAuthorization(customerApiPolicy);
     }
 
     private static async Task<IResult> ListTicketsAsync(AppDbContext dbContext, ListTicketsRequest request)
@@ -154,7 +158,7 @@ public static class TicketApi
         return Results.Ok();
     }
 
-    private static async Task CreateTicketAsync(AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request)
+    private static async Task CreateTicketAsync(HttpContext httpContext, AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request)
     {
         // Classify the new ticket using the small zero-shot classifier model
         var ticketTypes = Enum.GetValues<TicketType>();
@@ -165,7 +169,7 @@ public static class TicketApi
         var ticket = new Ticket
         {
             CreatedAt = DateTime.UtcNow,
-            CustomerId = request.CustomerId,
+            CustomerId = httpContext.GetRequiredCustomerId(),
             Customer = default!, // Will be populated by DB reference
             TicketStatus = TicketStatus.Open,
             TicketType = Enum.TryParse<TicketType>(inferredTicketType, out var type) ? type : TicketType.Question,

@@ -62,7 +62,7 @@ app.MapRazorComponents<App>();
 
 app.MapSmartComboBox("api/product-search", async request =>
 {
-    var backend = request.HttpContext.RequestServices.GetRequiredService<StaffBackendClient>();
+    var backend = request.HttpContext.RequestServices.GetRequiredService<CustomerBackendClient>();
     var results = await backend.FindProductsAsync(request.Query.SearchText);
     return results.Select(r => $"{r.Model} ({r.Brand})");
 });
