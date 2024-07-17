@@ -1,4 +1,5 @@
-﻿using eShopSupport.ServiceDefaults.Clients.Backend;
+﻿using eShopSupport.ServiceDefaults;
+using eShopSupport.ServiceDefaults.Clients.Backend;
 using eShopSupport.StaffWebUI.Components;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -17,7 +18,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 builder.Services.AddHttpClient<BackendClient>(client =>
-    client.BaseAddress = new Uri("http://backend/"));
+    client.BaseAddress = new Uri("http://backend/")).AddAuthToken();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorization();
@@ -35,7 +36,7 @@ builder.Services.AddAuthentication(options =>
         options.ClientSecret = "staff-webui-secret";
         options.ResponseType = "code";
         options.SaveTokens = true;
-        options.MapInboundClaims = false;
+        options.GetClaimsFromUserInfoEndpoint = true;
 
         options.Scope.Clear();
         options.Scope.Add("openid");
