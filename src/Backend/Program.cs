@@ -38,7 +38,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     options.TokenValidationParameters.ValidateAudience = false;
 });
 builder.Services.AddAuthorizationBuilder()
-    .AddFallbackPolicy("RequireStaffUser", policy => policy.RequireAuthenticatedUser()); // TODO: Require staff role
+    .AddFallbackPolicy("RequireStaffUser", policy => policy.RequireRole("staff"));
 
 var app = builder.Build();
 

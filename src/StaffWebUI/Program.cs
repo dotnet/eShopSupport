@@ -42,6 +42,8 @@ builder.Services.AddAuthentication(options =>
         options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
+        options.Scope.Add("staff-api");
+        options.Scope.Add("role");
     });
 
 builder.AddRedisClient("redis");
@@ -77,6 +79,6 @@ app.MapGet("/user/signout", async (HttpContext httpContext) =>
 {
     await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
-});
+}).AllowAnonymous();
 
 app.Run();

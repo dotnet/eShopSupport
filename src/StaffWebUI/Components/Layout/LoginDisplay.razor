@@ -9,11 +9,6 @@
         @(context.User?.Identity?.Name ?? "Unknown name")
     </AuthorizeView>
     <div class="user-menu">
-        <a href @onclick="@LogOut">Log out</a>
+        <a href="user/signout">Log out</a>
     </div>
 </div>
-
-@code {
-    void LogOut()
-        => Nav.NavigateTo("/user/signout", forceLoad: true);
-}
