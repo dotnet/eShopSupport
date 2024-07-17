@@ -30,14 +30,14 @@ builder.Services.AddAuthentication(options =>
     .AddOpenIdConnect(options =>
     {
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.Authority = "https://localhost:5001";
-        options.ClientId = "interactive";
-        options.ClientSecret = "49C1A7E1-0C79-4A89-A3D6-A37998FB86B0";
+        options.Authority = builder.Configuration["IdentityUrl"];
+        options.ClientId = "staff-webui";
+        options.ClientSecret = "staff-webui-secret";
         options.ResponseType = "code";
         options.SaveTokens = true;
-        options.GetClaimsFromUserInfoEndpoint = true;
-        options.RequireHttpsMetadata = false;
-        options.SignedOutRedirectUri = "https://localhost:7273/";
+        options.MapInboundClaims = false;
+
+        options.Scope.Clear();
         options.Scope.Add("openid");
         options.Scope.Add("profile");
     });

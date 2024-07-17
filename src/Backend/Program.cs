@@ -1,4 +1,5 @@
-﻿using eShopSupport.Backend.Api;
+﻿using System.Configuration;
+using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.PythonInference;
@@ -30,6 +31,14 @@ builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddChatCompletionService("chatcompletion", builder.Configuration["E2E_TEST_CHAT_COMPLETION_CACHE_DIR"]);
 builder.AddRedisClient("redis");
+
+builder.Services.AddAuthentication().AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["IdentityUrl"];
+    options.TokenValidationParameters.ValidateAudience = false;
+});
+builder.Services.AddAuthorizationBuilder()
+    .AddFallbackPolicy("RequireStaffUser", policy => policy.RequireAuthenticatedUser()); // TODO: Require staff role
 
 var app = builder.Build();
 

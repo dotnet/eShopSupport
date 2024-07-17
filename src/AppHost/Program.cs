@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration.Json;
+﻿using Aspire.Hosting;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Hosting;
 using Projects;
 
@@ -18,6 +19,12 @@ var backendDb = postgresServer
 var vectorDb = builder
     .AddContainer("vector-db", "qdrant/qdrant", "latest")
     .WithHttpEndpoint(port: 62392, targetPort: 6333);
+
+var identityServer = builder.AddProject<IdentityServer>("identity-server")
+    .WithExternalHttpEndpoints();
+
+var identityEndpoint = identityServer
+    .GetEndpoint("https");
 
 // Use this if you want to use Ollama
 var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
@@ -51,15 +58,22 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(vectorDb.GetEndpoint("http"))
     .WithReference(pythonInference)
     .WithReference(redis)
+    .WithEnvironment("IdentityUrl", identityEndpoint)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", isE2ETest ? "test" : "dev"));
 
-builder.AddProject<StaffWebUI>("staffwebui")
+var staffWebUi = builder.AddProject<StaffWebUI>("staffwebui")
     .WithExternalHttpEndpoints()
     .WithReference(backend)
-    .WithReference(redis);
+    .WithReference(redis)
+    .WithEnvironment("IdentityUrl", identityEndpoint);
 
-builder.AddProject<CustomerWebUI>("customerwebui")
+var customerWebUi = builder.AddProject<CustomerWebUI>("customerwebui")
     .WithReference(backend);
+
+// Circular references: IdentityServer needs to know the endpoints of the web UIs
+identityServer
+    .WithEnvironment("CustomerWebUIEndpoint", customerWebUi.GetEndpoint("https"))
+    .WithEnvironment("StaffWebUIEndpoint", staffWebUi.GetEndpoint("https"));
 
 if (!isE2ETest)
 {
