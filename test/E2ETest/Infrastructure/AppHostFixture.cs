@@ -27,33 +27,13 @@ public class AppHostFixture : IAsyncDisposable
         await app.StartAsync();
 
         // Don't consider it initialized until we confirm it's finished data seeding
-        var backendClient = await GetAuthenticatedStaffBackendClientAsync(app);
+        var backendClient = await DevToolBackendClient.GetDevToolStaffBackendClientAsync(
+            app.CreateHttpClient("identity-server"),
+            app.CreateHttpClient("backend"));
         var tickets = await backendClient.ListTicketsAsync(new ListTicketsRequest(null, null, null, 0, 1, null, null));
         Assert.NotEmpty(tickets.Items);
 
         return app;
-    }
-
-    private async Task<StaffBackendClient> GetAuthenticatedStaffBackendClientAsync(DistributedApplication app)
-    {
-        var identityServerHttpClient = app.CreateHttpClient("identity-server");
-        var identityServerDisco = await identityServerHttpClient.GetDiscoveryDocumentAsync();
-        if (identityServerDisco.IsError)
-        {
-            throw new InvalidOperationException(identityServerDisco.Error);
-        }
-
-        var tokenResponse = await identityServerHttpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-        {
-            Address = identityServerDisco.TokenEndpoint,
-            ClientId = "dev-and-test-tools",
-            ClientSecret = "dev-and-test-tools-secret",
-            Scope = "staff-api"
-        });
-
-        var backendHttpClient = app.CreateHttpClient("backend");
-        backendHttpClient.SetBearerToken(tokenResponse.AccessToken!);
-        return new StaffBackendClient(backendHttpClient);
     }
 
     public async ValueTask DisposeAsync()

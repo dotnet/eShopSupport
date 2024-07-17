@@ -13,8 +13,8 @@ public static class TicketApi
 {
     public static void MapTicketApiEndpoints(this WebApplication app)
     {
-        // Staff endpoints. Fallback policy required "staff" role.
-        app.MapPost("/tickets", ListTicketsAsync).RequireAuthorization("CustomerApi");
+        // Staff endpoints. Fallback policy requires "staff" role.
+        app.MapPost("/tickets", ListTicketsAsync);
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
         

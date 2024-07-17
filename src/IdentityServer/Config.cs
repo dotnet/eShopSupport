@@ -26,6 +26,8 @@ public static class Config
             ClientSecrets = { new Secret("dev-and-test-tools-secret".Sha256()) },
             AllowedGrantTypes = GrantTypes.ClientCredentials,
             AllowedScopes = { "staff-api" },
+            ClientClaimsPrefix = null,
+            Claims = { new("role", "staff") }
         },
         new Client
         {
