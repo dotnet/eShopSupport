@@ -1,7 +1,9 @@
-﻿using eShopSupport.Backend.Api;
+﻿using System.Configuration;
+using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.PythonInference;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -30,6 +32,17 @@ builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddChatCompletionService("chatcompletion", builder.Configuration["E2E_TEST_CHAT_COMPLETION_CACHE_DIR"]);
 builder.AddRedisClient("redis");
+
+JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
+
+builder.Services.AddAuthentication().AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["IdentityUrl"];
+    options.TokenValidationParameters.ValidateAudience = false;
+});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("CustomerApi", policy => policy.RequireAuthenticatedUser())
+    .AddFallbackPolicy("StaffApi", policy => policy.RequireRole("staff"));
 
 var app = builder.Build();
 

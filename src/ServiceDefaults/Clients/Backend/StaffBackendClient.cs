@@ -5,11 +5,8 @@ using System.Web;
 
 namespace eShopSupport.ServiceDefaults.Clients.Backend;
 
-public class BackendClient(HttpClient http)
+public class StaffBackendClient(HttpClient http)
 {
-    public Task CreateTicketAsync(CreateTicketRequest request)
-        => http.PostAsJsonAsync("/tickets/create", request);
-
     public async Task<ListTicketsResult> ListTicketsAsync(ListTicketsRequest request)
     {
         var result = await http.PostAsJsonAsync("/tickets", request);
@@ -46,11 +43,6 @@ public class BackendClient(HttpClient http)
     public async Task SendTicketMessageAsync(int ticketId, SendTicketMessageRequest message)
     {
         await http.PostAsJsonAsync($"/api/ticket/{ticketId}/message", message);
-    }
-
-    public async Task CloseTicketAsync(int ticketId)
-    {
-        await http.PutAsync($"/api/ticket/{ticketId}/close", null);
     }
 
     public async Task UpdateTicketDetailsAsync(int ticketId, int? productId, TicketType ticketType, TicketStatus ticketStatus)
@@ -108,7 +100,7 @@ public record AssistantChatReplyItem(AssistantChatReplyItemType Type, string Tex
 
 public enum AssistantChatReplyItemType { AnswerChunk, Search, SearchResult, IsAddressedToCustomer };
 
-public record SendTicketMessageRequest(string Text, bool IsCustomerMessage);
+public record SendTicketMessageRequest(string Text);
 
 public record FindCategoriesResult(int CategoryId)
 {
@@ -132,6 +124,5 @@ public enum TicketType
 }
 
 public record CreateTicketRequest(
-    int CustomerId, 
     string? ProductName,
     string Message);

@@ -16,6 +16,11 @@ public static class CatalogApi
         app.MapGet("/manual", GetManualPdfAsync);
         app.MapGet("/api/categories", SearchCategoriesAsync);
         app.MapGet("/api/products", SearchProductsAsync);
+
+        // APIs allowed for use from CustomerWebUI
+        var customerApiPolicy = "CustomerApi";
+        app.MapGet("/api/customer/products", SearchProductsAsync)
+            .RequireAuthorization(customerApiPolicy);
     }
 
     private static async Task<IEnumerable<FindCategoriesResult>> SearchCategoriesAsync(AppDbContext dbContext, ITextEmbeddingGenerationService embedder, string? searchText, string? ids)

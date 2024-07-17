@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="SmartComponents.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
   </ItemGroup>
 
   <ItemGroup>

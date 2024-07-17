@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using CustomerWebUI;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -12,11 +13,28 @@ public static class TicketApi
 {
     public static void MapTicketApiEndpoints(this WebApplication app)
     {
+        // Staff endpoints. Fallback policy requires "staff" role.
         app.MapPost("/tickets", ListTicketsAsync);
         app.MapGet("/tickets/{ticketId:int}", GetTicketAsync);
         app.MapPut("/api/ticket/{ticketId:int}", UpdateTicketAsync);
-        app.MapPut("/api/ticket/{ticketId:int}/close", CloseTicketAsync);
-        app.MapPost("/tickets/create", CreateTicketAsync);
+        
+        // Customer endpoints. These must each take care to restrict access to the customer's own tickets.
+        var customerApiPolicy = "CustomerApi";
+
+        app.MapGet("/customer/tickets", (HttpContext httpContext, AppDbContext dbContext) =>
+            ListTicketsAsync(dbContext, new(null, null, httpContext.GetRequiredCustomerId(), 0, 100, nameof(ListTicketsResultItem.TicketId), false)))
+            .RequireAuthorization(customerApiPolicy);
+
+        app.MapGet("/customer/tickets/{ticketId:int}", (HttpContext httpContext, AppDbContext dbContext, int ticketId) =>
+            GetTicketAsync(dbContext, ticketId, httpContext.GetRequiredCustomerId()))
+            .RequireAuthorization(customerApiPolicy);
+
+        app.MapPost("/customer/tickets/create", CreateTicketAsync)
+            .RequireAuthorization(customerApiPolicy);
+
+        app.MapPut("/api/customer/ticket/{ticketId:int}/close", (HttpContext httpContext, AppDbContext dbContext, int ticketId) =>
+            CloseTicketAsync(dbContext, ticketId, httpContext.GetRequiredCustomerId()))
+            .RequireAuthorization(customerApiPolicy);
     }
 
     private static async Task<IResult> ListTicketsAsync(AppDbContext dbContext, ListTicketsRequest request)
@@ -91,9 +109,10 @@ public static class TicketApi
         return Results.Ok(new ListTicketsResult(await resultItems.ToListAsync(), await itemsMatchingFilter.CountAsync(), totalOpen, totalClosed));
     }
 
-    private static async Task<IResult> GetTicketAsync(AppDbContext dbContext, int ticketId)
+    private static async Task<IResult> GetTicketAsync(AppDbContext dbContext, int ticketId, int? restrictToCustomerId)
     {
         var ticket = await dbContext.Tickets
+            .Where(t => restrictToCustomerId == null || t.CustomerId == restrictToCustomerId)
             .Include(t => t.Messages)
             .Include(t => t.Product)
             .Include(t => t.Customer)
@@ -134,9 +153,12 @@ public static class TicketApi
         return Results.Ok();
     }
 
-    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId)
+    private static async Task<IResult> CloseTicketAsync(AppDbContext dbContext, int ticketId, int loggedInCustomerId)
     {
-        var ticket = await dbContext.Tickets.FirstOrDefaultAsync(t => t.TicketId == ticketId);
+        var ticket = await dbContext.Tickets
+            .Where(t => t.CustomerId == loggedInCustomerId)
+            .FirstOrDefaultAsync(t => t.TicketId == ticketId);
+
         if (ticket == null)
         {
             return Results.NotFound();
@@ -147,7 +169,7 @@ public static class TicketApi
         return Results.Ok();
     }
 
-    private static async Task CreateTicketAsync(AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request)
+    private static async Task CreateTicketAsync(HttpContext httpContext, AppDbContext dbContext, TicketSummarizer summarizer, PythonInferenceClient pythonInference, CreateTicketRequest request)
     {
         // Classify the new ticket using the small zero-shot classifier model
         var ticketTypes = Enum.GetValues<TicketType>();
@@ -158,7 +180,7 @@ public static class TicketApi
         var ticket = new Ticket
         {
             CreatedAt = DateTime.UtcNow,
-            CustomerId = request.CustomerId,
+            CustomerId = httpContext.GetRequiredCustomerId(),
             Customer = default!, // Will be populated by DB reference
             TicketStatus = TicketStatus.Open,
             TicketType = Enum.TryParse<TicketType>(inferredTicketType, out var type) ? type : TicketType.Question,

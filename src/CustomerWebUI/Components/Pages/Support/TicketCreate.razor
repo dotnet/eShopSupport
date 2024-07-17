@@ -1,6 +1,6 @@
 ﻿@page "/support/new"
 @implements IValidatableObject
-@inject BackendClient Backend
+@inject CustomerBackendClient Backend
 @inject NavigationManager Nav
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Authorization
@@ -76,10 +76,7 @@
 
     async Task HandleSubmitAsync()
     {
-        if (HttpContext.GetCustomerId() is int customerId)
-        {
-            await Backend.CreateTicketAsync(new(customerId, ProductName, Message!));
-            Nav.NavigateTo("support");
-        }
+        await Backend.CreateTicketAsync(new(ProductName, Message!));
+        Nav.NavigateTo("support");
     }
 }

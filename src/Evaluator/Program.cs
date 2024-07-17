@@ -25,7 +25,9 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 // With:    After 200 questions: average score = 0.775, average duration = 2670.874ms
 
 var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
-var backend = new BackendClient(new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
+var backend = await DevToolBackendClient.GetDevToolStaffBackendClientAsync(
+    identityServerHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7275/") },
+    backendHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
 var chatCompletion = GetChatCompletionService("chatcompletion");
 var questions = LoadEvaluationQuestions().OrderBy(q => q.QuestionId);
 using var logFile = File.Open("log.txt", FileMode.Create, FileAccess.Write, FileShare.Read);

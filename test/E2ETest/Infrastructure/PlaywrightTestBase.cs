@@ -8,7 +8,7 @@ public class PlaywrightTestBase : IAsyncLifetime
     protected IBrowser Browser { get; private set; } = default!;
     protected IPage Page { get; private set; } = default!;
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
         Browser = await Playwright.Chromium.LaunchAsync(new()

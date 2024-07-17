@@ -1,8 +1,13 @@
-﻿using System.Security.Claims;
-using CustomerWebUI.Components;
+﻿using CustomerWebUI.Components;
+using eShopSupport.ServiceDefaults;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +15,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.AddRazorComponents();
 builder.Services.AddSmartComponents();
-builder.Services.AddHttpClient<BackendClient>(client =>
-    client.BaseAddress = new Uri("http://backend/"));
+builder.Services.AddHttpClient<CustomerBackendClient>(client =>
+    client.BaseAddress = new Uri("http://backend/"))
+    .AddAuthToken();
 builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddOpenIdConnect(options =>
+    {
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.Authority = builder.Configuration["IdentityUrl"];
+        options.ClientId = "customer-webui";
+        options.ClientSecret = "customer-webui-secret";
+        options.ResponseType = "code";
+        options.SaveTokens = true;
+        options.GetClaimsFromUserInfoEndpoint = true;
+        options.TokenValidationParameters.NameClaimType = "name";
+
+        options.Scope.Clear();
+        options.Scope.Add("openid");
+        options.Scope.Add("profile");
+    });
 
 var app = builder.Build();
 
@@ -28,15 +57,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// TODO: Integrate with an auth system
-app.Use((ctx, next) =>
-{
-    ctx.User = new ClaimsPrincipal(
-        new ClaimsIdentity([new Claim(ClaimTypes.Name, "alice"), new Claim("sub", "1")], "fake"));
-    return next();
-});
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 
@@ -44,9 +64,16 @@ app.MapRazorComponents<App>();
 
 app.MapSmartComboBox("api/product-search", async request =>
 {
-    var backend = request.HttpContext.RequestServices.GetRequiredService<BackendClient>();
+    var backend = request.HttpContext.RequestServices.GetRequiredService<CustomerBackendClient>();
     var results = await backend.FindProductsAsync(request.Query.SearchText);
     return results.Select(r => $"{r.Model} ({r.Brand})");
 });
+
+app.MapPost("/user/signout", async (HttpContext httpContext, IAntiforgery antiforgery) =>
+{
+    await antiforgery.ValidateRequestAsync(httpContext);
+    await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    await httpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+}).AllowAnonymous();
 
 app.Run();

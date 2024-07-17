@@ -77,9 +77,9 @@ public class AppDbContext : DbContext
                 customer.CustomerId = 0;
             }
 
-            // TODO: Once the customer web UI has a proper registration/auth system, it will
-            // be able to supply real customer IDs. Until then, add this hardcoded one as the first.
-            await dbContext.Customers.AddAsync(new Customer { FullName = "Alice" });
+            // These users correspond to entries in IdentityServer's TestUsers class
+            await dbContext.Customers.AddAsync(new Customer { CustomerId = 10000, FullName = "Alice Smith" });
+            await dbContext.Customers.AddAsync(new Customer { CustomerId = 10001, FullName = "Bob Smith" });
 
             await dbContext.Customers.AddRangeAsync(customers);
             await dbContext.ProductCategories.AddRangeAsync(categories);

@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Backend\Backend.csproj" />
     <ProjectReference Include="..\CustomerWebUI\CustomerWebUI.csproj" />
+    <ProjectReference Include="..\IdentityServer\IdentityServer.csproj" />
     <ProjectReference Include="..\StaffWebUI\StaffWebUI.csproj" />
   </ItemGroup>
 

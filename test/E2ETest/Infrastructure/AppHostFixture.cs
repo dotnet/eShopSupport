@@ -1,5 +1,6 @@
 ﻿using Aspire.Hosting.Testing;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using IdentityModel.Client;
 
 namespace E2ETest.Infrastructure;
 
@@ -26,8 +27,9 @@ public class AppHostFixture : IAsyncDisposable
         await app.StartAsync();
 
         // Don't consider it initialized until we confirm it's finished data seeding
-        var backendHttpClient = app.CreateHttpClient("backend");
-        var backendClient = new BackendClient(backendHttpClient);
+        var backendClient = await DevToolBackendClient.GetDevToolStaffBackendClientAsync(
+            app.CreateHttpClient("identity-server"),
+            app.CreateHttpClient("backend"));
         var tickets = await backendClient.ListTicketsAsync(new ListTicketsRequest(null, null, null, 0, 1, null, null));
         Assert.NotEmpty(tickets.Items);
 

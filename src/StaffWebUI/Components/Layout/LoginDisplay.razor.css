@@ -1,0 +1,39 @@
+﻿.login-display {
+    margin-left: auto;
+    background-color: rgba(128, 128, 128, 0.3);
+    padding: 0.2rem 1rem 0.2rem 0.8rem;
+    border-radius: 0.3rem;
+    margin-right: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 400;
+    position: relative;
+}
+
+.login-display:focus-within .user-menu, .login-display:hover .user-menu {
+    display: block;
+}
+
+.user-menu {
+    position: absolute;
+    top: 100%;
+    background-color: white;
+    width: 100%;
+    left: 0;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid silver;
+    display: none;
+}
+
+    .user-menu a {
+        display: block;
+        padding: 0.3rem 0.8rem;
+        color: black;
+        text-decoration: none;
+    }
+
+    .user-menu a:hover {
+        cursor: pointer;
+        background-color: #ddd;
+    }

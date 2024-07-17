@@ -1,5 +1,5 @@
-﻿@page "/support/tickets/{UntrustedTicketId:int}"
-@inject BackendClient Backend
+﻿@page "/support/tickets/{TicketId:int}"
+@inject CustomerBackendClient Backend
 @inject NavigationManager Nav
 @implements IValidatableObject
 @using System.ComponentModel.DataAnnotations
@@ -65,7 +65,7 @@
     const string SendAction = "send";
 
     [Parameter]
-    public int UntrustedTicketId { get; set; }
+    public int TicketId { get; set; }
 
     [CascadingParameter]
     public HttpContext HttpContext { get; set; } = default!;
@@ -80,15 +80,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Alternatively, configure auth so that we pass through the user's token to the backend,
-        // and it can apply its own access controls
-        var ticket = await Backend.GetTicketDetailsAsync(UntrustedTicketId);
-        if (ticket.CustomerId != HttpContext.GetCustomerId())
-        {
-            Nav.NavigateTo("/support");
-        }
-
-        TicketDetails = ticket;
+        TicketDetails = await Backend.GetTicketDetailsAsync(TicketId);
     }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -109,7 +101,7 @@
         var ticketId = TicketDetails.TicketId;
         if (!string.IsNullOrWhiteSpace(NewMessage))
         {
-            await Backend.SendTicketMessageAsync(ticketId, new(NewMessage!, true));
+            await Backend.SendTicketMessageAsync(ticketId, new(NewMessage));
         }
 
         if (Submitter == CloseAction)

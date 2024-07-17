@@ -1,6 +1,6 @@
 ﻿@page "/support"
 @attribute [StreamRendering]
-@inject BackendClient Backend
+@inject CustomerBackendClient Backend
 @using Microsoft.AspNetCore.Authorization
 @using eShopSupport.Backend.Data
 @using eShopSupport.ServiceDefaults.Clients.Backend
@@ -65,11 +65,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContext.GetCustomerId() is int customerId)
-        {
-            var request = new ListTicketsRequest(null, null, customerId, 0, 100, nameof(ListTicketsResultItem.TicketId), false);
-            var result = await Backend.ListTicketsAsync(request);
-            tickets = result.Items;
-        }
+        tickets = (await Backend.ListTicketsAsync()).Items;
     }
 }

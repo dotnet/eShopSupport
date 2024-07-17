@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using Microsoft.FluentUI.AspNetCore.Components
+@inject NavigationManager Nav
+
+<div class="login-display" tabindex="0">
+    <AuthorizeView>
+        <FluentIcon Value="@(new Icons.Regular.Size20.Person())" />
+        @(context.User?.Identity?.Name ?? "Unknown name")
+    </AuthorizeView>
+    <div class="user-menu">
+        <a href="user/signout">Log out</a>
+    </div>
+</div>
