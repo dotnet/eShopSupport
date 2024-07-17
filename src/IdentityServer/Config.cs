@@ -21,6 +21,14 @@ public static class Config
     [
         new Client
         {
+            // This is used by E2E test and evaluation
+            ClientId = "dev-and-test-tools",
+            ClientSecrets = { new Secret("dev-and-test-tools-secret".Sha256()) },
+            AllowedGrantTypes = GrantTypes.ClientCredentials,
+            AllowedScopes = { "staff-api" },
+        },
+        new Client
+        {
             ClientId = "customer-webui",
             ClientSecrets = { new Secret("customer-webui-secret".Sha256()) },
 

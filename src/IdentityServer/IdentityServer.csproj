@@ -10,4 +10,8 @@
     <PackageReference Include="Duende.IdentityServer" />
     <PackageReference Include="Serilog.AspNetCore" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+  </ItemGroup>
 </Project>
