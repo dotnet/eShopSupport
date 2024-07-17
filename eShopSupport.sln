@@ -54,9 +54,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{9E677D76-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{51031120-B48D-4680-8808-26B64F235CB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETest", "test\E2ETest\E2ETest.csproj", "{F30843C3-AFB5-435E-8A7D-9B4C86A75E18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "E2ETest", "test\E2ETest\E2ETest.csproj", "{F30843C3-AFB5-435E-8A7D-9B4C86A75E18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityServer", "src\IdentityServer\IdentityServer.csproj", "{89404F66-90BC-4D45-9061-050334772CDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityServer", "src\IdentityServer\IdentityServer.csproj", "{89404F66-90BC-4D45-9061-050334772CDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

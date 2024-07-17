@@ -12,4 +12,4 @@
 @using eShopSupport.StaffWebUI.Components.Layout
 @using Microsoft.AspNetCore.Components.Sections
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "staff")]

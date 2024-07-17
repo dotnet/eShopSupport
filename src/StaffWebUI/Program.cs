@@ -38,6 +38,8 @@ builder.Services.AddAuthentication(options =>
         options.SaveTokens = true;
         options.GetClaimsFromUserInfoEndpoint = true;
         options.TokenValidationParameters.NameClaimType = "name";
+        options.TokenValidationParameters.RoleClaimType = "role";
+        options.ClaimActions.MapUniqueJsonKey("role", "role");
 
         options.Scope.Clear();
         options.Scope.Add("openid");

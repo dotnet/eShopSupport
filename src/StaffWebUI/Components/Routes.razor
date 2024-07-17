@@ -1,7 +1,12 @@
-﻿<StatefulReconnection />
+﻿@using Microsoft.AspNetCore.Components.Authorization
+<StatefulReconnection />
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <eShopSupport.StaffWebUI.Components.Pages.Account.AccessDenied />
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
