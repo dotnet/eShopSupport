@@ -37,3 +37,9 @@
 .grants-page .card label {
   font-weight: bold;
 }
+.test-users {
+    margin-top: 1rem;
+    background: #ddd;
+    padding: 0.6rem 1rem;
+    padding-bottom: 0.1rem;
+}
