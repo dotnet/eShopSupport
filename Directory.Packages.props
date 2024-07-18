@@ -2,12 +2,12 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <MicrosoftExtensionsVersion>8.3.0</MicrosoftExtensionsVersion>
-    <AspireVersion>8.0.1</AspireVersion>
+    <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
+    <AspireVersion>8.0.2</AspireVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
-    <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="8.0.1-preview.8.24267.1" />
+    <PackageVersion Include="Aspire.Azure.AI.OpenAI" Version="8.0.2-preview.1.24326.4" />
     <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="$(AspireVersion)" />
@@ -22,32 +22,32 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="$(AspireVersion)" />
     <!-- Version together with ASP.NET -->
-    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.7" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="$(MicrosoftExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.7.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.7.1" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" Version="4.7.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.7.2" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.44.0" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.14" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.10.0-alpha" />
-    <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.14" />
-    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.14" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.45.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.16.0" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.16.0-alpha" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.16" />
+    <PackageVersion Include="Microsoft.SemanticKernel" Version="1.16.0" />
     <!-- Open Telemetry -->
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.8.0" />
-    <PackageVersion Include="PdfPig" Version="0.1.9-alpha-20240601-65a18" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
+    <PackageVersion Include="PdfPig" Version="0.1.9-alpha-20240702-65c64" />
     <PackageVersion Include="SmartComponents.AspNetCore" Version="0.1.0-preview10148" />
     <PackageVersion Include="SmartComponents.LocalEmbeddings.SemanticKernel" Version="0.1.0-preview10148" />
     <PackageVersion Include="StatefulReconnection" Version="0.1.0" />
-    <PackageVersion Include="Markdown2Pdf" Version="2.1.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
-    <PackageVersion Include="xunit" Version="2.4.2" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="Markdown2Pdf" Version="2.2.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0-release-24352-06" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Duende.IdentityServer" Version="7.0.5" />
-    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2-dev-00341" />
   </ItemGroup>
 </Project>
