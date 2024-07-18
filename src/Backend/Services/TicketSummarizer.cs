@@ -2,111 +2,90 @@
 using System.Text.Json;
 using eShopSupport.Backend.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using StackExchange.Redis;
 
 namespace eShopSupport.Backend.Services;
 
-public class TicketSummarizer(IServiceScopeFactory scopeFactory)
+public class TicketSummarizer(
+    AppDbContext dbContext,
+    IConnectionMultiplexer redisConnection,
+    IChatCompletionService chatCompletion)
 {
-    private static JsonSerializerOptions SerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private static JsonSerializerOptions SerializerOptions= new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-    public void UpdateSummary(int ticketId)
+    public async Task UpdateSummaryAsync(int ticketId)
     {
-        _ = UpdateSummaryAsync(ticketId);
-    }
+        // Load the data we want to summarize
+        var ticket = (await dbContext.Tickets
+            .Include(t => t.Product)
+            .Include(t => t.Messages)
+            .FirstOrDefaultAsync(t => t.TicketId == ticketId))!;
 
-    private async Task UpdateSummaryAsync(int ticketId)
-    {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<TicketSummarizer>>();
+        // Score with words, not numbers, as LLMs are much better with words
+        string[] satisfactionScores = ["AbsolutelyFurious", "VeryUnhappy", "Unhappy",
+            "Disappointed", "Indifferent", "Pleased", "Happy", "Delighted", "UnspeakablyThrilled"];
 
-        try
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var redisConnection = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>();
-            var chatCompletion = scope.ServiceProvider.GetRequiredService<IChatCompletionService>();
+        var prompt = $$"""
+            You are part of a customer support ticketing system.
+            Your job is to write brief summaries of customer support interactions. This is to help support agents
+            understand the context quickly so they can help the customer efficiently.
 
-            var ticket = await db.Tickets
-                .Include(t => t.Product)
-                .Include(t => t.Messages)
-                .FirstOrDefaultAsync(t => t.TicketId == ticketId);
-            if (ticket is not null)
-            {
-                // Score with words, not numbers, as LLMs are much better with words
-                string[] satisfactionScores = ["AbsolutelyFurious", "VeryUnhappy", "Unhappy", "Disappointed", "Indifferent", "Pleased", "Happy", "Delighted", "UnspeakablyThrilled"];
+            Here are details of a support ticket:
+            Product: {{ticket.Product?.Model ?? "Not specified"}}
+            Brand: {{ticket.Product?.Brand ?? "Not specified"}}
 
-                var product = ticket.Product;
-                var prompt = $$"""
-                    You are part of a customer support ticketing system.
-                    Your job is to write brief summaries of customer support interactions. This is to help support agents
-                    understand the context quickly so they can help the customer efficiently.
+            The message log so far is:
+            {{FormatMessagesForPrompt(ticket.Messages)}}
 
-                    Here are details of a support ticket:
-                    Product: {{product?.Model ?? "Not specified"}}
-                    Brand: {{product?.Brand ?? "Not specified"}}
+            Write these summaries for customer support agents:
 
-                    The message log so far is:
-                    {{FormatMessagesForPrompt(ticket.Messages)}}
+            1. A longer summary that is up to 30 words long, condensing as much distinctive information
+                as possible. Do NOT repeat the customer or product name, since this is known anyway.
+                Try to include what SPECIFIC questions/info were given, not just stating in general that questions/info were given.
+                Always cite specifics of the questions or answers. For example, if there is pending question, summarize it in a few words.
+                FOCUS ON THE CURRENT STATUS AND WHAT KIND OF RESPONSE (IF ANY) WOULD BE MOST USEFUL FROM THE NEXT SUPPORT AGENT.
 
-                    Write these summaries for customer support agents:
+            2. Condense that into a shorter summary up to 8 words long, which functions as a title for the ticket,
+                so the goal is to distinguish what's unique about this ticket.
 
-                    1. A longer summary that is up to 30 words long, condensing as much distinctive information
-                       as possible. Do NOT repeat the customer or product name, since this is known anyway.
-                       Try to include what SPECIFIC questions/info were given, not just stating in general that questions/info were given.
-                       Always cite specifics of the questions or answers. For example, if there is pending question, summarize it in a few words.
-                       FOCUS ON THE CURRENT STATUS AND WHAT KIND OF RESPONSE (IF ANY) WOULD BE MOST USEFUL FROM THE NEXT SUPPORT AGENT.
+            3. A customerSatisfaction score using one of the following phrases ranked from worst to best:
+                {{string.Join(", ", satisfactionScores)}}.
+                Focus on the CUSTOMER'S messages (not support agent messages) to determine their satisfaction level.
 
-                    2. Condense that into a shorter summary up to 8 words long, which functions as a title for the ticket,
-                       so the goal is to distinguish what's unique about this ticket.
-
-                    3. A customerSatisfaction score using one of the following phrases ranked from worst to best:
-                       {{string.Join(", ", satisfactionScores)}}.
-                       Focus on the CUSTOMER'S messages (not support agent messages) to determine their satisfaction level.
-
-                    Respond as JSON in the following form: {
-                      "longSummary": "string",
-                      "shortSummary": "string",
-                      "customerSatisfaction": "string"
-                    }
-                    """;
-
-                var chatHistory = new ChatHistory();
-                chatHistory.AddUserMessage(prompt);
-                var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, new OpenAIPromptExecutionSettings
-                {
-                    ResponseFormat = "json_object",
-                    Seed = 0,
-                });
-
-                // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
-                // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).
-                // As a workaround, just read the first complete JSON object from the response.
-                var responseString = response.ToString();
-                var parsed = ReadAndDeserializeSingleValue<Response>(responseString, SerializerOptions)!;
-
-                var shortSummary = parsed.ShortSummary;
-                var longSummary = parsed.LongSummary;
-                int? satisfactionScore = Array.IndexOf(satisfactionScores, parsed.CustomerSatisfaction ?? string.Empty);
-                if (satisfactionScore < 0)
-                {
-                    satisfactionScore = null;
-                }
-
-                await db.Tickets.Where(t => t.TicketId == ticketId).ExecuteUpdateAsync(t => t
-                    .SetProperty(t => t.ShortSummary, shortSummary)
-                    .SetProperty(t => t.LongSummary, longSummary)
-                    .SetProperty(t => t.CustomerSatisfaction, satisfactionScore));
-
-                await redisConnection.GetSubscriber().PublishAsync(
-                    RedisChannel.Literal($"ticket:{ticketId}"), "Updated");
+            Respond as JSON in the following form: {
+                "longSummary": "string",
+                "shortSummary": "string",
+                "customerSatisfaction": "string"
             }
-        }
-        catch (Exception ex)
+            """;
+
+        // Invoke the LLM backend and parse the response as JSON
+        var responseMessage = await chatCompletion.GetChatMessageContentAsync(new ChatHistory(prompt), new OpenAIPromptExecutionSettings
         {
-            logger.LogError(ex, "An error occurred during summarization");
+            ResponseFormat = "json_object",
+            Seed = 0,
+        });
+        var response = ParseJson<Response>(responseMessage);
+
+        // Map the satisfaction label to a numerical score
+        int? satisfactionScore = Array.IndexOf(satisfactionScores, response.CustomerSatisfaction ?? string.Empty);
+        if (satisfactionScore < 0)
+        {
+            satisfactionScore = null;
         }
+
+        // Write the changes to the database
+        await dbContext.Tickets.Where(t => t.TicketId == ticketId).ExecuteUpdateAsync(t => t
+            .SetProperty(t => t.ShortSummary, response.ShortSummary)
+            .SetProperty(t => t.LongSummary, response.LongSummary)
+            .SetProperty(t => t.CustomerSatisfaction, satisfactionScore));
+
+        // Notify any subscribers so we can update the UI in realtime
+        await redisConnection.GetSubscriber().PublishAsync(
+            RedisChannel.Literal($"ticket:{ticketId}"), "Updated");
     }
 
     private static string FormatMessagesForPrompt(IReadOnlyList<Message> messages)
@@ -119,10 +98,11 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
         return sb.ToString();
     }
 
-    private static TResponse? ReadAndDeserializeSingleValue<TResponse>(string json, JsonSerializerOptions options)
+    private static TResponse ParseJson<TResponse>(ChatMessageContent message)
     {
-        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json).AsSpan());
-        return JsonSerializer.Deserialize<TResponse>(ref reader, options);
+        // We need to read only the *first* object in the response, as the LLM may return multiple objects
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(message.ToString()).AsSpan());
+        return JsonSerializer.Deserialize<TResponse>(ref reader, SerializerOptions)!;
     }
 
     private class Response

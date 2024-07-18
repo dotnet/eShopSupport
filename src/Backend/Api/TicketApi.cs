@@ -205,6 +205,6 @@ public static class TicketApi
         dbContext.Tickets.Add(ticket);
         await dbContext.SaveChangesAsync();
 
-        summarizer.UpdateSummary(ticket.TicketId);
+        await summarizer.UpdateSummaryAsync(ticket.TicketId);
     }
 }
