@@ -46,31 +46,82 @@ internal class OllamaChatCompletionService : IChatCompletionService
 
     public async IAsyncEnumerable<StreamingChatMessageContent> GetStreamingChatMessageContentsAsync(ChatHistory chatHistory, PromptExecutionSettings? executionSettings = null, Kernel? kernel = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var toolCallBuilder = default(StringBuilder);
-        await foreach (var chunk in ProcessStreamingMessagesAsync(chatHistory, executionSettings, kernel, cancellationToken))
+        for (var iterationIndex = 0; iterationIndex < 3; iterationIndex++)
         {
-            if (chunk.ContentUpdate is { } contentUpdate)
+            Exception? exception = null;
+            var toolCallBuilder = default(StringBuilder);
+            await foreach (var chunk in ProcessStreamingMessagesAsync(chatHistory, executionSettings, kernel, cancellationToken))
             {
-                yield return new StreamingChatMessageContent(AuthorRole.Assistant, chunk.ContentUpdate);
+                if (chunk.ContentUpdate is { } contentUpdate)
+                {
+                    yield return new StreamingChatMessageContent(AuthorRole.Assistant, chunk.ContentUpdate);
+                }
+                else if (chunk.ToolUpdate is { } toolUpdate)
+                {
+                    toolCallBuilder ??= new();
+                    toolCallBuilder.Append(toolUpdate);
+                }
             }
-            else if (chunk.ToolUpdate is { } toolUpdate)
+
+            if (toolCallBuilder is { Length: > 0 } && kernel is not null)
             {
-                toolCallBuilder ??= new();
-                toolCallBuilder.Append(toolUpdate);
+                var toolCallsJson = toolCallBuilder!.ToString().Trim();
+                try
+                {
+                    var toolCalls = JsonSerializer.Deserialize<OllamaChatMessageToolCall[]>(toolCallsJson, _jsonSerializerOptions)!;
+                    foreach (var toolCall in toolCalls)
+                    {
+                        if (FindFunction(kernel, toolCall.Name) is { } function)
+                        {
+                            var args = new KernelArguments();
+                            foreach (var param in function.Metadata.Parameters)
+                            {
+                                var receivedValue = toolCall.Arguments.TryGetValue(param.Name, out var jsonValue) ? jsonValue : default;
+                                args.Add(param.Name, MapParameterType(param.ParameterType, receivedValue));
+                            }
+
+                            var callResult = await function.InvokeAsync(kernel, args, cancellationToken);
+                            var message = new ChatMessageContent(AuthorRole.Tool, JsonSerializer.Serialize(new
+                            {
+                                name = toolCall.Name,
+                                arguments = toolCall.Arguments,
+                                result = callResult.GetValue<object>()
+                            }));
+                            chatHistory.Add(message);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+            }
+            else
+            {
+                break;
+            }
+
+            if (exception is not null)
+            {
+                // TODO: Log the exception properly with ILogger
+                Console.Error.WriteLine(exception.ToString());
+                yield return new StreamingChatMessageContent(AuthorRole.Assistant, "Sorry, there was a problem invoking a function.");
+                break;
+            }
+        }
+    }
+
+    private KernelFunction? FindFunction(Kernel? kernel, string name)
+    {
+        foreach (var plugin in kernel?.Plugins ?? [])
+        {
+            if (plugin.TryGetFunction(name, out var function))
+            {
+                return function;
             }
         }
 
-        /*
-        if (toolCallBuilder is { Length: > 0 })
-        {
-            var toolCallsJson = toolCallBuilder!.ToString().Trim();
-            var toolCalls = JsonSerializer.Deserialize<OllamaChatMessageToolCall[]>(toolCallsJson, _jsonSerializerOptions)!;
-            foreach (var toolCall in toolCalls)
-            {
-                yield return new ChatMessageChunk(ChatMessageRole.Assistant, $"[Tool call: {toolCall.Name}]", toolCall);
-            }
-        }
-        */
+        return null;
     }
 
     private async IAsyncEnumerable<OllamaStreamingChunk> ProcessStreamingMessagesAsync(
@@ -167,7 +218,7 @@ internal class OllamaChatCompletionService : IChatCompletionService
         return JsonContent.Create(new
         {
             Model = _modelName,
-            Prompt = FormatRawPrompt(messages, kernel?.Plugins),
+            Prompt = FormatRawPrompt(messages, kernel, openAiOptions?.ToolCallBehavior == ToolCallBehavior.AutoInvokeKernelFunctions),
             Format = json ? "json" : null,
             Options = new
             {
@@ -181,7 +232,7 @@ internal class OllamaChatCompletionService : IChatCompletionService
         }, options: _jsonSerializerOptions);
     }
 
-    private static string FormatRawPrompt(ChatHistory messages, IEnumerable<KernelPlugin>? plugins)
+    private static string FormatRawPrompt(ChatHistory messages, Kernel? kernel, bool autoInvokeFunctions)
     {
         // TODO: First fetch the prompt template for the model via /api/show, and then use
         // that to format the messages. Currently this is hardcoded to the Mistral prompt,
@@ -197,16 +248,15 @@ internal class OllamaChatCompletionService : IChatCompletionService
             var message = messages[index];
 
             // Emit tools descriptor immediately before the final [INST]
-            if (index == indexOfLastUserOrSystemMessage)
+            if (index == indexOfLastUserOrSystemMessage && autoInvokeFunctions && kernel is not null)
             {
-                /*
-                if (tools is not null)
+                var tools = kernel.Plugins.SelectMany(p => p.GetFunctionsMetadata()).ToArray() ?? [];
+                if (tools is { Length: > 0 })
                 {
                     sb.Append("[AVAILABLE_TOOLS] ");
-                    sb.Append(JsonSerializer.Serialize(tools.OfType<OllamaChatFunction>().Select(t => t.Tool), _jsonSerializerOptions));
+                    sb.Append(JsonSerializer.Serialize(tools.Select(OllamaChatFunction.Create), _jsonSerializerOptions));
                     sb.Append("[/AVAILABLE_TOOLS]");
                 }
-                */
             }
 
             if (message.Role == AuthorRole.User || message.Role == AuthorRole.System)
@@ -215,6 +265,12 @@ internal class OllamaChatCompletionService : IChatCompletionService
                 sb.Append(message.Content);
                 sb.Append(" [/INST]");
             }
+            else if (message.Role == AuthorRole.Tool)
+            {
+                sb.Append("[TOOL_CALLS] ");
+                sb.Append(message.Content);
+                sb.Append(" [/TOOL_CALLS]\n\n");
+            }
             else
             {
                 if (!string.IsNullOrWhiteSpace(message.Content))
@@ -222,21 +278,6 @@ internal class OllamaChatCompletionService : IChatCompletionService
                     sb.Append(message.Content);
                     sb.Append("</s> "); // That's right, there's no matching <s>. See https://discuss.huggingface.co/t/skew-between-mistral-prompt-in-docs-vs-chat-template/66674/2
                 }
-                /*
-                if (message.ToolCalls is not null)
-                {
-                    // Note that when JSON-serializing here, we don't use any property name conversions
-                    // because the "result" property names are defined by the app developer, not us.
-                    sb.Append("[TOOL_CALLS] ");
-                    sb.Append(JsonSerializer.Serialize(message.ToolCalls.OfType<OllamaChatMessageToolCall>().Select(call => new
-                    {
-                        name = call.Name,
-                        arguments = call.Arguments,
-                        result = call.Result,
-                    })));
-                    sb.Append(" [/TOOL_CALLS]\n\n");
-                }
-                */
             }
         }
 
@@ -262,9 +303,118 @@ internal class OllamaChatCompletionService : IChatCompletionService
         public string? Response { get; set; }
     }
 
+    private class OllamaChatMessageToolCall
+    {
+        public required string Name { get; set; }
+        public required Dictionary<string, JsonElement> Arguments { get; set; }
+    }
+
     private record struct OllamaStreamingChunk(string? ContentUpdate, string? ToolUpdate)
     {
         public static OllamaStreamingChunk Content(string text) => new OllamaStreamingChunk(text, null);
         public static OllamaStreamingChunk Tool(string text) => new OllamaStreamingChunk(null, text);
+    }
+
+    private static class OllamaChatFunction
+    {
+        // When JSON-serialized, needs to produce a structure like this:
+        // {
+        //   "type": "function",
+        //   "function": {
+        //     "name": "get_current_weather",
+        //     "description": "Get the current weather",
+        //     "parameters": {
+        //       "type": "object",
+        //       "properties": {
+        //         "location": {
+        //           "type": "string",
+        //           "description": "The city or country name"
+        //         },
+        //         "format": {
+        //           "type": "string",
+        //           "enum": ["celsius", "fahrenheit"],
+        //           "description": "The temperature unit to use. Infer this from the users location."
+        //         }
+        //       },
+        //       "required": ["location", "format"]
+        //     }
+        //   }
+        // }
+
+        public record ToolDescriptor(string Type, FunctionDescriptor Function);
+        public record FunctionDescriptor(string Name, string Description, FunctionParameters Parameters);
+        public record FunctionParameters(string Type, Dictionary<string, ParameterDescriptor> Properties, string[] Required);
+        public record ParameterDescriptor(string Type, string? Description, string[]? Enum);
+
+        public static ToolDescriptor Create(KernelFunctionMetadata metadata)
+        {
+            return new ToolDescriptor("function", new FunctionDescriptor(metadata.Name, metadata.Description, ToFunctionParameters(metadata)));
+        }
+
+        private static FunctionParameters ToFunctionParameters(KernelFunctionMetadata kernelFunction)
+        {
+            var parameters = kernelFunction.Parameters;
+            return new FunctionParameters(
+                "object",
+                parameters.ToDictionary(p => p.Name!, ToParameterDescriptor),
+                parameters.Where(p => p.IsRequired).Select(p => p.Name!).ToArray());
+        }
+
+        private static ParameterDescriptor ToParameterDescriptor(KernelParameterMetadata parameterInfo)
+            => new ParameterDescriptor(
+                ToParameterType(parameterInfo.ParameterType),
+                parameterInfo.Description,
+                ToEnumValues(parameterInfo?.ParameterType));
+
+        private static string[]? ToEnumValues(Type? type)
+            => type is not null && type.IsEnum ? Enum.GetNames(type) : null;
+
+        private static string ToParameterType(Type? parameterType)
+        {
+            if (parameterType is null)
+            {
+                return "object";
+            }
+
+            parameterType = Nullable.GetUnderlyingType(parameterType) ?? parameterType;
+            if (parameterType == typeof(int))
+            {
+                return "number";
+            }
+            else if (parameterType == typeof(string))
+            {
+                return "string";
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported parameter type {parameterType}");
+            }
+        }
+    }
+
+    private static object? MapParameterType(Type? targetType, JsonElement receivedValue)
+    {
+        if (targetType is null)
+        {
+            return null;
+        }
+        else if (targetType == typeof(int) && receivedValue.ValueKind == JsonValueKind.Number)
+        {
+            return receivedValue.GetInt32();
+        }
+        else if (targetType == typeof(int?) && receivedValue.ValueKind == JsonValueKind.Number)
+        {
+            return receivedValue.GetInt32();
+        }
+        else if (Nullable.GetUnderlyingType(targetType) is not null && (receivedValue.ValueKind == JsonValueKind.Null || receivedValue.ValueKind == JsonValueKind.Undefined))
+        {
+            return null;
+        }
+        else if (targetType == typeof(string) && receivedValue.ValueKind == JsonValueKind.String)
+        {
+            return receivedValue.GetString();
+        }
+
+        throw new InvalidOperationException($"JSON value of kind {receivedValue.ValueKind} cannot be converted to {targetType}");
     }
 }
