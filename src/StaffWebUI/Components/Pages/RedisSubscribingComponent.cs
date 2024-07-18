@@ -11,6 +11,7 @@ public abstract class RedisSubscribingComponent : ComponentBase, IDisposable
 {
     private RedisChannel? _channel;
     private bool disposedValue;
+    private ExecutionContext? executionContext;
 
     [Inject]
     private IConnectionMultiplexer Redis { get; set; } = default!;
@@ -33,6 +34,12 @@ public abstract class RedisSubscribingComponent : ComponentBase, IDisposable
                 _channel = value;
                 if (_channel.HasValue && !disposedValue)
                 {
+                    // We must explicitly capture and restore the execution context around subscription
+                    // callbacks, otherwise the callback won't have access to any async locals from the
+                    // original context, and then things like HttpClientAuthorizationDelegatingHandler
+                    // won't work.
+                    executionContext = ExecutionContext.Capture();
+
                     subscriber.Subscribe(_channel.Value, HandleMessage);
                 }
             }
@@ -48,11 +55,17 @@ public abstract class RedisSubscribingComponent : ComponentBase, IDisposable
         // returned task, and processing any exceptions within the component's rendering context
         try
         {
-
             await InvokeAsync(async () =>
             {
-                var eventCallback = EventCallback.Factory.Create<RedisValue>(this, OnRedisNotificationAsync);
-                await eventCallback.InvokeAsync(value);
+                Task? result = null;
+                ExecutionContext.Run(executionContext!, _ =>
+                {
+                    result = EventCallback.Factory
+                        .Create<RedisValue>(this, OnRedisNotificationAsync)
+                        .InvokeAsync(value);
+                }, null);
+
+                await result!;
             });
         }
         catch (Exception ex)
