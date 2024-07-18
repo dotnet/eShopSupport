@@ -19,7 +19,7 @@
         "Items": [
           {
             "$type": "TextContent",
-            "Text": "What type of battery does it have?"
+            "Text": "What product is this about? Reply with the product name only and no other text."
           }
         ]
       },
@@ -36,6 +36,7 @@
       }
     ],
     "ExecutionSettings": {
+      "service_id": null,
       "model_id": null
     }
   },
@@ -47,7 +48,7 @@
       "Items": [
         {
           "$type": "TextContent",
-          "Text": "{ \u0022needMoreInfo\u0022: true, \u0022searchProductId\u0022: \u00221\u0022, \u0022searchPhrase\u0022: \u0022battery\u0022 }"
+          "Text": "{ \u0022needMoreInfo\u0022: true, \u0022searchProductId\u0022: \u00221\u0022, \u0022searchPhrase\u0022: \u0022Trailblazer Bike Helmet\u0022 }"
         }
       ]
     }
