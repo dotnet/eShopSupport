@@ -1,5 +1,4 @@
-﻿using Aspire.Hosting;
-using Microsoft.Extensions.Configuration.Json;
+﻿using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Hosting;
 using Projects;
 
@@ -41,6 +40,8 @@ if (builder.Environment.IsDevelopment())
         {
             r.WithDataVolume();
         }
+
+        r.WithImageTag("3.30.0"); // Temporary workaround for https://github.com/dotnet/aspire/issues/4646
     });
 }
 
