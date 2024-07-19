@@ -18,7 +18,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 //
 // Comparing prompts:
 //
-// Effect of adding "If this is a question about the product, you should ALWAYS set gotEnoughInfoAlready to false and search the manual."
+// Effect of adding "If this is a question about the product, you should ALWAYS search the manual."
 // to the prompt:
 //
 // Without: After 200 questions: average score = 0.615, average duration = 2092.407ms
