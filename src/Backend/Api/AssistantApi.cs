@@ -30,17 +30,7 @@ public static class AssistantApi
         // Build the prompt plus any existing conversation history
         var chatHistory = new ChatHistory($$"""
             You are a helpful AI assistant called 'Assistant' whose job is to help customer service agents working for AdventureWorks, an online retailer.
-            The customer service agent is currently handling the following ticket:
-
-            <product_id>{{request.ProductId}}</product_id>
-            <product_name>{{product?.Model ?? "None specified"}}</product_name>
-            <customer_name>{{request.CustomerName}}</customer_name>
-            <summary>{{request.TicketSummary}}</summary>
-
-            The most recent message from the customer is this:
-            <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
-            However, that is only provided for context. You are not answering that question directly. The real question will be asked by the user below.
-
+            
             If this is a question about the product, ALWAYS search the product manual.
 
             ALWAYS justify your answer by citing a search result. Do this by including this syntax in your reply:
@@ -54,7 +44,6 @@ public static class AssistantApi
 
         // Call the LLM backend
         var kernel = new Kernel();
-        kernel.ImportPluginFromObject(new SearchManualPlugin(httpContext, manualSearch));
         var executionSettings = new OpenAIPromptExecutionSettings { Seed = 0, Temperature = 0, ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
         var streamingAnswer = chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, kernel, cancellationToken);
 
@@ -66,26 +55,6 @@ public static class AssistantApi
             await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, chunk.ToString())));
             answerBuilder.Append(chunk.ToString());
         }
-
-        // Ask if this answer is suitable for sending directly to the customer
-        // If so, we'll show a button in the UI
-        chatHistory.AddAssistantMessage(answerBuilder.ToString());
-        chatHistory.AddSystemMessage("""
-            Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
-            Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
-            """);
-        executionSettings.ResponseFormat = "json_object";
-        var isAddressedToCustomer = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
-        try
-        {
-            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.ToString(), _jsonOptions)!;
-            if (isAddressedToCustomerJson.IsAddressedByNameToCustomer)
-            {
-                await httpContext.Response.WriteAsync(",\n");
-                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true")));
-            }
-        }
-        catch { }
 
         // Signal to the UI that we're finished
         await httpContext.Response.WriteAsync("]");
