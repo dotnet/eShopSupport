@@ -56,6 +56,26 @@ public static class AssistantApi
             answerBuilder.Append(chunk.ToString());
         }
 
+        // Ask if this answer is suitable for sending directly to the customer
+        // If so, we'll show a button in the UI
+        chatHistory.AddAssistantMessage(answerBuilder.ToString());
+        chatHistory.AddSystemMessage("""
+            Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
+            Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
+            """);
+        executionSettings.ResponseFormat = "json_object";
+        var isAddressedToCustomer = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+        try
+        {
+            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.ToString(), _jsonOptions)!;
+            if (isAddressedToCustomerJson.IsAddressedByNameToCustomer)
+            {
+                await httpContext.Response.WriteAsync(",\n");
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true")));
+            }
+        }
+        catch { }
+
         // Signal to the UI that we're finished
         await httpContext.Response.WriteAsync("]");
     }
