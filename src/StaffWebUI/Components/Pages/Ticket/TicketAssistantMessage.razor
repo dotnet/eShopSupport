@@ -23,7 +23,7 @@ else
         <div class="sender-icon">
             <FluentPersona Image="@assistantImage" ImageSize="30px" />
         </div>
-        <div class="sender-name">Assistant</div>
+        <div class="sender-name">@(State.Message.From ?? "...")</div>
         <div class="message-content" @ref="messageContentElement">
             @if (!string.IsNullOrEmpty(searchText))
             {
@@ -93,8 +93,21 @@ else
                 visible = true;
                 StateHasChanged();
 
-                await foreach (var item in State.ResponseItems)
+                foreach (var item in State.ResponseItems)
                 {
+                    if (item.From != State.Message.From && item.Type != AssistantChatReplyItemType.SearchResult)
+                    {
+                        if (State.Message.From is null)
+                        {
+                            State.Message.From = item.From;
+                            StateHasChanged();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
                     switch (item.Type)
                     {
                         case AssistantChatReplyItemType.Search:

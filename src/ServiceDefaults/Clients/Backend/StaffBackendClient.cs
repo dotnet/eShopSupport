@@ -94,9 +94,10 @@ public class AssistantChatRequestMessage
 {
     public bool IsAssistant { get; set; }
     public required string Text { get; set; }
+    public string? From { get; set; }
 }
 
-public record AssistantChatReplyItem(AssistantChatReplyItemType Type, string Text, int? SearchResultId = null, int? SearchResultProductId = null, int? SearchResultPageNumber = null);
+public record AssistantChatReplyItem(AssistantChatReplyItemType Type, string Text, int? SearchResultId = null, int? SearchResultProductId = null, int? SearchResultPageNumber = null, string? From = null);
 
 public enum AssistantChatReplyItemType { AnswerChunk, Search, SearchResult, IsAddressedToCustomer };
 

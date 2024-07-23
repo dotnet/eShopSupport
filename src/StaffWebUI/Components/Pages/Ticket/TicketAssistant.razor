@@ -64,14 +64,14 @@
         }
     }
 
-    void SendMessage()
+    async Task SendMessage()
     {
         if (Ticket is { } ticket && !string.IsNullOrWhiteSpace(userMessageText))
         {
             StopResponding();
 
             // Add the user's message to the UI
-            messages.Add(new MessageState(new() { Text = userMessageText }, null, CancellationToken.None));
+            messages.Add(new MessageState(new() { Text = userMessageText, From = "user" }, null, CancellationToken.None));
             userMessageText = null;
 
             // Submit request to backend
@@ -86,8 +86,43 @@
             var responseItems = Backend.AssistantChatAsync(request, cancellationToken);
 
             // Add the assistant's reply to the UI
-            var reply = new AssistantChatRequestMessage { IsAssistant = true, Text = string.Empty };
-            messages.Add(new MessageState(reply, responseItems, cancellationToken));
+            var collections = new List<AssistantChatReplyItem>();
+            var searchResultCollections = new List<AssistantChatReplyItem>();
+            await foreach (var item in responseItems)
+            {
+                if (item.Type == AssistantChatReplyItemType.SearchResult)
+                {
+                    searchResultCollections.Add(item);
+
+                    continue;
+                }
+                if (collections.Count == 0)
+                {
+                    collections.Add(item);
+                }
+                else if (collections.Last().From == item.From)
+                {
+                    collections.Add(item);
+                }
+                else
+                {
+                    var reply = new AssistantChatRequestMessage { IsAssistant = true, Text = string.Empty };
+                    // add search result to collections as well
+                    collections.AddRange(searchResultCollections);
+                    messages.Add(new MessageState(reply, collections, cancellationToken));
+                    StateHasChanged();
+                    collections = new List<AssistantChatReplyItem> { item };
+                }
+            }
+
+            // add the last message
+            var finalReply = new AssistantChatRequestMessage { IsAssistant = true, Text = string.Empty };
+            // add search result to collections as well
+            collections.AddRange(searchResultCollections);
+            messages.Add(new MessageState(finalReply, collections, cancellationToken));
+            StateHasChanged();
+            // var reply = new AssistantChatRequestMessage { IsAssistant = true, Text = string.Empty };
+            // messages.Add(new MessageState(reply, responseItems, cancellationToken));
         }
     }
 
@@ -111,11 +146,11 @@
         currentReplyCancellationTokenSource?.Cancel();
     }
 
-    private void ApplySuggestion(string suggestion)
+    private Task ApplySuggestion(string suggestion)
     {
         userMessageText = suggestion;
-        SendMessage();
+        return SendMessage();
     }
 
-    public record MessageState(AssistantChatRequestMessage Message, IAsyncEnumerable<AssistantChatReplyItem>? ResponseItems, CancellationToken CancellationToken);
+    public record MessageState(AssistantChatRequestMessage Message, IEnumerable<AssistantChatReplyItem>? ResponseItems, CancellationToken CancellationToken);
 }

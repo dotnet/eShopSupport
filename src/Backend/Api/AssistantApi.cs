@@ -2,6 +2,12 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using AutoGen.Core;
+using AutoGen.OpenAI;
+using AutoGen.OpenAI.Extension;
+using AutoGen.SemanticKernel;
+using AutoGen.SemanticKernel.Extension;
+using Azure.AI.OpenAI;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -18,7 +24,113 @@ public static class AssistantApi
 
     public static void MapAssistantApiEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
+        app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync2);
+    }
+
+    private static async Task GetStreamingChatResponseAsync2(OpenAIClient client, AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    {
+        await httpContext.Response.WriteAsync("[null");
+
+        var product = request.ProductId.HasValue
+            ? await dbContext.Products.FindAsync(request.ProductId.Value)
+            : null;
+
+        var kernelBuilder = Kernel.CreateBuilder();
+        kernelBuilder.Services.AddSingleton(chatService);
+
+        var kernel = kernelBuilder.Build();
+
+        // create agents
+        var manualSearchAgent = new ManualSearchAgent(client, manualSearch, httpContext.Response)
+            .RegisterPrintMessage();
+        var plannerAgent = new PlannerAgent(chatService)
+            .RegisterPrintMessage();
+        var writer = new WriterAgent(chatService, httpResponse: httpContext.Response);
+        var user = new DefaultReplyAgent("user", "<get_user_input>");
+
+        var groupAdminAgent = new SemanticKernelAgent(
+            kernel: kernel,
+            name: "admin")
+            .RegisterMessageConnector()
+            .RegisterPrintMessage();
+
+        // construct group chat
+        var workflow = new Graph();
+
+        // user <=> planner
+        workflow.AddTransition(Transition.Create(user, plannerAgent));
+        workflow.AddTransition(Transition.Create(plannerAgent, user));
+
+        // planner => writer
+        workflow.AddTransition(Transition.Create(plannerAgent, writer));
+
+        // writer => user
+        workflow.AddTransition(Transition.Create(writer, user));
+
+        // planner <=> manualSearchAgent
+        workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
+        workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent));
+
+        var groupChat = new GroupChat(
+            admin: groupAdminAgent,
+            members: [user, plannerAgent, writer, manualSearchAgent],
+            workflow: workflow);
+
+        // Add initialize message to help planner create a plan
+        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am manual_search. I can help you search the manual for products.", from: manualSearchAgent.Name));
+        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am writer. I can help you write the answer based on the context.", from: writer.Name));
+
+        // start group chat
+        var maxRound = 10;
+        List<IMessage> chatHistory = request.Messages
+            .Select(m => new TextMessage(m.IsAssistant ? Role.Assistant : Role.User, m.Text, from: m.From) as IMessage)
+            .ToList();
+
+        // add context
+        var contextMessage = new TextMessage(Role.Assistant, $$"""
+            ==== Context ====
+            <product_id>{{request.ProductId}}</product_id>
+            <product_name>{{product?.Model ?? "None specified"}}</product_name>
+            <customer_name>{{request.CustomerName}}</customer_name>
+            <summary>{{request.TicketSummary}}</summary>
+
+            The most recent message from the customer is this:
+            <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
+            =================
+            """);
+        chatHistory.Insert(0, contextMessage);
+        while (maxRound > 0)
+        {
+            var nextReplies = await groupChat.CallAsync(
+                chatHistory: chatHistory,
+                maxRound: 1);
+
+            var nextReply = nextReplies.Last();
+
+            // if next reply is from user, then it's the user's round
+            if (nextReply.From == user.Name)
+            {
+                break;
+            }
+            else if (nextReply.GetContent() is string text)
+            {
+                // send the reply to the user only when it's not from manual helper
+                // because we don't want to directly expose the manual search results to the user
+                await httpContext.Response.WriteAsync(",\n");
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, text, From: nextReply.From)));
+
+                // break if the reply is from planner and contains 'task completed'
+                if (nextReply.From == plannerAgent.Name && text.ToLower().Contains("task completed"))
+                {
+                    break;
+                }
+            }
+
+            chatHistory.Add(nextReply);
+            maxRound--;
+        }
+
+        await httpContext.Response.WriteAsync("]");
     }
 
     private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
@@ -93,7 +205,7 @@ public static class AssistantApi
         await httpContext.Response.WriteAsync("]");
     }
 
-    class IsAddressedToCustomerReply
+    internal class IsAddressedToCustomerReply
     {
         public bool IsAddressedByNameToCustomer { get; set; }
     }

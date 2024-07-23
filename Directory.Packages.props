@@ -16,6 +16,8 @@
     <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
+    <PackageVersion Include="AutoGen" Version="0.0.16" />
+    <PackageVersion Include="AutoGen.SourceGenerator" Version="0.0.16" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
@@ -45,6 +47,7 @@
     <PackageVersion Include="StatefulReconnection" Version="0.1.0" />
     <PackageVersion Include="Markdown2Pdf" Version="2.2.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0-release-24352-06" />
+    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="xunit" Version="2.9.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Duende.IdentityServer" Version="7.0.5" />

@@ -34,7 +34,7 @@ using var logFile = File.Open("log.txt", FileMode.Create, FileAccess.Write, File
 using var log = new StreamWriter(logFile);
 
 var questionBatches = questions.Chunk(5);
-var scoringParallelism = 4;
+var scoringParallelism = 3;
 var allScores = new List<double>();
 var allDurations = new List<TimeSpan>();
 await Parallel.ForEachAsync(questionBatches, new ParallelOptions { MaxDegreeOfParallelism = scoringParallelism }, async (batch, cancellationToken) =>
@@ -153,7 +153,7 @@ async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuest
             null,
             null,
             null,
-            [new() { IsAssistant = true, Text = question.Question }]),
+            [new() { IsAssistant = true, Text = question.Question, From = "user" }]),
             CancellationToken.None);
         var answerBuilder = new StringBuilder();
         await foreach (var item in responseItems)
