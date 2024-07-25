@@ -22,20 +22,45 @@ public class PlannerAgent : IAgent
             kernel: kernel,
             name: this.Name,
             systemMessage: """
-            You are Planner.
-            Given a task, please determine what step is needed to complete the task.
-            Please only suggest steps that can be done by others. You can assgin the steps to others explicitly.
-            Remember, YOU DON't DO ANYTHING. YOU JUST PLAN.
-
-            After each step is done by others, check the progress and instruct the remaining steps.
-            If a step fails, try to work around it.
-            If the task is completed, say 'task completed'.
+            You are helping user resolve customer tickets. Based on the context, suggest the next step for the following agents to handle.
             """)
-            .RegisterMessageConnector();
+            .RegisterMessageConnector()
+            .RegisterPrintMessage();
     }
 
-    public Task<IMessage> GenerateReplyAsync(IEnumerable<IMessage> messages, GenerateReplyOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task<IMessage> GenerateReplyAsync(IEnumerable<IMessage> messages, GenerateReplyOptions? options = null, CancellationToken cancellationToken = default)
     {
-        return innerAgent.GenerateReplyAsync(messages, options, cancellationToken);
+        var taskCompleteCheckPrompt = """
+            observe the conversation and determine if task from user is done. Reply with the following JSON object:
+            {
+                "reason": "<a short description of the reason why the task is done>",
+                "task_done": true or false
+            }
+            """;
+        var taskCompleteCheck = await innerAgent.SendAsync(taskCompleteCheckPrompt, messages);
+
+        if (taskCompleteCheck.GetContent()?.ToLower().Contains("\"task_done\": true") is true)
+        {
+            return new TextMessage(Role.Assistant, "The task is done.", from: this.Name);
+        }
+
+        var suggestNextStepPrompt = """
+            Suggest the next step for the following agents to handle. Below are available agents:
+            - manual_search: Help you search the manual for information.
+            - writer: Help you write responses or answers on given context.
+
+            Use the following JSON format to suggest the next step, create ONE SINGLE STEP only:
+            {
+                "next_step": "<a short description of the next step>",
+                "assigned_agent": "<the agent to handle the next step>"
+            }
+            """;
+
+        var message = new TextMessage(Role.User, suggestNextStepPrompt);
+
+        var jsonReply = await innerAgent.GenerateReplyAsync(messages.Concat([message]), options, cancellationToken);
+
+        // prompt it nicely
+        return await innerAgent.SendAsync("prompt it in the format of @<assigned_agent>, <step>, make your answer short.", chatHistory: [jsonReply]);
     }
 }

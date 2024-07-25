@@ -27,7 +27,7 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync2);
     }
 
-    private static async Task GetStreamingChatResponseAsync2(OpenAIClient client, AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync2(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         await httpContext.Response.WriteAsync("[null");
 
@@ -41,17 +41,29 @@ public static class AssistantApi
         var kernel = kernelBuilder.Build();
 
         // create agents
-        var manualSearchAgent = new ManualSearchAgent(client, manualSearch, httpContext.Response)
-            .RegisterPrintMessage();
-        var plannerAgent = new PlannerAgent(chatService)
-            .RegisterPrintMessage();
-        var writer = new WriterAgent(chatService, httpResponse: httpContext.Response);
+        var manualSearchAgent = new ManualSearchAgent(chatService, manualSearch, httpContext.Response);
+        var plannerAgent = new PlannerAgent(chatService);
+        var writer = new SupportAgent(chatService, httpResponse: httpContext.Response);
         var user = new DefaultReplyAgent("user", "<get_user_input>");
 
         var groupAdminAgent = new SemanticKernelAgent(
             kernel: kernel,
             name: "admin")
             .RegisterMessageConnector()
+            .RegisterMiddleware(async (msgs, options, agent, ct) =>
+            {
+                var prompt = """
+                Carefully read the conversation and return the next speaker in the following format:
+                From xxx: yyy
+                Where xxx is the speaker and yyy is the message.
+                """;
+                var reply = await agent.GenerateReplyAsync(msgs.Concat([new TextMessage(Role.User, prompt)]), options, ct);
+                
+                // trim
+                var text = reply.GetContent();
+                var trimmedText = text!.TrimStart();
+                return new TextMessage(Role.Assistant, trimmedText, from: agent.Name);
+            })
             .RegisterPrintMessage();
 
         // construct group chat
@@ -61,11 +73,9 @@ public static class AssistantApi
         workflow.AddTransition(Transition.Create(user, plannerAgent));
         workflow.AddTransition(Transition.Create(plannerAgent, user));
 
-        // planner => writer
+        // planner <=> writer
         workflow.AddTransition(Transition.Create(plannerAgent, writer));
-
-        // writer => user
-        workflow.AddTransition(Transition.Create(writer, user));
+        workflow.AddTransition(Transition.Create(writer, plannerAgent));
 
         // planner <=> manualSearchAgent
         workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
@@ -76,10 +86,6 @@ public static class AssistantApi
             members: [user, plannerAgent, writer, manualSearchAgent],
             workflow: workflow);
 
-        // Add initialize message to help planner create a plan
-        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am manual_search. I can help you search the manual for products.", from: manualSearchAgent.Name));
-        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am writer. I can help you write the answer based on the context.", from: writer.Name));
-
         // start group chat
         var maxRound = 10;
         List<IMessage> chatHistory = request.Messages
@@ -87,7 +93,7 @@ public static class AssistantApi
             .ToList();
 
         // add context
-        var contextMessage = new TextMessage(Role.Assistant, $$"""
+        var contextMessage = new TextMessage(Role.User, $$"""
             ==== Context ====
             <product_id>{{request.ProductId}}</product_id>
             <product_name>{{product?.Model ?? "None specified"}}</product_name>
@@ -97,7 +103,7 @@ public static class AssistantApi
             The most recent message from the customer is this:
             <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
             =================
-            """);
+            """, from: user.Name);
         chatHistory.Insert(0, contextMessage);
         while (maxRound > 0)
         {
@@ -120,7 +126,7 @@ public static class AssistantApi
                 await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, text, From: nextReply.From)));
 
                 // break if the reply is from planner and contains 'task completed'
-                if (nextReply.From == plannerAgent.Name && text.ToLower().Contains("task completed"))
+                if (nextReply.From == plannerAgent.Name && text.ToLower().Contains("the task is done."))
                 {
                     break;
                 }

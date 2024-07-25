@@ -11,12 +11,12 @@ using static eShopSupport.Backend.Api.AssistantApi;
 
 namespace eShopSupport.Backend.Api;
 
-public class WriterAgent : IAgent
+public class SupportAgent : IAgent
 {
     private readonly IStreamingAgent innerAgent;
     private readonly HttpResponse? _httpResponse;
 
-    public WriterAgent(
+    public SupportAgent(
         IChatCompletionService chatCompletionService,
         HttpResponse? httpResponse = null)
     {
@@ -29,7 +29,7 @@ public class WriterAgent : IAgent
             kernel: kernel,
             name: this.Name,
             systemMessage: """
-            You are writer. Based on the context, provide an answer to the user's question.
+            You are support agent. Based on the context, provide an answer to the user's question.
             """)
             .RegisterMessageConnector()
             .RegisterPrintMessage();
@@ -76,11 +76,18 @@ public class WriterAgent : IAgent
 
         if (addressedByNameToCustomer.GetContent() is string replyText && _httpResponse is not null)
         {
-            var isAddressedToCustomer = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(replyText, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-            if (isAddressedToCustomer?.IsAddressedByNameToCustomer == true)
+            try
             {
-                await _httpResponse.WriteAsync(",\n");
-                await _httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true", From: this.Name)));
+                var isAddressedToCustomer = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(replyText, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                if (isAddressedToCustomer?.IsAddressedByNameToCustomer == true)
+                {
+                    await _httpResponse.WriteAsync(",\n");
+                    await _httpResponse.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true", From: this.Name)));
+                }
+            }
+            catch (JsonException)
+            {
+                // ignore
             }
         }
 

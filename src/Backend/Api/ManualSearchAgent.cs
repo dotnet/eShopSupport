@@ -35,7 +35,7 @@ public partial class ManualSearchAgent : IAgent
     [Description("earch the manual. To Search a manual for pecific product, provide the product ID. Otherwise, search all manuals.")]
     public async Task<string> SearchManualAsync(
         [Description("product ID.")] [DefaultValue(null)] int? productID,
-        [Description("search prase")] string searchPhrase)
+        [Description("search phrase")] string searchPhrase)
     {
         if (_httpResponse != null)
         {
@@ -70,34 +70,63 @@ public partial class ManualSearchAgent : IAgent
     }
 
     public ManualSearchAgent(
-        OpenAIClient client,
+        IChatCompletionService chatCompletionService,
         ProductManualSemanticSearch manualSearch,
         HttpResponse? httpResponse = null)
     {
         _manualSearch = manualSearch;
-        var functionCallMiddleware = new FunctionCallMiddleware(
-            functions: [this.SearchManualAsyncFunctionContract],
-            functionMap: new Dictionary<string, Func<string, Task<string>>>
-            {
-                { this.SearchManualAsyncFunctionContract.Name!, this.SearchManualAsyncWrapper },
-            });
         _httpResponse = httpResponse;
-        _kernelChatAgent = new OpenAIChatAgent(
-            openAIClient: client,
+        var kernelBuilder = Kernel.CreateBuilder();
+        kernelBuilder.Services.AddSingleton(chatCompletionService);
+        var kernel = kernelBuilder.Build();
+        _kernelChatAgent = new SemanticKernelAgent(
+            kernel: kernel,
             name: this.Name,
-            modelName: "gpt-4o",
-            systemMessage: "You are a helpful manual search assistant.")
+            systemMessage: "You are a helpful manual search assistant. You always respond in JSON object.")
             .RegisterMessageConnector()
-            .RegisterMiddleware(functionCallMiddleware);
+            .RegisterPrintMessage();
     }
 
     public string Name => "manual_search";
 
     public async Task<IMessage> GenerateReplyAsync(IEnumerable<IMessage> messages, GenerateReplyOptions? options = null, CancellationToken cancellationToken = default)
     {
-        var reply = await _kernelChatAgent.GenerateReplyAsync(messages, options, cancellationToken);
+        var prompt = """
+            Determine if more information is needed. If so, search the manual for the information.
+            To search a manual for all products, reply the following JSON object.
+            {"searchPhrase": string}
+            To search a manual for a specific product, rely the following JSON object.
+            {"productID": number, "searchPhrase": string}
+            """;
+        var message = new TextMessage(Role.User, prompt);
+        var reply = await _kernelChatAgent.GenerateReplyAsync(messages.Concat([message]), options, cancellationToken);
 
-        return new TextMessage(Role.Assistant, reply.GetContent(), from: this.Name);
+        // try parse the reply as a function call
+        try
+        {
+            var content = reply.GetContent();
+            // if the json is wrapped between ```json and ```, get the content inside
+            if (content?.IndexOf("```json") is int start && content.IndexOf("```", start + 6) is int end && start >= 0 && end >= 0)
+            {
+                content = content.Substring(start + 7, end - start - 7);
+            }
+
+            var obj = JsonSerializer.Deserialize<SearchManualAsyncSchema>(content);
+
+            if (obj?.searchPhrase is not null)
+            {
+                var searchResult = await SearchManualAsync(obj.productID, obj.searchPhrase);
+
+                return new TextMessage(Role.Assistant, searchResult, from: this.Name);
+            }
+        }
+        catch (JsonException)
+        {
+            return new TextMessage(Role.Assistant, "fail to search manual, please modify the search phrase and try again", from: this.Name);
+            // ignore
+        }
+
+        return new TextMessage(Role.Assistant, "no information found from manual", from: this.Name);
     }
 
     private static int? GetProductId(MemoryQueryResult result)
@@ -111,4 +140,5 @@ public partial class ManualSearchAgent : IAgent
         var match = Regex.Match(result.Metadata.AdditionalMetadata, @"pagenumber:(\d+)");
         return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
+
 }
