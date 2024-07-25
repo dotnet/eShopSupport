@@ -34,7 +34,7 @@ public class SupportAgent : IAgent
             .RegisterMessageConnector()
             .RegisterPrintMessage();
     }
-    public string Name => "writer";
+    public string Name => "customer_support";
 
     public async Task<IMessage> GenerateReplyAsync(IEnumerable<IMessage> messages, GenerateReplyOptions? options = null, CancellationToken cancellationToken = default)
     {

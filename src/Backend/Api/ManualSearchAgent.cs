@@ -94,12 +94,20 @@ public partial class ManualSearchAgent : IAgent
         var prompt = """
             Determine if more information is needed. If so, search the manual for the information.
             To search a manual for all products, reply the following JSON object.
+            ```json
             {"searchPhrase": string}
-            To search a manual for a specific product, rely the following JSON object.
+            ```
+
+            To search a manual for a specific product, reply the following JSON object.
+            ```json
             {"productID": number, "searchPhrase": string}
+            ```
             """;
         var message = new TextMessage(Role.User, prompt);
-        var reply = await _kernelChatAgent.GenerateReplyAsync(messages.Concat([message]), options, cancellationToken);
+        var reply = await _kernelChatAgent.GenerateReplyAsync(messages.Concat([message]), new GenerateReplyOptions()
+        {
+            Temperature=0,
+        }, cancellationToken);
 
         // try parse the reply as a function call
         try

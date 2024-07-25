@@ -40,10 +40,22 @@ public static class AssistantApi
 
         var kernel = kernelBuilder.Build();
 
+        var helperAgent = new SemanticKernelAgent(kernel, "helper")
+            .RegisterMessageConnector()
+            .RegisterPrintMessage();
+
+        List<IMessage> chatHistory = request.Messages
+            .Select(m => new TextMessage(m.IsAssistant ? Role.Assistant : Role.User, m.Text, from: m.From) as IMessage)
+            .ToList();
+
+        // use the most recent user message as task
+        var lastUserMessage = chatHistory.Last(m => m.From == "user");
+        var task = lastUserMessage.GetContent() as string;
+
         // create agents
         var manualSearchAgent = new ManualSearchAgent(chatService, manualSearch, httpContext.Response);
-        var plannerAgent = new PlannerAgent(chatService);
-        var writer = new SupportAgent(chatService, httpResponse: httpContext.Response);
+        var plannerAgent = new PlannerAgent(chatService, task!);
+        var customerSupportAgent = new SupportAgent(chatService, httpResponse: httpContext.Response);
         var user = new DefaultReplyAgent("user", "<get_user_input>");
 
         var groupAdminAgent = new SemanticKernelAgent(
@@ -52,6 +64,23 @@ public static class AssistantApi
             .RegisterMessageConnector()
             .RegisterMiddleware(async (msgs, options, agent, ct) =>
             {
+                // short cut if the last message contains one of the following keywords
+                // @manual_search
+                // @customer_support
+                // @user
+
+                var lastMessage = msgs.Last();
+                var agents = new IAgent[] { manualSearchAgent, customerSupportAgent, user };
+                var agentNames = agents.Select(a => a.Name).ToArray();
+                var lastMessageText = lastMessage.GetContent();
+                foreach (var agentName in agentNames)
+                {
+                    if (lastMessageText?.Contains($"@{agentName}") is true)
+                    {
+                        return new TextMessage(Role.Assistant, $"From {agentName}", from: agent.Name);
+                    }
+                }
+
                 var prompt = """
                 Carefully read the conversation and return the next speaker in the following format:
                 From xxx: yyy
@@ -73,24 +102,32 @@ public static class AssistantApi
         workflow.AddTransition(Transition.Create(user, plannerAgent));
         workflow.AddTransition(Transition.Create(plannerAgent, user));
 
+        // user <=> manualSearchAgent
+        workflow.AddTransition(Transition.Create(user, manualSearchAgent));
+        workflow.AddTransition(Transition.Create(manualSearchAgent, user));
+
+        // user <=> writer
+        workflow.AddTransition(Transition.Create(user, customerSupportAgent));
+        workflow.AddTransition(Transition.Create(customerSupportAgent, user));
+
         // planner <=> writer
-        workflow.AddTransition(Transition.Create(plannerAgent, writer));
-        workflow.AddTransition(Transition.Create(writer, plannerAgent));
+        workflow.AddTransition(Transition.Create(plannerAgent, customerSupportAgent));
+        workflow.AddTransition(Transition.Create(customerSupportAgent, plannerAgent));
 
         // planner <=> manualSearchAgent
         workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
         workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent));
 
+        // manualSearchAgent <=> writer
+        workflow.AddTransition(Transition.Create(manualSearchAgent, customerSupportAgent));
+        workflow.AddTransition(Transition.Create(customerSupportAgent, manualSearchAgent));
+
         var groupChat = new GroupChat(
             admin: groupAdminAgent,
-            members: [user, plannerAgent, writer, manualSearchAgent],
-            workflow: workflow);
+            members: [user, plannerAgent, customerSupportAgent, manualSearchAgent]);
 
         // start group chat
         var maxRound = 10;
-        List<IMessage> chatHistory = request.Messages
-            .Select(m => new TextMessage(m.IsAssistant ? Role.Assistant : Role.User, m.Text, from: m.From) as IMessage)
-            .ToList();
 
         // add context
         var contextMessage = new TextMessage(Role.User, $$"""
