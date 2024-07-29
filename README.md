@@ -56,7 +56,6 @@ get-WinGetConfiguration -file .\.configurations\vscode.dsc.yaml | Invoke-WinGetC
 
 > Note: When running on Mac with Apple Silicon (M series processor), Rosetta 2 for grpc-tools.
 
-
 ### Running the solution
 
 > [!WARNING]
