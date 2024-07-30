@@ -103,6 +103,8 @@ public partial class ManualSearchAgent : IAgent
             {"productID": number, "searchPhrase": string}
             ```
             """;
+        // replace /r/n with /n if any
+        prompt = prompt.Replace("\r\n", "\n");
         var message = new TextMessage(Role.User, prompt);
         var reply = await _kernelChatAgent.GenerateReplyAsync(messages.Concat([message]), new GenerateReplyOptions()
         {
@@ -113,6 +115,11 @@ public partial class ManualSearchAgent : IAgent
         try
         {
             var content = reply.GetContent();
+
+            // for llama3.1 only, remove <|python_tag|>
+            content = content.Replace("<|python_tag|>", "");
+            // for llama3.1 only, remove <|eom_id|>
+            content = content.Replace("<|eom_id|>", "");
             // if the json is wrapped between ```json and ```, get the content inside
             if (content?.IndexOf("```json") is int start && content.IndexOf("```", start + 6) is int end && start >= 0 && end >= 0)
             {

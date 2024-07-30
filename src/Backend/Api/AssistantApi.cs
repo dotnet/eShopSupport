@@ -70,7 +70,7 @@ public static class AssistantApi
                 // @user
 
                 var lastMessage = msgs.Last();
-                var agents = new IAgent[] { manualSearchAgent, customerSupportAgent, user };
+                var agents = new IAgent[] { manualSearchAgent, customerSupportAgent, user, plannerAgent };
                 var agentNames = agents.Select(a => a.Name).ToArray();
                 var lastMessageText = lastMessage.GetContent();
                 foreach (var agentName in agentNames)
@@ -80,6 +80,15 @@ public static class AssistantApi
                         return new TextMessage(Role.Assistant, $"From {agentName}", from: agent.Name);
                     }
                 }
+
+                //// if the current speaker is one of [customer_support, manual_search]
+                //// return back to its caller agent, either [user, planner]
+
+                //if (new []{ customerSupportAgent.Name, manualSearchAgent.Name }.Contains(lastMessage.From))
+                //{
+                //    var secondLastMessage = msgs.SkipLast(1).Last();
+                //    return new TextMessage(Role.Assistant, $"From {secondLastMessage.From}", from: agent.Name);
+                //}
 
                 var prompt = """
                 Carefully read the conversation and return the next speaker in the following format:
@@ -104,29 +113,47 @@ public static class AssistantApi
 
         // user <=> manualSearchAgent
         workflow.AddTransition(Transition.Create(user, manualSearchAgent));
-        workflow.AddTransition(Transition.Create(manualSearchAgent, user));
+        workflow.AddTransition(Transition.Create(manualSearchAgent, user, canTransitionAsync: async (from, to, msgs) =>
+        {
+            var secondLastMessage = msgs.SkipLast(1).Last();
+            return secondLastMessage.From == to.Name;
+        }));
 
         // user <=> writer
         workflow.AddTransition(Transition.Create(user, customerSupportAgent));
-        workflow.AddTransition(Transition.Create(customerSupportAgent, user));
+        workflow.AddTransition(Transition.Create(customerSupportAgent, user, canTransitionAsync: async (from, to, msgs) =>
+        {
+            var secondLastMessage = msgs.SkipLast(1).Last();
+            return secondLastMessage.From == to.Name;
+        }));
 
         // planner <=> writer
         workflow.AddTransition(Transition.Create(plannerAgent, customerSupportAgent));
-        workflow.AddTransition(Transition.Create(customerSupportAgent, plannerAgent));
+        workflow.AddTransition(Transition.Create(customerSupportAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
+        {
+            var secondLastMessage = msgs.SkipLast(1).Last();
+            return secondLastMessage.From == to.Name;
+        }));
 
         // planner <=> manualSearchAgent
         workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
-        workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent));
+        workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
+        {
+            var secondLastMessage = msgs.SkipLast(1).Last();
+            return secondLastMessage.From == to.Name;
+        }));
 
-        // manualSearchAgent <=> writer
-        workflow.AddTransition(Transition.Create(manualSearchAgent, customerSupportAgent));
-        workflow.AddTransition(Transition.Create(customerSupportAgent, manualSearchAgent));
+        //// manualSearchAgent <=> writer
+        //workflow.AddTransition(Transition.Create(manualSearchAgent, customerSupportAgent));
+        //workflow.AddTransition(Transition.Create(customerSupportAgent, manualSearchAgent));
 
         var groupChat = new GroupChat(
             admin: groupAdminAgent,
+            workflow: workflow,
             members: [user, plannerAgent, customerSupportAgent, manualSearchAgent]);
 
-        // start group chat
+        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am manual_search, I can help you search the manual for more information.", from: manualSearchAgent.Name));
+        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am customer_support, I can help you write responses or summarize the conversation.", from: customerSupportAgent.Name));
         var maxRound = 10;
 
         // add context

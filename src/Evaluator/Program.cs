@@ -24,7 +24,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 // Without: After 200 questions: average score = 0.615, average duration = 2092.407ms
 // With:    After 200 questions: average score = 0.775, average duration = 2670.874ms
 
-var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 3);
+var assistantAnsweringSemaphore = new SemaphoreSlim(/* parallelism */ 1);
 var backend = await DevToolBackendClient.GetDevToolStaffBackendClientAsync(
     identityServerHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7275/") },
     backendHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
@@ -147,18 +147,25 @@ async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuest
 
     try
     {
-        Console.WriteLine($"Asking question {question.QuestionId}...");
+        Console.WriteLine($"Asking question {question.QuestionId}: {question.Question}");
         var responseItems = backend.AssistantChatAsync(new AssistantChatRequest(
             question.ProductId,
             null,
             null,
             null,
-            [new() { IsAssistant = true, Text = question.Question, From = "user" }]),
+            [new() { IsAssistant = true, Text = $"""
+            @task_planner, answer the customer question below:
+            
+            {question.Question}
+
+            Remember, customer can only see the answer from customer_support agent, so ALWAYS ask customer_support to finalize the answer.
+            """,
+                From = "user" }]),
             CancellationToken.None);
         var answerBuilder = new StringBuilder();
         await foreach (var item in responseItems)
         {
-            if (item.Type == AssistantChatReplyItemType.AnswerChunk)
+            if (item.Type == AssistantChatReplyItemType.AnswerChunk && item.From == "customer_support")
             {
                 answerBuilder.Append(item.Text);
             }
@@ -167,6 +174,7 @@ async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuest
         var duration = DateTime.Now - startTime;
         var finalAnswer = answerBuilder.ToString();
         Console.WriteLine($"Received answer to question {question.QuestionId}");
+        Console.WriteLine($"finalAnswer: {finalAnswer}");
         return (string.IsNullOrWhiteSpace(finalAnswer) ? "No answer provided" : finalAnswer, duration);
     }
     catch (Exception ex)

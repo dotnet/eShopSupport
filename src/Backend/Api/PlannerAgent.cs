@@ -1,4 +1,5 @@
-﻿using AutoGen.Core;
+﻿using System.Text;
+using AutoGen.Core;
 using AutoGen.SemanticKernel;
 using AutoGen.SemanticKernel.Extension;
 using Microsoft.SemanticKernel;
@@ -32,36 +33,64 @@ public class PlannerAgent : IAgent
 
     public async Task<IMessage> GenerateReplyAsync(IEnumerable<IMessage> messages, GenerateReplyOptions? options = null, CancellationToken cancellationToken = default)
     {
-        var taskCompleteCheckPrompt = $$"""
-            observe the most recent conversation and determine if the following task has been resolved.
-            
-            task: {{_task}}
-
-            Reply with the following JSON object:
-            {
-                "reason": "<a short description of the reason why the task is done>",
-                "task_done": true or false
-            }
-            """;
-
         // only include the new messages when check if task is done
         var lastUserMessageIndex = messages.ToList().FindLastIndex(m => m.From == "user");
         var messageToInclude = messages.Skip(lastUserMessageIndex);
         if (messageToInclude.Count() > 1)
         {
+            var stepPromptBuilder = new StringBuilder();
+
+            int i = 0;
+            foreach (var msg in messageToInclude.Where(m => m.From != "user"))
+            {
+                if (msg.From  == this.Name)
+                {
+                    stepPromptBuilder.AppendLine($"## Step {i++}");
+                    // @<assigned_agent>, <step>
+                    stepPromptBuilder.AppendLine(msg.GetContent());
+                    stepPromptBuilder.AppendLine();
+                }
+                else
+                {
+                    // observation: <observation>
+                    stepPromptBuilder.AppendLine($"## Observation");
+                    stepPromptBuilder.AppendLine($"From {msg.From}: {msg.GetContent()}");
+                    stepPromptBuilder.AppendLine();
+                }
+            }
+            var taskCompleteCheckPrompt = $$"""
+
+            # previous steps
+            ```markdown
+            {{stepPromptBuilder.ToString()}}
+            ```
+
+            # task
+            ```task
+            {{_task}}
+            ```
+            
+            Determine if more steps are needed to complete the task. Reply with the following JSON object:
+            ```json
+            {"need_more_steps": true/false, "reason": "<reason>"}
+            ```
+            """;
+
+            Console.WriteLine(taskCompleteCheckPrompt);
+
             // only check when there are new messages
-            messageToInclude = messageToInclude.Append(new TextMessage(Role.User, taskCompleteCheckPrompt));
+            //messageToInclude = messageToInclude.Append(new TextMessage(Role.User, taskCompleteCheckPrompt));
 
-            var taskCompleteCheck = await innerAgent.GenerateReplyAsync(messageToInclude, new GenerateReplyOptions { Temperature = 0, StopSequence = ["}"] });
+            var taskCompleteCheck = await innerAgent.GenerateReplyAsync([new TextMessage(Role.User, taskCompleteCheckPrompt)], new GenerateReplyOptions { Temperature = 0, StopSequence = ["}"] });
 
-            if (taskCompleteCheck.GetContent()?.ToLower().Contains("\"task_done\": true") is true)
+            if (taskCompleteCheck.GetContent()?.ToLower().Contains("\"need_more_steps\": false") is true)
             {
                 return new TextMessage(Role.Assistant, "The task is done.", from: this.Name);
             }
         }
 
         var suggestNextStepPrompt = $$"""
-            Given the task: <{{_task}}>, suggest the next step for the following agents to handle. Below are available agents:
+            Given the task: <{{_task}}>, suggest the next step for the following agents. Below are available agents:
             - manual_search: Help you search the manual for information.
             - customer_support: Help you write responses or summarize the conversation.
 
