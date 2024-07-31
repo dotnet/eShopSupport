@@ -3,11 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using AutoGen.Core;
-using AutoGen.OpenAI;
-using AutoGen.OpenAI.Extension;
-using AutoGen.SemanticKernel;
-using AutoGen.SemanticKernel.Extension;
-using Azure.AI.OpenAI;
+using eShopSupport.Backend.Agents;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -22,183 +18,193 @@ public static class AssistantApi
 {
     private readonly static JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
+    // This is the entrypoint
     public static void MapAssistantApiEndpoints(this WebApplication app)
     {
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync2);
     }
 
-    private static async Task GetStreamingChatResponseAsync2(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync2(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService,
+     ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         await httpContext.Response.WriteAsync("[null");
+        var subject = $"{request.CustomerName}-{request.ProductId}";
+        var grains = httpContext.RequestServices.GetRequiredService<IGrainFactory>();
 
-        var product = request.ProductId.HasValue
-            ? await dbContext.Products.FindAsync(request.ProductId.Value)
-            : null;
 
-        var kernelBuilder = Kernel.CreateBuilder();
-        kernelBuilder.Services.AddSingleton(chatService);
-
-        var kernel = kernelBuilder.Build();
-
-        var helperAgent = new SemanticKernelAgent(kernel, "helper")
-            .RegisterMessageConnector()
-            .RegisterPrintMessage();
-
-        List<IMessage> chatHistory = request.Messages
+        var chatHistory = request.Messages
             .Select(m => new TextMessage(m.IsAssistant ? Role.Assistant : Role.User, m.Text, from: m.From) as IMessage)
             .ToList();
 
         // use the most recent user message as task
         var lastUserMessage = chatHistory.Last(m => m.From == "user");
         var task = lastUserMessage.GetContent() as string;
+        var coordinator = grains.GetGrain<ICoordinateSupportAgents>(subject);
+        var response = await coordinator.ForwardToTeam(task);
+        await httpContext.Response.WriteAsync(",\n");
+        await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, response, From: "coordinator")));
+        // var product = request.ProductId.HasValue
+        //     ? await dbContext.Products.FindAsync(request.ProductId.Value)
+        //     : null;
 
-        // create agents
-        var manualSearchAgent = new ManualSearchAgent(chatService, manualSearch, httpContext.Response);
-        var plannerAgent = new PlannerAgent(chatService, task!);
-        var customerSupportAgent = new SupportAgent(chatService, httpResponse: httpContext.Response);
-        var user = new DefaultReplyAgent("user", "<get_user_input>");
+        // var kernelBuilder = Kernel.CreateBuilder();
+        // kernelBuilder.Services.AddSingleton(chatService);
 
-        var groupAdminAgent = new SemanticKernelAgent(
-            kernel: kernel,
-            name: "admin")
-            .RegisterMessageConnector()
-            .RegisterMiddleware(async (msgs, options, agent, ct) =>
-            {
-                // short cut if the last message contains one of the following keywords
-                // @manual_search
-                // @customer_support
-                // @user
+        // var kernel = kernelBuilder.Build();
 
-                var lastMessage = msgs.Last();
-                var agents = new IAgent[] { manualSearchAgent, customerSupportAgent, user, plannerAgent };
-                var agentNames = agents.Select(a => a.Name).ToArray();
-                var lastMessageText = lastMessage.GetContent();
-                foreach (var agentName in agentNames)
-                {
-                    if (lastMessageText?.Contains($"@{agentName}") is true)
-                    {
-                        return new TextMessage(Role.Assistant, $"From {agentName}", from: agent.Name);
-                    }
-                }
+        // var helperAgent = new SemanticKernelAgent(kernel, "helper")
+        //     .RegisterMessageConnector()
+        //     .RegisterPrintMessage();
 
-                //// if the current speaker is one of [customer_support, manual_search]
-                //// return back to its caller agent, either [user, planner]
+      
 
-                //if (new []{ customerSupportAgent.Name, manualSearchAgent.Name }.Contains(lastMessage.From))
-                //{
-                //    var secondLastMessage = msgs.SkipLast(1).Last();
-                //    return new TextMessage(Role.Assistant, $"From {secondLastMessage.From}", from: agent.Name);
-                //}
+        // // create agents
+        // var manualSearchAgent = new ManualSearchAgent(chatService, manualSearch, httpContext.Response);
+        // var plannerAgent = new PlannerAgent(chatService, task!);
+        // var customerSupportAgent = new SupportAgent(chatService, httpResponse: httpContext.Response);
+        // var user = new DefaultReplyAgent("user", "<get_user_input>");
 
-                var prompt = """
-                Carefully read the conversation and return the next speaker in the following format:
-                From xxx: yyy
-                Where xxx is the speaker and yyy is the message.
-                """;
-                var reply = await agent.GenerateReplyAsync(msgs.Concat([new TextMessage(Role.User, prompt)]), options, ct);
+        // var groupAdminAgent = new SemanticKernelAgent(
+        //     kernel: kernel,
+        //     name: "admin")
+        //     .RegisterMessageConnector()
+        //     .RegisterMiddleware(async (msgs, options, agent, ct) =>
+        //     {
+        //         // short cut if the last message contains one of the following keywords
+        //         // @manual_search
+        //         // @customer_support
+        //         // @user
+
+        //         var lastMessage = msgs.Last();
+        //         var agents = new IAgent[] { manualSearchAgent, customerSupportAgent, user, plannerAgent };
+        //         var agentNames = agents.Select(a => a.Name).ToArray();
+        //         var lastMessageText = lastMessage.GetContent();
+        //         foreach (var agentName in agentNames)
+        //         {
+        //             if (lastMessageText?.Contains($"@{agentName}") is true)
+        //             {
+        //                 return new TextMessage(Role.Assistant, $"From {agentName}", from: agent.Name);
+        //             }
+        //         }
+
+        //         //// if the current speaker is one of [customer_support, manual_search]
+        //         //// return back to its caller agent, either [user, planner]
+
+        //         //if (new []{ customerSupportAgent.Name, manualSearchAgent.Name }.Contains(lastMessage.From))
+        //         //{
+        //         //    var secondLastMessage = msgs.SkipLast(1).Last();
+        //         //    return new TextMessage(Role.Assistant, $"From {secondLastMessage.From}", from: agent.Name);
+        //         //}
+
+        //         var prompt = """
+        //         Carefully read the conversation and return the next speaker in the following format:
+        //         From xxx: yyy
+        //         Where xxx is the speaker and yyy is the message.
+        //         """;
+        //         var reply = await agent.GenerateReplyAsync(msgs.Concat([new TextMessage(Role.User, prompt)]), options, ct);
                 
-                // trim
-                var text = reply.GetContent();
-                var trimmedText = text!.TrimStart();
-                return new TextMessage(Role.Assistant, trimmedText, from: agent.Name);
-            })
-            .RegisterPrintMessage();
+        //         // trim
+        //         var text = reply.GetContent();
+        //         var trimmedText = text!.TrimStart();
+        //         return new TextMessage(Role.Assistant, trimmedText, from: agent.Name);
+        //     })
+        //     .RegisterPrintMessage();
 
-        // construct group chat
-        var workflow = new Graph();
+        // // construct group chat
+        // var workflow = new Graph();
 
-        // user <=> planner
-        workflow.AddTransition(Transition.Create(user, plannerAgent));
-        workflow.AddTransition(Transition.Create(plannerAgent, user));
+        // // user <=> planner
+        // workflow.AddTransition(Transition.Create(user, plannerAgent));
+        // workflow.AddTransition(Transition.Create(plannerAgent, user));
 
-        // user <=> manualSearchAgent
-        workflow.AddTransition(Transition.Create(user, manualSearchAgent));
-        workflow.AddTransition(Transition.Create(manualSearchAgent, user, canTransitionAsync: async (from, to, msgs) =>
-        {
-            var secondLastMessage = msgs.SkipLast(1).Last();
-            return secondLastMessage.From == to.Name;
-        }));
+        // // user <=> manualSearchAgent
+        // workflow.AddTransition(Transition.Create(user, manualSearchAgent));
+        // workflow.AddTransition(Transition.Create(manualSearchAgent, user, canTransitionAsync: async (from, to, msgs) =>
+        // {
+        //     var secondLastMessage = msgs.SkipLast(1).Last();
+        //     return secondLastMessage.From == to.Name;
+        // }));
 
-        // user <=> writer
-        workflow.AddTransition(Transition.Create(user, customerSupportAgent));
-        workflow.AddTransition(Transition.Create(customerSupportAgent, user, canTransitionAsync: async (from, to, msgs) =>
-        {
-            var secondLastMessage = msgs.SkipLast(1).Last();
-            return secondLastMessage.From == to.Name;
-        }));
+        // // user <=> writer
+        // workflow.AddTransition(Transition.Create(user, customerSupportAgent));
+        // workflow.AddTransition(Transition.Create(customerSupportAgent, user, canTransitionAsync: async (from, to, msgs) =>
+        // {
+        //     var secondLastMessage = msgs.SkipLast(1).Last();
+        //     return secondLastMessage.From == to.Name;
+        // }));
 
-        // planner <=> writer
-        workflow.AddTransition(Transition.Create(plannerAgent, customerSupportAgent));
-        workflow.AddTransition(Transition.Create(customerSupportAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
-        {
-            var secondLastMessage = msgs.SkipLast(1).Last();
-            return secondLastMessage.From == to.Name;
-        }));
+        // // planner <=> writer
+        // workflow.AddTransition(Transition.Create(plannerAgent, customerSupportAgent));
+        // workflow.AddTransition(Transition.Create(customerSupportAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
+        // {
+        //     var secondLastMessage = msgs.SkipLast(1).Last();
+        //     return secondLastMessage.From == to.Name;
+        // }));
 
-        // planner <=> manualSearchAgent
-        workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
-        workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
-        {
-            var secondLastMessage = msgs.SkipLast(1).Last();
-            return secondLastMessage.From == to.Name;
-        }));
+        // // planner <=> manualSearchAgent
+        // workflow.AddTransition(Transition.Create(plannerAgent, manualSearchAgent));
+        // workflow.AddTransition(Transition.Create(manualSearchAgent, plannerAgent, canTransitionAsync: async (from, to, msgs) =>
+        // {
+        //     var secondLastMessage = msgs.SkipLast(1).Last();
+        //     return secondLastMessage.From == to.Name;
+        // }));
 
-        //// manualSearchAgent <=> writer
-        //workflow.AddTransition(Transition.Create(manualSearchAgent, customerSupportAgent));
-        //workflow.AddTransition(Transition.Create(customerSupportAgent, manualSearchAgent));
+        // //// manualSearchAgent <=> writer
+        // //workflow.AddTransition(Transition.Create(manualSearchAgent, customerSupportAgent));
+        // //workflow.AddTransition(Transition.Create(customerSupportAgent, manualSearchAgent));
 
-        var groupChat = new GroupChat(
-            admin: groupAdminAgent,
-            workflow: workflow,
-            members: [user, plannerAgent, customerSupportAgent, manualSearchAgent]);
+        // var groupChat = new GroupChat(
+        //     admin: groupAdminAgent,
+        //     workflow: workflow,
+        //     members: [user, plannerAgent, customerSupportAgent, manualSearchAgent]);
 
-        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am manual_search, I can help you search the manual for more information.", from: manualSearchAgent.Name));
-        groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am customer_support, I can help you write responses or summarize the conversation.", from: customerSupportAgent.Name));
-        var maxRound = 10;
+        // groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am manual_search, I can help you search the manual for more information.", from: manualSearchAgent.Name));
+        // groupChat.AddInitializeMessage(new TextMessage(Role.Assistant, "I am customer_support, I can help you write responses or summarize the conversation.", from: customerSupportAgent.Name));
+        // var maxRound = 10;
 
-        // add context
-        var contextMessage = new TextMessage(Role.User, $$"""
-            ==== Context ====
-            <product_id>{{request.ProductId}}</product_id>
-            <product_name>{{product?.Model ?? "None specified"}}</product_name>
-            <customer_name>{{request.CustomerName}}</customer_name>
-            <summary>{{request.TicketSummary}}</summary>
+        // // add context
+        // var contextMessage = new TextMessage(Role.User, $$"""
+        //     ==== Context ====
+        //     <product_id>{{request.ProductId}}</product_id>
+        //     <product_name>{{product?.Model ?? "None specified"}}</product_name>
+        //     <customer_name>{{request.CustomerName}}</customer_name>
+        //     <summary>{{request.TicketSummary}}</summary>
 
-            The most recent message from the customer is this:
-            <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
-            =================
-            """, from: user.Name);
-        chatHistory.Insert(0, contextMessage);
-        while (maxRound > 0)
-        {
-            var nextReplies = await groupChat.CallAsync(
-                chatHistory: chatHistory,
-                maxRound: 1);
+        //     The most recent message from the customer is this:
+        //     <customer_message>{{request.TicketLastCustomerMessage}}</customer_message>
+        //     =================
+        //     """, from: user.Name);
+        // chatHistory.Insert(0, contextMessage);
+        // while (maxRound > 0)
+        // {
+        //     var nextReplies = await groupChat.CallAsync(
+        //         chatHistory: chatHistory,
+        //         maxRound: 1);
 
-            var nextReply = nextReplies.Last();
+        //     var nextReply = nextReplies.Last();
 
-            // if next reply is from user, then it's the user's round
-            if (nextReply.From == user.Name)
-            {
-                break;
-            }
-            else if (nextReply.GetContent() is string text)
-            {
-                // send the reply to the user only when it's not from manual helper
-                // because we don't want to directly expose the manual search results to the user
-                await httpContext.Response.WriteAsync(",\n");
-                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, text, From: nextReply.From)));
+        //     // if next reply is from user, then it's the user's round
+        //     if (nextReply.From == user.Name)
+        //     {
+        //         break;
+        //     }
+        //     else if (nextReply.GetContent() is string text)
+        //     {
+        //         // send the reply to the user only when it's not from manual helper
+        //         // because we don't want to directly expose the manual search results to the user
+        //         await httpContext.Response.WriteAsync(",\n");
+        //         await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.AnswerChunk, text, From: nextReply.From)));
 
-                // break if the reply is from planner and contains 'task completed'
-                if (nextReply.From == plannerAgent.Name && text.ToLower().Contains("the task is done."))
-                {
-                    break;
-                }
-            }
+        //         // break if the reply is from planner and contains 'task completed'
+        //         if (nextReply.From == plannerAgent.Name && text.ToLower().Contains("the task is done."))
+        //         {
+        //             break;
+        //         }
+        //     }
 
-            chatHistory.Add(nextReply);
-            maxRound--;
-        }
+        //     chatHistory.Add(nextReply);
+        //     maxRound--;
+        // }
 
         await httpContext.Response.WriteAsync("]");
     }

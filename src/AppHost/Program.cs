@@ -10,6 +10,12 @@ var isE2ETest = builder.Configuration["E2E_TEST"] == "true";
 
 var dbPassword = builder.AddParameter("PostgresPassword", secret: true);
 
+var orleans = builder.AddOrleans("default")
+              .WithDevelopmentClustering()
+              .WithMemoryStreaming("StreamProvider")
+              .WithMemoryGrainStorage("PubSubStore")
+              .WithMemoryGrainStorage("messages");
+
 var postgresServer = builder
     .AddPostgres("eshopsupport-postgres", password: dbPassword);
 var backendDb = postgresServer
@@ -59,6 +65,7 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(vectorDb.GetEndpoint("http"))
     .WithReference(pythonInference)
     .WithReference(redis)
+    .WithReference(orleans)
     .WithEnvironment("IdentityUrl", identityEndpoint)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", isE2ETest ? "test" : "dev"));
 

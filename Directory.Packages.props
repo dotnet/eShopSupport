@@ -14,6 +14,7 @@
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Orleans" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="AutoGen" Version="0.0.16" />
@@ -35,6 +36,9 @@
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.16.0-alpha" />
     <PackageVersion Include="Microsoft.SemanticKernel.Core" Version="1.16" />
     <PackageVersion Include="Microsoft.SemanticKernel" Version="1.16.0" />
+    <PackageVersion Include="Microsoft.Orleans.Server" Version="8.2.0" />
+    <PackageVersion Include="Microsoft.Orleans.Streaming" Version="8.2.0" />
+    <PackageVersion Include="Oagents.Orleans" Version="0.0.2-alpha.20240710143921" />
     <!-- Open Telemetry -->
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />

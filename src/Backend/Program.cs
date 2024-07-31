@@ -1,9 +1,14 @@
 ﻿using System.Configuration;
+using System.Data.Common;
+using Azure.AI.OpenAI;
 using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.PythonInference;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
@@ -32,6 +37,24 @@ builder.AddAzureBlobClient("eshopsupport-blobs");
 
 builder.AddChatCompletionService("chatcompletion", builder.Configuration["E2E_TEST_CHAT_COMPLETION_CACHE_DIR"]);
 builder.AddRedisClient("redis");
+
+builder.Services.AddKeyedSingleton("oagents", (sp, _) =>
+{
+    var client = sp.GetRequiredService<OpenAIClient>();
+    var connectionStringBuilder = new DbConnectionStringBuilder();
+     //TODO read from config
+    // connectionStringBuilder.ConnectionString = builder.Configuration.GetConnectionString(name);
+    //         if (!connectionStringBuilder.TryGetValue("Deployment", out var deploymentName))
+    //         {
+    //             throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
+    //         }
+    var deploymentName = "gpt-4o";
+    var builder = Kernel.CreateBuilder();
+    builder.AddAzureOpenAIChatCompletion(deploymentName,client);
+    return builder.Build();
+});
+
+builder.UseOrleans();
 
 JsonWebTokenHandler.DefaultInboundClaimTypeMap.Remove("sub");
 
