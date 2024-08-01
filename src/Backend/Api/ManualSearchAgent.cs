@@ -1,18 +1,16 @@
-﻿using eShopSupport.Backend.Services;
-using AutoGen.Core;
+﻿using System.ComponentModel;
 using System.Text;
-using Microsoft.SemanticKernel.Memory;
-using System.Text.RegularExpressions;
 using System.Text.Json;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel;
-using AutoGen.SemanticKernel;
-using System.ComponentModel;
-using AutoGen.SemanticKernel.Extension;
-using AutoGen.OpenAI;
-using Azure.AI.OpenAI;
+using System.Text.RegularExpressions;
+using AutoGen.Core;
 using AutoGen.OpenAI.Extension;
+using AutoGen.SemanticKernel;
+using AutoGen.SemanticKernel.Extension;
+using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
 
@@ -32,9 +30,9 @@ public partial class ManualSearchAgent : IAgent
     /// <returns></returns>
     [Function]
     [KernelFunction]
-    [Description("earch the manual. To Search a manual for pecific product, provide the product ID. Otherwise, search all manuals.")]
+    [Description("Search the manual. To Search a manual for pecific product, provide the product ID. Otherwise, search all manuals.")]
     public async Task<string> SearchManualAsync(
-        [Description("product ID.")] [DefaultValue(null)] int? productID,
+        [Description("product ID.")][DefaultValue(null)] int? productID,
         [Description("search phrase")] string searchPhrase)
     {
         if (_httpResponse != null)
@@ -84,6 +82,7 @@ public partial class ManualSearchAgent : IAgent
             name: this.Name,
             systemMessage: "You are a helpful manual search assistant. You always respond in JSON object.")
             .RegisterMessageConnector()
+            .RegisterStreamingMiddleware(new EventMessageMiddleware())
             .RegisterPrintMessage();
     }
 
@@ -108,7 +107,7 @@ public partial class ManualSearchAgent : IAgent
         var message = new TextMessage(Role.User, prompt);
         var reply = await _kernelChatAgent.GenerateReplyAsync(messages.Concat([message]), new GenerateReplyOptions()
         {
-            Temperature=0,
+            Temperature = 0,
         }, cancellationToken);
 
         // try parse the reply as a function call
@@ -132,7 +131,7 @@ public partial class ManualSearchAgent : IAgent
             {
                 var searchResult = await SearchManualAsync(obj.productID, obj.searchPhrase);
 
-                return new TextMessage(Role.Assistant, searchResult, from: this.Name);
+                return new TextMessage(Role.Assistant, searchResult, from: this.Name).WithEvent(AssistantEvent.CompleteStep);
             }
         }
         catch (JsonException)
@@ -141,7 +140,7 @@ public partial class ManualSearchAgent : IAgent
             // ignore
         }
 
-        return new TextMessage(Role.Assistant, "no information found from manual", from: this.Name);
+        return new TextMessage(Role.Assistant, "no information found from manual", from: this.Name).WithEvent(AssistantEvent.CompleteStep);
     }
 
     private static int? GetProductId(MemoryQueryResult result)

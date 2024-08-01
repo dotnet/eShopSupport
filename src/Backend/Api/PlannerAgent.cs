@@ -27,6 +27,7 @@ public class PlannerAgent : IAgent
             You are helping user resolve customer tickets. Based on the context, suggest the next step for the following agents to handle.
             """)
             .RegisterMessageConnector()
+            .RegisterStreamingMiddleware(new EventMessageMiddleware())
             .RegisterPrintMessage();
         this._task = task;
     }
@@ -59,16 +60,11 @@ public class PlannerAgent : IAgent
                 }
             }
             var taskCompleteCheckPrompt = $$"""
-
-            # previous steps
-            ```markdown
-            {{stepPromptBuilder.ToString()}}
-            ```
-
             # task
-            ```task
             {{_task}}
-            ```
+
+            # completed steps
+            {{stepPromptBuilder.ToString()}}
             
             Determine if more steps are needed to complete the task. Reply with the following JSON object:
             ```json
@@ -85,7 +81,7 @@ public class PlannerAgent : IAgent
 
             if (taskCompleteCheck.GetContent()?.ToLower().Contains("\"need_more_steps\": false") is true)
             {
-                return new TextMessage(Role.Assistant, "The task is done.", from: this.Name);
+                return new TextMessage(Role.Assistant, "The task is done.", from: this.Name).WithEvent(AssistantEvent.CompleteTask);
             }
         }
 
@@ -106,6 +102,8 @@ public class PlannerAgent : IAgent
         var jsonReply = await innerAgent.GenerateReplyAsync(messages.Concat([message]), options, cancellationToken);
 
         // prompt it nicely
-        return await innerAgent.SendAsync("prompt it in the format of @<assigned_agent>, <step>, make your answer short.", chatHistory: [jsonReply]);
+        var finalReply = await innerAgent.SendAsync("prompt it in the format of @<assigned_agent>, <step>, make your answer short.", chatHistory: [jsonReply]);
+
+        return finalReply.WithEvent(AssistantEvent.CreateStep);
     }
 }

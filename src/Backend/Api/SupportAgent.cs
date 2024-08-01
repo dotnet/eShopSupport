@@ -32,6 +32,7 @@ public class SupportAgent : IAgent
             You are support agent. Based on the context, provide an answer to the user's question.
             """)
             .RegisterMessageConnector()
+            .RegisterStreamingMiddleware(new EventMessageMiddleware())
             .RegisterPrintMessage();
     }
     public string Name => "customer_support";
@@ -91,6 +92,6 @@ public class SupportAgent : IAgent
             }
         }
 
-        return reply;
+        return reply.WithEvent(AssistantEvent.WriteReply);
     }
 }

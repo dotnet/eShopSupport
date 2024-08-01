@@ -38,7 +38,7 @@
     List<MessageState> messages = new();
     ElementReference writeMessageElement;
     string? userMessageText;
-    string[] suggestions = ["What does the manual say about this?", "Write a suggested reply to the customer."];
+    string[] suggestions = ["@manual_search, What does the manual say about this?", "@customer_support, Write a suggested reply to the customer."];
 
     [Parameter, EditorRequired]
     public TicketDetailsResult? Ticket { get; set; }
