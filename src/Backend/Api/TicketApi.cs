@@ -206,6 +206,6 @@ public static class TicketApi
         dbContext.Tickets.Add(ticket);
         await dbContext.SaveChangesAsync();
 
-        summarizer.UpdateSummary(ticket.TicketId);
+        summarizer.UpdateSummary(ticket.TicketId, enforceRateLimit: true);
     }
 }
