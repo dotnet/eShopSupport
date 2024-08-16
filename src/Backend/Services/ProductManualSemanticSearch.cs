@@ -8,7 +8,7 @@ using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Services;
 
-public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, HttpClient httpClient)
+public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, IServiceProvider services)
 {
     private const string ManualCollectionName = "manuals";
 
@@ -24,7 +24,9 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
                     new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
                 }
             };
-        var response = await httpClient.PostAsync($"http://vector-db/collections/{ManualCollectionName}/points/search",
+
+        var httpClient = services.GetQdrantHttpClient("vector-db");
+        var response = await httpClient.PostAsync($"collections/{ManualCollectionName}/points/search",
             JsonContent.Create(new
             {
                 vector = embedding,
