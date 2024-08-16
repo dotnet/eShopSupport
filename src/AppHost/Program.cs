@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using Projects;
 
-
 var builder = DistributedApplication.CreateBuilder(args);
 builder.Configuration.Sources.Add(new JsonConfigurationSource { Path = "appsettings.Local.json", Optional = true });
 
@@ -16,8 +15,7 @@ var backendDb = postgresServer
     .AddDatabase("backenddb");
 
 var vectorDb = builder
-    .AddContainer("vector-db", "qdrant/qdrant", "latest")
-    .WithHttpEndpoint(port: 62392, targetPort: 6333);
+    .AddQdrant("vector-db");
 
 var identityServer = builder.AddProject<IdentityServer>("identity-server")
     .WithExternalHttpEndpoints();
@@ -56,7 +54,7 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(backendDb)
     .WithReference(chatCompletion)
     .WithReference(blobStorage)
-    .WithReference(vectorDb.GetEndpoint("http"))
+    .WithReference(vectorDb)
     .WithReference(pythonInference)
     .WithReference(redis)
     .WithEnvironment("IdentityUrl", identityEndpoint)

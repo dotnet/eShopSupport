@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using eShopSupport.Backend.Api;
+﻿using eShopSupport.Backend.Api;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.PythonInference;
@@ -15,12 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 builder.AddNpgsqlDbContext<AppDbContext>("backenddb");
-builder.Services.AddScoped(s =>
-{
-    var httpClient = s.GetRequiredService<HttpClient>();
-    httpClient.BaseAddress = new Uri("http://vector-db");
-    return new QdrantMemoryStore(httpClient, 384);
-});
+
+builder.AddQdrantHttpClient("vector-db");
+builder.Services.AddScoped(s => new QdrantMemoryStore(
+    s.GetQdrantHttpClient("vector-db"), 384));
+
 builder.Services.AddScoped<IMemoryStore>(s => s.GetRequiredService<QdrantMemoryStore>());
 builder.Services.AddScoped<ITextEmbeddingGenerationService, LocalTextEmbeddingGenerationService>();
 builder.Services.AddScoped<ISemanticTextMemory, SemanticTextMemory>();
