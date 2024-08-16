@@ -1,12 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using Azure;
+using System.Threading.RateLimiting;
 using eShopSupport.Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Npgsql.Internal;
 using StackExchange.Redis;
 
 namespace eShopSupport.Backend.Services;
@@ -15,9 +13,35 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
 {
     private static JsonSerializerOptions SerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-    public void UpdateSummary(int ticketId)
+    // Because this LLM call can be triggered by external end-user actions, it's helpful to impose a rate limit
+    // to prevent resource consumption abuse. If the rate limit is exceeded, we'll simply not compute updated summaries
+    // for a while, but everything else will continue to work. In a real application, also consider:
+    // - Adjusting the parameters based on your traffic and usage patterns
+    // - Scoping the rate limit to be per-user
+    private static TokenBucketRateLimiter RateLimiter = new(new()
     {
-        _ = UpdateSummaryAsync(ticketId);
+        // With these settings, we're limited to generating one summary every 2 seconds as a long-run average, but
+        // can burst to up to 100 summaries in a short period if it's been several minutes since the last one.
+        AutoReplenishment = true,
+        TokenLimit = 100,
+        ReplenishmentPeriod = TimeSpan.FromSeconds(10),
+        TokensPerPeriod = 5,
+    });
+
+    public void UpdateSummary(int ticketId, bool enforceRateLimit)
+    {
+        if (enforceRateLimit)
+        {
+            using var lease = RateLimiter.AttemptAcquire();
+            if (lease.IsAcquired)
+            {
+                _ = UpdateSummaryAsync(ticketId);
+            }
+        }
+        else
+        {
+            _ = UpdateSummaryAsync(ticketId);
+        }
     }
 
     private async Task UpdateSummaryAsync(int ticketId)
