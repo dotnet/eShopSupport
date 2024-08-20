@@ -5,7 +5,7 @@ Reference to the architecture here: [Architecture.pptx](https://github.com/dotne
 
 ### Prerequisites
 
-- Clone the eShop repository: [https://github.com/dotnet/eShopSupport](https://github.com/dotnet/eShopSupport)
+- Clone the eShopSupport repository: [https://github.com/dotnet/eShopSupport](https://github.com/dotnet/eShopSupport)
 - Ensure you're on the lastest version of Products
 
 #### Windows with Visual Studio
