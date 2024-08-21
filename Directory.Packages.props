@@ -48,7 +48,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0-release-24352-06" />
     <PackageVersion Include="xunit" Version="2.9.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
-    <PackageVersion Include="Duende.IdentityServer" Version="7.0.5" />
+    <PackageVersion Include="Duende.IdentityServer" Version="7.0.6" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2-dev-00341" />
   </ItemGroup>
 </Project>
