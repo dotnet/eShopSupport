@@ -27,13 +27,16 @@ This sample also demonstrates the following development practices:
 
 ### Prerequisites
 
+- A device with an Nvidia GPU (see [workaround for running on the CPU](https://github.com/dotnet/eShopSupport/issues/19))
 - Clone the eShopSupport repository: https://github.com/dotnet/eshopsupport
 - [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
+- [Install Python 3.12.5](https://www.python.org/downloads/release/python-3125/)
 
 #### Windows with Visual Studio
-- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/).
+- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/)
   - Select the following workloads:
     - `ASP.NET and web development` workload.
+    - `Python Development` workload.
     - `.NET Aspire SDK` component in `Individual components`.
 
 #### Mac, Linux, & Windows without Visual Studio
@@ -47,10 +50,24 @@ This sample also demonstrates the following development practices:
   ```
 - (Optionally) Install [Visual Studio Code](https://code.visualstudio.com) with the [C# Dev Kit extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
 
+#### Install Python requirements
+
+From the Terminal, at the root of the cloned repo, run:
+
+```powershell
+pip install -r src/PythonInference/requirements.txt
+```
+
+**Note:** If the above command doesn't work on Windows, use the following command:
+
+```powershell
+py -m pip install -r src/PythonInference/requirements.txt
+```
+
 ### Running the solution
 
 > [!WARNING]
-> Remember to ensure that Docker is started
+> Remember to ensure that Docker is started.
 
 * (Windows only) Run the application from Visual Studio:
   - Open the `eShopSupport.sln` file in Visual Studio
