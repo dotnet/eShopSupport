@@ -1,10 +1,23 @@
 # eShopSupport 
 
-A sample .NET application showcasing support via AI for an e-commerce website using a services-based architecture with .NET Aspire.
+A sample .NET application showcasing common use cases and development practices for build AI solutions in .NET (Generative AI, specifically). This sample demonstrates a customer support application for an e-commerce website using a services-based architecture with .NET Aspire. It includes support for the following AI use cases:
+
+* Text classification, applying labels based on content
+* Sentiment analysis based on message content
+* Summarization of large sets of text
+* Synthetic data generation, creating test content for the sample
+* Chat bot interactions with chat history and suggested responses
 
 <img width=400 align=top src=https://github.com/user-attachments/assets/5a41493f-565b-4dd0-ae31-1b5c3c2f6d22>
 
 <img width=400 align=top src=https://github.com/user-attachments/assets/7930a940-bb31-4dc0-b5f6-738d43dfcfe5>
+
+This sample also demonstrates the following development practices:
+
+* Developing a solution locally, using small local models
+* Evaluating the quality of AI responses using grounded Q&A data
+* Leveraging Python projects as part of a .NET Aspire solution
+* Deploying the application, including small local models, to the Cloud (coming soon)
 
 ## Architecture
 
@@ -14,13 +27,16 @@ A sample .NET application showcasing support via AI for an e-commerce website us
 
 ### Prerequisites
 
+- A device with an Nvidia GPU (see [workaround for running on the CPU](https://github.com/dotnet/eShopSupport/issues/19))
 - Clone the eShopSupport repository: https://github.com/dotnet/eshopsupport
 - [Install & start Docker Desktop](https://docs.docker.com/engine/install/)
+- [Install Python 3.12.5](https://www.python.org/downloads/release/python-3125/)
 
 #### Windows with Visual Studio
-- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/).
+- Install [Visual Studio 2022 version 17.10 or newer](https://visualstudio.microsoft.com/vs/)
   - Select the following workloads:
     - `ASP.NET and web development` workload.
+    - `Python Development` workload.
     - `.NET Aspire SDK` component in `Individual components`.
 
 #### Mac, Linux, & Windows without Visual Studio
@@ -32,16 +48,31 @@ A sample .NET application showcasing support via AI for an e-commerce website us
   dotnet workload install aspire
   dotnet restore eShopSupport.sln
   ```
+- (Optionally) Install [Visual Studio Code](https://code.visualstudio.com) with the [C# Dev Kit extension](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csdevkit)
+
+#### Install Python requirements
+
+From the Terminal, at the root of the cloned repo, run:
+
+```powershell
+pip install -r src/PythonInference/requirements.txt
+```
+
+**Note:** If the above command doesn't work on Windows, use the following command:
+
+```powershell
+py -m pip install -r src/PythonInference/requirements.txt
+```
 
 ### Running the solution
 
 > [!WARNING]
-> Remember to ensure that Docker is started
+> Remember to ensure that Docker is started.
 
 * (Windows only) Run the application from Visual Studio:
   - Open the `eShopSupport.sln` file in Visual Studio
   - Ensure that `AppHost` is your startup project
-  - Hit Ctrl-F5 to launch Aspire
+  - Hit Ctrl-F5 to launch .NET Aspire
 
 * Or run the application from your terminal:
 
