@@ -1,6 +1,6 @@
 ﻿@page "/"
 @inherits RedisSubscribingComponent
-
+@using Microsoft.AspNetCore.Components.QuickGrid
 @using StackExchange.Redis
 @using eShopSupport.ServiceDefaults.Clients.Backend
 @using eShopSupport.StaffWebUI.Components.Pages.Tickets.Columns
@@ -10,48 +10,35 @@
 
 <Title>Tickets</Title>
 
-<div class="tickets-page">
+<div class="tickets-page ensure-page-scrollbar">
     <TicketsFilter @bind-Filter="@filter" @bind-Filter:after="@OnFilterChangedAsync" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
-    <div class="tickets-grid-wrapper">
-        <FluentDataGrid @ref="ticketsGrid"
-                        Class="tickets-grid"
-                        TGridItem="ListTicketsResultItem"
-                        ItemsProvider="@TicketsProvider"
-                        ItemKey="@(t => t.TicketId)"
-                        Virtualize="true"
-                        ItemSize="34"
-                        GenerateHeader="GenerateHeaderOption.Sticky"
-                        GridTemplateColumns="0.08fr 0.2fr 0.5fr 0.11fr 0.11fr"
-                        ShowHover="true"
-                        Loading="@(totalOpenCount == null && totalClosedCount == null)">
-            <LoadingContent>
-                <FluentStack Class="loader" Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
-                    Loading tickets...<br />
-                    <FluentProgress Width="50vw" />
-                </FluentStack>
-            </LoadingContent>
-            <ChildContent>
-                <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" InitialSortDirection="@SortDirection.Descending" />
-                <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
-                <LinkTemplateColumn Href="@TicketHref" Title="Summary" Class="ticket-summary">
-                    @TicketTypeIcon(context)
-                    <span class="spacer"></span>
-                    @context.ShortSummary
-                </LinkTemplateColumn>
-                <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction">
-                    <SatisfactionIndicator Satisfaction="@context.CustomerSatisfaction" />
-                </LinkTemplateColumn>
-                <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
-            </ChildContent>
-        </FluentDataGrid>
-    </div>
+    <QuickGrid @ref="ticketsGrid" TGridItem="ListTicketsResultItem" ItemKey="@(t => t.TicketId)" Virtualize="true" ItemSize="34" ItemsProvider="@TicketsProvider" Class="tickets-grid">
+        <ChildContent>
+            <LinkPropertyColumn Href="@TicketHref" Title="#" Property="@(t => t.TicketId)" Sortable="true" Align="Align.Center" Class="ticket-id" IsDefaultSortColumn="true" InitialSortDirection="@SortDirection.Descending" />
+            <LinkPropertyColumn Href="@TicketHref" Title="Customer" Property="@(t => t.CustomerFullName)" Sortable="true" Class="ticket-customer" />
+            <LinkTemplateColumn Href="@TicketHref" Title="Summary" Class="ticket-summary">
+                @TicketTypeIcon(context)
+                <span class="spacer"></span>
+                @context.ShortSummary
+            </LinkTemplateColumn>
+            <LinkTemplateColumn Href="@TicketHref" Title="Satisfaction" Align="Align.Center" SortBy="@SortBySatisfaction" Class="ticket-satisfaction">
+                <SatisfactionIndicator Satisfaction="@context.CustomerSatisfaction" />
+            </LinkTemplateColumn>
+            <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
+        </ChildContent>
+    </QuickGrid>
+
+    @if (totalOpenCount == null && totalClosedCount == null)
+    {
+        <Microsoft.FluentUI.AspNetCore.Components.FluentProgress Class="tickets-loading" />
+    }
 </div>
 
 @code {
     private readonly GridItemsProvider<ListTicketsResultItem> TicketsProvider;
     private readonly static Func<ListTicketsResultItem, string> TicketHref = t => $"ticket/{t.TicketId}";
     private readonly static GridSort<ListTicketsResultItem> SortBySatisfaction = GridSort<ListTicketsResultItem>.ByAscending(x => x.CustomerSatisfaction);
-    private FluentDataGrid<ListTicketsResultItem>? ticketsGrid;
+    private QuickGrid<ListTicketsResultItem>? ticketsGrid;
     private int? totalOpenCount, totalClosedCount;
     private Filter filter = default!;
 
@@ -104,9 +91,4 @@
 
     protected override Task OnRedisNotificationAsync(RedisValue value)
         => ticketsGrid?.RefreshDataAsync() ?? Task.CompletedTask;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JS.InvokeVoidAsync("setFocus", "tickets-grid");
-    }
 }
