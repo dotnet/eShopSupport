@@ -31,7 +31,3 @@ window.LoadingThemeInfo = LoadingThemeInfo;
 window.scrollToTop = function () {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 }
-
-window.setFocus = function (element) {
-    document.getElementsByClassName(element)[0].focus();
-}
