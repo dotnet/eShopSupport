@@ -12,13 +12,13 @@
     text-decoration: none;
     color: var(--neutral-foreground-rest);
     margin: -0.4rem;
-    padding: 0.4rem;
+    padding: 0.2rem;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
 ::deep .loader {
-    height: 400px;
+    height: 50vh;
 }
 
 .spacer {

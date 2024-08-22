@@ -10,20 +10,22 @@
 
 <Title>Tickets</Title>
 
-<div class="tickets-page ensure-page-scrollbar">
+<div class="tickets-page">
     <TicketsFilter @bind-Filter="@filter" @bind-Filter:after="@OnFilterChangedAsync" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
+    <div class="tickets-grid-wrapper">
         <FluentDataGrid @ref="ticketsGrid"
+                        Class="tickets-grid"
                         TGridItem="ListTicketsResultItem"
                         ItemsProvider="@TicketsProvider"
                         ItemKey="@(t => t.TicketId)"
                         Virtualize="true"
                         ItemSize="34"
                         GenerateHeader="GenerateHeaderOption.Sticky"
-                        GridTemplateColumns="100px 20% 60% 120px 120px"
+                        GridTemplateColumns="0.08fr 0.2fr 0.5fr 0.11fr 0.11fr"
                         ShowHover="true"
                         Loading="@(totalOpenCount == null && totalClosedCount == null)">
             <LoadingContent>
-                <FluentStack Class="Loader" Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentStack Class="loader" Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
                     Loading tickets...<br />
                     <FluentProgress Width="50vw" />
                 </FluentStack>
@@ -42,6 +44,7 @@
                 <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
             </ChildContent>
         </FluentDataGrid>
+    </div>
 </div>
 
 @code {
@@ -101,4 +104,9 @@
 
     protected override Task OnRedisNotificationAsync(RedisValue value)
         => ticketsGrid?.RefreshDataAsync() ?? Task.CompletedTask;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("setFocus", "tickets-grid");
+    }
 }
