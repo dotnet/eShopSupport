@@ -3,6 +3,10 @@ html.dark-mode {
     color-scheme: dark;
 }
 
+html:has(.ensure-page-scrollbar) {
+    overflow-y: scroll;
+}
+
 h1:focus {
     outline: none;
 }

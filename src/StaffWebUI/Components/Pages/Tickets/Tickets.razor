@@ -12,7 +12,6 @@
 
 <div class="tickets-page ensure-page-scrollbar">
     <TicketsFilter @bind-Filter="@filter" @bind-Filter:after="@OnFilterChangedAsync" TotalOpenCount="@totalOpenCount" TotalClosedCount="@totalClosedCount" />
-    <div class="tickets-grid-wrapper" tabindex="-1">
         <FluentDataGrid @ref="ticketsGrid"
                         TGridItem="ListTicketsResultItem"
                         ItemsProvider="@TicketsProvider"
@@ -21,11 +20,10 @@
                         ItemSize="34"
                         GenerateHeader="GenerateHeaderOption.Sticky"
                         GridTemplateColumns="100px 20% 60% 120px 120px"
-                        Style="height: 100%;"
                         ShowHover="true"
                         Loading="@(totalOpenCount == null && totalClosedCount == null)">
             <LoadingContent>
-                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentStack Class="Loader" Orientation="Orientation.Vertical" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center">
                     Loading tickets...<br />
                     <FluentProgress Width="50vw" />
                 </FluentStack>
@@ -44,7 +42,6 @@
                 <LinkPropertyColumn Href="@TicketHref" Title="Messages" Property="@(t => t.NumMessages)" Sortable="true" Align="Align.Center" Class="ticket-messages" />
             </ChildContent>
         </FluentDataGrid>
-    </div>
 </div>
 
 @code {

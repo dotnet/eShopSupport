@@ -17,6 +17,10 @@
     overflow: hidden;
 }
 
+::deep .loader {
+    height: 400px;
+}
+
 .spacer {
     display: inline-block;
 }
