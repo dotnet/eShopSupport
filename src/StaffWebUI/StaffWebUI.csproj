@@ -10,7 +10,6 @@
   <ItemGroup>
     <PackageReference Include="Aspire.StackExchange.Redis" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.DataGrid.EntityFrameworkAdapter" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />

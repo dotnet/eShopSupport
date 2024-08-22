@@ -2,80 +2,9 @@
     --filter-bar-height: 3.25rem;
 }
 
-::deep .tickets-grid {
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 0;
-    width: 100%;
-    --col-gap: 0.1rem;
-}
-
-::deep thead {
-    position: sticky;
-    top: calc(var(--header-height) + var(--filter-bar-height));
-    background: var(--neutral-fill-stealth-active);
-    z-index: 1;
-    border-bottom: 1px solid silver;
-}
-
-::deep .col-title {
-    font-weight: 600 !important;
-    padding: 0.4rem 0.8rem !important;
-}
-
-::deep .tickets-grid td {
-    border-bottom: calc(var(--stroke-width)* 1px) solid var(--neutral-stroke-divider-rest);
-    height: 34px;
-}
-
-::deep th {
-    padding: 0 0 0.2rem 0;
-    border-bottom: calc(var(--stroke-width)* 1px) solid var(--neutral-layer-4);
-}
-
-    ::deep th.ticket-id {
-        width: 100px;
-    }
-
-    ::deep th.ticket-satisfaction {
-        width: 120px;
-    }
-
-    ::deep th.ticket-messages {
-        width: 120px;
-    }
-
-    ::deep th.ticket-customer {
-        width: 20%;
-    }
-
-    ::deep th.ticket-summary {
-        width: 60%;
-    }
-
-::deep .tickets-grid tbody > tr > td {
-    white-space: nowrap;
-    padding-left: 0.8rem;
-}
-
-::deep .tickets-grid thead > tr > th button {
-    border-radius: calc(var(--control-corner-radius)* 1px);
-    color: var(--neutral-foreground-rest);
-    padding: 0.4rem 0.8rem !important;
-}
-
-::deep .sort-indicator {
-    display: none;
-}
-
-::deep th.col-sort-asc .sort-indicator, ::deep th.col-sort-desc .sort-indicator {
-    display: block;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' slot='end' style='width: 24px; stroke-width:0.5px; stroke: rgb(45,156,230); fill:rgb(45,156,230)' focusable='false' viewBox='0 0 24 24' aria-hidden='true'%3E%3C!--!--%3E%3Cpath d='M11.65 4h.1c.38 0 .7.28.74.65l.01.1v12.7l3.22-3.23c.27-.26.68-.29.98-.07l.08.07c.27.27.3.69.07.98l-.07.09-4.5 4.5a.75.75 0 0 1-.97.07l-.09-.07-4.5-4.5a.75.75 0 0 1 .98-1.14l.08.07L11 17.44V4.75c0-.38.28-.7.65-.74l.1-.01h-.1Z'%3E%3C/path%3E%3C/svg%3E%0A");
-    opacity: 1;
-}
-
-::deep tbody tr:hover {
-    background: var(--neutral-fill-stealth-hover);
+.tickets-grid-wrapper {
+    height: calc(100dvh - calc(var(--header-height) + var(--filter-bar-height)));
+    overflow: auto;
 }
 
 ::deep .link-col {
@@ -88,15 +17,6 @@
     overflow: hidden;
 }
 
-::deep .ticket-summary {
-    filter: saturate(0.7);
-}
-
 .spacer {
     display: inline-block;
-}
-
-::deep .tickets-loading {
-    margin: 20vh auto;
-    width: 50vw;
 }
