@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
-    <AspireVersion>8.0.2</AspireVersion>
+    <AspireVersion>8.2.0</AspireVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
