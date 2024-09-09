@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.SemanticKernel.Core" />
     <PackageReference Include="PdfPig" />
     <PackageReference Include="SmartComponents.LocalEmbeddings.SemanticKernel" />
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0" />
   </ItemGroup>
 
 </Project>
