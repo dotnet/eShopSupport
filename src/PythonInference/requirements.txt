@@ -59,7 +59,7 @@ transformers==4.41.1
 typer==0.12.3
 typing_extensions==4.12.0
 ujson==5.10.0
-urllib3==2.2.1
+urllib3==2.2.2
 uvicorn==0.30.0
 watchfiles==0.22.0
 websockets==12.0
