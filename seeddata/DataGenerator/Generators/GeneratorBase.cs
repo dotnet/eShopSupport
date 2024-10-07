@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +24,7 @@ public abstract class GeneratorBase<T>
 
     public GeneratorBase(IServiceProvider services)
     {
-        ChatCompletionService = services.GetRequiredService<IChatCompletionService>();
+        ChatCompletionService = services.GetRequiredService<IChatClient>();
     }
 
     public async Task<IReadOnlyList<T>> GenerateAsync()
@@ -55,39 +53,30 @@ public abstract class GeneratorBase<T>
 
     protected abstract IAsyncEnumerable<T> GenerateCoreAsync();
 
-    protected IChatCompletionService ChatCompletionService { get; }
+    protected IChatClient ChatCompletionService { get; }
 
     protected async Task<string> GetChatCompletion(string prompt)
     {
         // Instructing it to end the content with END_OF_CONTENT is beneficial because it often tries to add a suffix like
         // "I have done the task, hope this helps!". We can avoid that by making it stop before that.
-        var executionSettings = new OpenAIPromptExecutionSettings { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] };
-        var chatHistory = new ChatHistory();
-        chatHistory.AddUserMessage(prompt);
-        var response = await ChatCompletionService.GetChatMessageContentAsync(chatHistory, executionSettings);
-        return response.ToString();
+        var chatOptions = new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] };
+        var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
+        var response = await ChatCompletionService.CompleteAsync(chatHistory, chatOptions);
+        return response.Message.Text ?? string.Empty;
     }
 
-    protected async Task<TResponse> GetAndParseJsonChatCompletion<TResponse>(string prompt, int? maxTokens = null, object? tools = null)
+    protected async Task<TResponse> GetAndParseJsonChatCompletion<TResponse>(string prompt, int? maxTokens = null, IList<AITool>? tools = null)
     {
-        var executionSettings = new OpenAIPromptExecutionSettings
+        var options = new ChatOptions
         {
-            MaxTokens = maxTokens,
+            // MaxOutputTokens = maxTokens, // TODO: Re-enable when https://github.com/dotnet/temp-ai-abstractions/issues/294 is fixed
             Temperature = 0.9f,
-            ResponseFormat = "json_object",
-            ToolCallBehavior = tools is null ? default : ToolCallBehavior.AutoInvokeKernelFunctions
+            ResponseFormat = ChatResponseFormat.Json,
+            Tools = tools,
         };
 
-        var kernel = (Kernel?)null;
-        if (tools is not null)
-        {
-            kernel = new();
-            kernel.Plugins.AddFromObject(tools);
-        }
-
-        var chatHistory = new ChatHistory();
-        chatHistory.AddUserMessage(prompt);
-        var response = await RunWithRetries(() => ChatCompletionService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel));
+        var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
+        var response = await RunWithRetries(() => ChatCompletionService.CompleteAsync(chatHistory, options));
         var responseString = response.ToString();
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,

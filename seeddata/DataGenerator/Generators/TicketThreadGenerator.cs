@@ -1,17 +1,14 @@
 ﻿using eShopSupport.DataGenerator.Model;
-using Microsoft.SemanticKernel;
 using System.Text;
 using System.ComponentModel;
-using Microsoft.SemanticKernel.Text;
-using Microsoft.SemanticKernel.Embeddings;
-using SmartComponents.LocalEmbeddings.SemanticKernel;
 using System.Numerics.Tensors;
+using Microsoft.Extensions.AI;
 
 namespace eShopSupport.DataGenerator.Generators;
 
 public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<Product> products, IReadOnlyList<Manual> manuals, IServiceProvider services) : GeneratorBase<TicketThread>(services)
 {
-    private readonly ITextEmbeddingGenerationService embedder = new LocalTextEmbeddingGenerationService();
+    private readonly IEmbeddingGenerator<string, Embedding<float>> embedder = new LocalTextEmbeddingGenerator();
 
     protected override object GetId(TicketThread item) => item.TicketId;
 
@@ -139,8 +136,9 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
 
         var manual = manuals.Single(m => m.ProductId == product.ProductId);
         var tools = new AssistantTools(embedder, manual);
+        var searchManual = AIFunctionFactory.Create(tools.SearchUserManualAsync);
 
-        return await GetAndParseJsonChatCompletion<Response>(prompt, tools: tools);
+        return await GetAndParseJsonChatCompletion<Response>(prompt, tools: [searchManual]);
     }
 
     public static string FormatMessagesForPrompt(IReadOnlyList<TicketThreadMessage> messages)
@@ -159,19 +157,19 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         public bool ShouldClose { get; set; }
     }
 
-    private class AssistantTools(ITextEmbeddingGenerationService embedder, Manual manual)
+    private class AssistantTools(IEmbeddingGenerator<string, Embedding<float>> embedder, Manual manual)
     {
-        [KernelFunction, Description("Searches for information in the product's user manual.")]
+        [Description("Searches for information in the product's user manual.")]
         public async Task<string> SearchUserManualAsync([Description("text to look for in user manual")] string query)
         {
             // Obviously it would be more performant to chunk and embed each manual only once, but this is simpler for now
-            var chunks = TextChunker.SplitPlainTextParagraphs([manual.MarkdownText], 100);
-            var embeddings = await embedder.GenerateEmbeddingsAsync(chunks);
+            var chunks = SplitPlainTextParagraphs(manual.MarkdownText, 100);
+            var embeddings = await embedder.GenerateAsync(chunks);
             var candidates = chunks.Zip(embeddings);
-            var queryEmbedding = await embedder.GenerateEmbeddingAsync(query);
+            var queryEmbedding = (await embedder.GenerateAsync(query)).Single();
 
             var closest = candidates
-                .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Span, queryEmbedding.Span) })
+                .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Vector.Span, queryEmbedding.Vector.Span) })
                 .OrderByDescending(c => c.Similarity)
                 .Take(3)
                 .Where(c => c.Similarity > 0.6f)
@@ -184,6 +182,17 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
             else
             {
                 return "The manual contains no relevant information about this";
+            }
+        }
+
+        private IEnumerable<string> SplitPlainTextParagraphs(string markdownText, int maxLength)
+        {
+            // TODO: Actually prefer to split on paragraph boundaries
+            for (var pos = 0; pos < markdownText.Length;)
+            {
+                var chunkLen = Math.Min(maxLength, markdownText.Length - pos);
+                yield return markdownText.Substring(pos, chunkLen);
+                pos += chunkLen;
             }
         }
     }
