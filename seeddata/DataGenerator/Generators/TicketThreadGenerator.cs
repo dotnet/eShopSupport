@@ -163,7 +163,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         public async Task<string> SearchUserManualAsync([Description("text to look for in user manual")] string query)
         {
             // Obviously it would be more performant to chunk and embed each manual only once, but this is simpler for now
-            var chunks = SplitPlainTextParagraphs(manual.MarkdownText, 100);
+            var chunks = SplitIntoChunks(manual.MarkdownText, 200).ToList();
             var embeddings = await embedder.GenerateAsync(chunks);
             var candidates = chunks.Zip(embeddings);
             var queryEmbedding = (await embedder.GenerateAsync(query)).Single();
@@ -186,16 +186,28 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         }
 
         // Note: this is not very efficient. Consider using a chunking library.
-        private IEnumerable<string> SplitPlainTextParagraphs(string markdownText, int maxLength)
+        private IEnumerable<string> SplitIntoChunks(string markdownText, int maxLength, SeparatorMode mode = SeparatorMode.Paragraph)
         {
-            var currentChunk = string.Empty;
-            var paragraphs = markdownText.Split("\n\n", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-            for (var paragraphIndex = 0; paragraphIndex < paragraphs.Length; paragraphIndex++)
+            string[] separators = mode switch
             {
-                var paragraph = paragraphs[paragraphIndex];
-                if (currentChunk.Length + paragraph.Length <= maxLength)
+                SeparatorMode.Paragraph => ["\n\n", "\r\n\r\n"],
+                SeparatorMode.Sentence => [". "],
+                SeparatorMode.Word => [" "],
+                _ => throw new NotImplementedException()
+            };
+            var currentChunk = string.Empty;
+            var blocks = markdownText.Split(separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            for (var blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+            {
+                var block = blocks[blockIndex];
+                if (currentChunk.Length + block.Length <= maxLength)
                 {
-                    currentChunk += paragraph;
+                    if (!string.IsNullOrEmpty(currentChunk))
+                    {
+                        currentChunk += separators.First();
+                    }
+
+                    currentChunk += block;
                 }
                 else
                 {
@@ -205,18 +217,36 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
                         currentChunk = string.Empty;
                     }
 
-                    if (paragraph.Length <= maxLength)
+                    if (block.Length <= maxLength)
                     {
-                        currentChunk = paragraph;
+                        currentChunk = block;
                     }
                     else
                     {
-                        // This paragraph alone is too big to fit in one chunk, so just chop arbitrarily
-                        for (var pos = 0; pos < paragraph.Length;)
+                        // This block alone is too big to fit in one chunk, so use a narrower split
+                        SeparatorMode? nextMode = mode switch
                         {
-                            var chunkLength = Math.Min(maxLength, paragraph.Length - pos);
-                            yield return paragraph.Substring(pos, chunkLength);
-                            pos += chunkLength;
+                            SeparatorMode.Paragraph => SeparatorMode.Sentence,
+                            SeparatorMode.Sentence => SeparatorMode.Word,
+                            _ => null
+                        };
+
+                        if (nextMode.HasValue)
+                        {
+                            foreach (var chunk in SplitIntoChunks(block, maxLength, nextMode.Value))
+                            {
+                                yield return chunk;
+                            }
+                        }
+                        else
+                        {
+                            // Even a single word is too long
+                            for (var pos = 0; pos < block.Length;)
+                            {
+                                var chunkLength = Math.Min(maxLength, block.Length - pos);
+                                yield return block.Substring(pos, chunkLength);
+                                pos += chunkLength;
+                            }
                         }
                     }
                 }
@@ -227,5 +257,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
                 yield return currentChunk;
             }
         }
+
+        private enum SeparatorMode { Paragraph, Sentence, Word }
     }
 }
