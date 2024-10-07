@@ -8,7 +8,6 @@ using eShopSupport.Evaluator;
 using eShopSupport.ServiceDefaults.Clients.Backend;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
-using Microsoft.SemanticKernel.ChatCompletion;
 
 // Comparing models:
 //
