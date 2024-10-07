@@ -77,7 +77,7 @@ public abstract class GeneratorBase<T>
 
         var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
         var response = await RunWithRetries(() => ChatCompletionService.CompleteAsync(chatHistory, options));
-        var responseString = response.Message.Text;
+        var responseString = response.Message.Text ?? string.Empty;
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
         // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).

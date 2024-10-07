@@ -5,9 +5,7 @@ using System.Text.RegularExpressions;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Api;
@@ -21,14 +19,14 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatCompletionService chatService, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatClient chatClient, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         var product = request.ProductId.HasValue
             ? await dbContext.Products.FindAsync(request.ProductId.Value)
             : null;
 
         // Build the prompt plus any existing conversation history
-        var chatHistory = new ChatHistory($$"""
+        var chatHistory = new List<ChatMessage>([ new(ChatRole.System, $$"""
             You are a helpful AI assistant called 'Assistant' whose job is to help customer service agents working for AdventureWorks, an online retailer.
             The customer service agent is currently handling the following ticket:
 
@@ -47,16 +45,20 @@ public static class AssistantApi
             <cite searchResultId=number>shortVerbatimQuote</cite>
             shortVerbatimQuote must be a very short, EXACT quote (max 10 words) from whichever search result you are citing.
             Only give one citation per answer. Always give a citation because this is important to the business.
-            """);
+            """) ]);
 
-        chatHistory.AddRange(request.Messages.Select(m => new ChatMessageContent(m.IsAssistant ? AuthorRole.Assistant : AuthorRole.User, m.Text)));
+        chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatRole.Assistant : ChatRole.User, m.Text)));
         await httpContext.Response.WriteAsync("[null");
 
         // Call the LLM backend
-        var kernel = new Kernel();
-        kernel.ImportPluginFromObject(new SearchManualPlugin(httpContext, manualSearch));
-        var executionSettings = new OpenAIPromptExecutionSettings { Seed = 0, Temperature = 0, ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions };
-        var streamingAnswer = chatService.GetStreamingChatMessageContentsAsync(chatHistory, executionSettings, kernel, cancellationToken);
+        var searchManual = AIFunctionFactory.Create(new SearchManualPlugin(httpContext, manualSearch).SearchManual);
+        var executionSettings = new ChatOptions
+        {
+            Temperature = 0,
+            Tools = [searchManual],
+            AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
+        };
+        var streamingAnswer = chatClient.CompleteStreamingAsync(chatHistory, executionSettings, cancellationToken);
 
         // Stream the response to the UI
         var answerBuilder = new StringBuilder();
@@ -69,13 +71,13 @@ public static class AssistantApi
 
         // Ask if this answer is suitable for sending directly to the customer
         // If so, we'll show a button in the UI
-        chatHistory.AddAssistantMessage(answerBuilder.ToString());
-        chatHistory.AddSystemMessage("""
+        chatHistory.Add(new (ChatRole.Assistant, answerBuilder.ToString()));
+        chatHistory.Add(new (ChatRole.System, """
             Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
             Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
-            """);
-        executionSettings.ResponseFormat = "json_object";
-        var isAddressedToCustomer = await chatService.GetChatMessageContentAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
+            """));
+        executionSettings.ResponseFormat = ChatResponseFormat.Json;
+        var isAddressedToCustomer = await chatClient.CompleteAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
         try
         {
             var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.ToString(), _jsonOptions)!;
@@ -98,7 +100,6 @@ public static class AssistantApi
 
     private class SearchManualPlugin(HttpContext httpContext, ProductManualSemanticSearch manualSearch)
     {
-        [KernelFunction]
         public async Task<object> SearchManual(
             [Description("A phrase to use when searching the manual")] string searchPhrase,
             [Description("ID for the product whose manual to search. Set to null only if you must search across all product manuals.")] int? productId)

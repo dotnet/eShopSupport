@@ -15,7 +15,7 @@
     <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" />
-    <PackageReference Include="SmartComponents.LocalEmbeddings" />
+    <PackageReference Include="SmartComponents.LocalEmbeddings.SemanticKernel" />
   </ItemGroup>
 
   <ItemGroup>

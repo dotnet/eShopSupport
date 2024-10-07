@@ -1,10 +1,10 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using System.Text.Json;
 using System.Threading.RateLimiting;
 using eShopSupport.Backend.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.Extensions.AI;
 using StackExchange.Redis;
 
 namespace eShopSupport.Backend.Services;
@@ -53,7 +53,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var redisConnection = scope.ServiceProvider.GetRequiredService<IConnectionMultiplexer>();
-            var chatCompletion = scope.ServiceProvider.GetRequiredService<IChatCompletionService>();
+            var chatClient = scope.ServiceProvider.GetRequiredService<IChatClient>();
 
             var ticket = await db.Tickets
                 .Include(t => t.Product)
@@ -109,12 +109,11 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                     }
                     """;
 
-                var chatHistory = new ChatHistory();
-                chatHistory.AddUserMessage(prompt);
-                var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, new OpenAIPromptExecutionSettings
+                var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
+                var response = await chatClient.CompleteAsync(chatHistory, new ChatOptions
                 {
-                    ResponseFormat = "json_object",
-                    Seed = 0,
+                    ResponseFormat = ChatResponseFormat.Json,
+                    AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
                 });
 
                 // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,

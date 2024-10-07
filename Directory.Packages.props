@@ -46,6 +46,7 @@
     <PackageVersion Include="PdfPig" Version="0.1.9-alpha-20240702-65c64" />
     <PackageVersion Include="SmartComponents.AspNetCore" Version="0.1.0-preview10148" />
     <PackageVersion Include="SmartComponents.LocalEmbeddings" Version="0.1.0-preview10148" />
+    <PackageVersion Include="SmartComponents.LocalEmbeddings.SemanticKernel" Version="0.1.0-preview10148" />
     <PackageVersion Include="StatefulReconnection" Version="0.1.0" />
     <PackageVersion Include="Markdown2Pdf" Version="2.2.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0-release-24352-06" />

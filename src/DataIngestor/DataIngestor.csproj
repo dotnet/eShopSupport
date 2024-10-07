@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.DataIngestor</RootNamespace>
     <StartArguments>$(SolutionDir)\seeddata\DataGenerator\output</StartArguments>
+    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0020;SKEXP0050</NoWarn>
     <IsAspireHost>true</IsAspireHost>
   </PropertyGroup>
 
@@ -18,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.SemanticKernel.Core" />
     <PackageReference Include="PdfPig" />
     <PackageReference Include="SmartComponents.LocalEmbeddings" />
   </ItemGroup>

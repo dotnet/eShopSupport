@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.Evaluator</RootNamespace>
-    <NoWarn>$(NoWarn);SKEXP0010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

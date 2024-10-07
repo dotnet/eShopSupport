@@ -1,12 +1,14 @@
-﻿using System.Data.Common;
+﻿using System.ClientModel;
+using System.Data.Common;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Azure.AI.OpenAI;
 using eShopSupport.Evaluator;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
 // Comparing models:
 //
@@ -113,10 +115,14 @@ async Task<(double? Score, string Justification)[]> ScoreAnswersAsync(IReadOnlyC
         Do not use any other words for scoreLabel. You may only pick one of those labels.
         """;
 
-    var chatHistory = new ChatHistory();
-    chatHistory.AddUserMessage(prompt);
-    var promptExecutionSettings = new OpenAIPromptExecutionSettings { ResponseFormat = "json_object", Seed = 0, Temperature = 0 };
-    var response = await chatCompletion.GetChatMessageContentAsync(chatHistory, promptExecutionSettings);
+    var chatHistory = new List<ChatMessage> { new(ChatRole.User, prompt) };
+    var promptExecutionSettings = new ChatOptions
+    {
+        ResponseFormat = ChatResponseFormat.Json,
+        Temperature = 0,
+        AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
+    };
+    var response = await chatCompletion.CompleteAsync(chatHistory, promptExecutionSettings);
     var responseJson = response.ToString();
     var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
     var parsedResponse = JsonSerializer.Deserialize<ScoringResponse>(responseJson, jsonOptions)!;
@@ -180,7 +186,7 @@ async Task<(string Answer, TimeSpan Duration)> GetAssistantAnswerAsync(EvalQuest
     }
 }
 
-static IChatCompletionService GetChatCompletionService(string connectionStringName)
+static IChatClient GetChatCompletionService(string connectionStringName)
 {
     var config = new ConfigurationManager();
     config.AddJsonFile("appsettings.json");
@@ -199,7 +205,7 @@ static IChatCompletionService GetChatCompletionService(string connectionStringNa
     var endpoint = connectionStringBuilder.TryGetValue("Endpoint", out var endpointValue) ? (string)endpointValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Endpoint'");
     var key = connectionStringBuilder.TryGetValue("Key", out var keyValue) ? (string)keyValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Key'");
 
-    return new AzureOpenAIChatCompletionService(deployment, endpoint, key);
+    return new AzureOpenAIClient(new Uri(deployment), new ApiKeyCredential(key)).AsChatClient(deployment);
 }
 
 record ScoringResponse(AnswerScore[] Scores);
