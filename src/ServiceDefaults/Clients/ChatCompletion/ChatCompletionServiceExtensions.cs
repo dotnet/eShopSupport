@@ -24,6 +24,7 @@ public static class ChatCompletionServiceExtensions
             builder.Services.AddChatClient(builder => builder
                 .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
                 .UsePreventStreamingWithFunctions()
+                .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true)
                 .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName, builder.Services.GetRequiredService<HttpClient>())));
         }
         else
@@ -46,6 +47,7 @@ public static class ChatCompletionServiceExtensions
 
             builder.Services.AddChatClient(builder => builder
                 .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
+                .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true)
                 .Use(builder.Services.GetRequiredService<OpenAIClient>().AsChatClient((string)deploymentName)));
         }
 
