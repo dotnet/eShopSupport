@@ -205,7 +205,7 @@ static IChatClient GetChatCompletionService(string connectionStringName)
     var endpoint = connectionStringBuilder.TryGetValue("Endpoint", out var endpointValue) ? (string)endpointValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Endpoint'");
     var key = connectionStringBuilder.TryGetValue("Key", out var keyValue) ? (string)keyValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Key'");
 
-    return new AzureOpenAIClient(new Uri(deployment), new ApiKeyCredential(key)).AsChatClient(deployment);
+    return new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(key)).AsChatClient(deployment);
 }
 
 record ScoringResponse(AnswerScore[] Scores);
