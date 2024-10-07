@@ -56,7 +56,7 @@ public static class AssistantApi
         {
             Temperature = 0,
             Tools = [searchManual],
-            AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
+            AdditionalProperties = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase) { ["seed"] = 0 },
         };
         var streamingAnswer = chatClient.CompleteStreamingAsync(chatHistory, executionSettings, cancellationToken);
 

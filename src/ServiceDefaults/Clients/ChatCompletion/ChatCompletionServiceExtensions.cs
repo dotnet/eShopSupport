@@ -21,11 +21,10 @@ public static class ChatCompletionServiceExtensions
                 throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
             }
 
-            // TODO: Going to need to add some middleware that handles streaming by calling the nonstreaming endpoint
-            // if there are tools, since Ollama doesn't currently support streaming function calling.
             builder.Services.AddChatClient(builder => builder
                 .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
-                .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName)));
+                .UsePreventStreamingWithFunctions()
+                .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName, builder.Services.GetRequiredService<HttpClient>())));
         }
         else
         {
