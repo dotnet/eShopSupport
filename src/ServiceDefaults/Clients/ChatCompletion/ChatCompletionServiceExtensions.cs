@@ -24,7 +24,7 @@ public static class ChatCompletionServiceExtensions
             // TODO: Going to need to add some middleware that handles streaming by calling the nonstreaming endpoint
             // if there are tools, since Ollama doesn't currently support streaming function calling.
             builder.Services.AddChatClient(builder => builder
-                .UseFunctionInvocation()
+                .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
                 .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName)));
         }
         else
@@ -46,7 +46,7 @@ public static class ChatCompletionServiceExtensions
             builder.Services.AddScoped<OpenAIClient>(_ => openAIClient);
 
             builder.Services.AddChatClient(builder => builder
-                .UseFunctionInvocation()
+                .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
                 .Use(builder.Services.GetRequiredService<OpenAIClient>().AsChatClient((string)deploymentName)));
         }
 
