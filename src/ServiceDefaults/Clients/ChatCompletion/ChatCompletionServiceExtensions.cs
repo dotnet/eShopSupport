@@ -1,12 +1,8 @@
 ﻿using System.Data.Common;
-using Azure.AI.OpenAI;
-using eShopSupport.ServiceDefaults.Clients.ChatCompletion;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using OpenAI;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -17,7 +13,17 @@ public static class ChatCompletionServiceExtensions
         var implementationType = builder.Configuration[$"{name}:Type"];
         if (implementationType == "ollama")
         {
-            builder.AddOllamaChatCompletionService(name);
+            var modelName = builder.Configuration[$"{name}:LlmModelName"];
+            if (string.IsNullOrEmpty(modelName))
+            {
+                throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
+            }
+
+            // TODO: Going to need to add some middleware that handles streaming by calling the nonstreaming endpoint
+            // if there are tools, since Ollama doesn't currently support streaming function calling.
+            builder.Services.AddChatClient(builder => builder
+                .UseFunctionInvocation()
+                .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName)));
         }
         else
         {
@@ -30,11 +36,9 @@ public static class ChatCompletionServiceExtensions
                 throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
             }
 
-            builder.Services.AddScoped<IChatCompletionService>(services =>
-            {
-                var client = services.GetRequiredService<OpenAIClient>();
-                return new AzureOpenAIChatCompletionService((string)deploymentName, client);
-            });
+            builder.Services.AddChatClient(builder => builder
+                .UseFunctionInvocation()
+                .Use(builder.Services.GetRequiredService<OpenAIClient>().AsChatClient((string)deploymentName)));
         }
 
         if (!string.IsNullOrEmpty(cacheDir))
@@ -45,13 +49,6 @@ public static class ChatCompletionServiceExtensions
 
     private static void AddChatCompletionCaching(IHostApplicationBuilder builder, string cacheDir)
     {
-        var underlyingRegistration = builder.Services.Last(s => s.ServiceType == typeof(IChatCompletionService));
-
-        builder.Services.Replace(new ServiceDescriptor(typeof(IChatCompletionService), services =>
-        {
-            var underlyingInstance = underlyingRegistration.ImplementationInstance
-                ?? underlyingRegistration.ImplementationFactory!(services);
-            return new CachedChatCompletionService((IChatCompletionService)underlyingInstance, cacheDir, services.GetRequiredService<ILoggerFactory>());
-        }, underlyingRegistration.Lifetime));
+        throw new NotImplementedException("TODO: Implement caching");
     }
 }
