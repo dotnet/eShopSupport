@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.AI;
 using Azure.AI.OpenAI;
 using System.ClientModel;
+using OpenAI;
 
 namespace eShopSupport.DataGenerator;
 
@@ -25,8 +26,11 @@ public static class ChatCompletionServiceExtensions
         var endpoint = connectionStringBuilder.TryGetValue("Endpoint", out var endpointValue) ? (string)endpointValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Endpoint'");
         var key = connectionStringBuilder.TryGetValue("Key", out var keyValue) ? (string)keyValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Key'");
 
-        builder.Services.AddSingleton(services => new AzureOpenAIClient(
-            new Uri(endpoint), new ApiKeyCredential(key))
-            .AsChatClient(deployment));
+        builder.Services.AddSingleton<OpenAIClient>(_ => new AzureOpenAIClient(
+            new Uri(endpoint), new ApiKeyCredential(key)));
+
+        builder.Services.AddChatClient(builder => builder
+            .UseFunctionInvocation()
+            .Use(builder.Services.GetRequiredService<OpenAIClient>().AsChatClient(deployment))); // TODO: Use simpler extension method
     }
 }
