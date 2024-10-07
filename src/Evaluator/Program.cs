@@ -119,7 +119,7 @@ async Task<(double? Score, string Justification)[]> ScoreAnswersAsync(IReadOnlyC
     {
         ResponseFormat = ChatResponseFormat.Json,
         Temperature = 0,
-        AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
+        AdditionalProperties = new() { ["seed"] = 0 },
     };
     var response = await chatCompletion.CompleteAsync(chatHistory, promptExecutionSettings);
     var responseJson = response.ToString();

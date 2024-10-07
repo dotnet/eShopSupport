@@ -113,7 +113,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                 var response = await chatClient.CompleteAsync(chatHistory, new ChatOptions
                 {
                     ResponseFormat = ChatResponseFormat.Json,
-                    AdditionalProperties = new Dictionary<string, object?> { ["seed"] = 0 },
+                    AdditionalProperties = new() { ["seed"] = 0 },
                 });
 
                 // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
