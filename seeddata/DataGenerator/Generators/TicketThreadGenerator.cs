@@ -185,14 +185,46 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
             }
         }
 
+        // Note: this is not very efficient. Consider using a chunking library.
         private IEnumerable<string> SplitPlainTextParagraphs(string markdownText, int maxLength)
         {
-            // TODO: Actually prefer to split on paragraph boundaries
-            for (var pos = 0; pos < markdownText.Length;)
+            var currentChunk = string.Empty;
+            var paragraphs = markdownText.Split("\n\n", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            for (var paragraphIndex = 0; paragraphIndex < paragraphs.Length; paragraphIndex++)
             {
-                var chunkLen = Math.Min(maxLength, markdownText.Length - pos);
-                yield return markdownText.Substring(pos, chunkLen);
-                pos += chunkLen;
+                var paragraph = paragraphs[paragraphIndex];
+                if (currentChunk.Length + paragraph.Length <= maxLength)
+                {
+                    currentChunk += paragraph;
+                }
+                else
+                {
+                    if (currentChunk.Length > 0)
+                    {
+                        yield return currentChunk;
+                        currentChunk = string.Empty;
+                    }
+
+                    if (paragraph.Length <= maxLength)
+                    {
+                        currentChunk = paragraph;
+                    }
+                    else
+                    {
+                        // This paragraph alone is too big to fit in one chunk, so just chop arbitrarily
+                        for (var pos = 0; pos < paragraph.Length;)
+                        {
+                            var chunkLength = Math.Min(maxLength, paragraph.Length - pos);
+                            yield return paragraph.Substring(pos, chunkLength);
+                            pos += chunkLength;
+                        }
+                    }
+                }
+            }
+
+            if (currentChunk.Length > 0)
+            {
+                yield return currentChunk;
             }
         }
     }
