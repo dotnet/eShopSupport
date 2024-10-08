@@ -16,6 +16,23 @@ public static class PreventStreamingWithFunctionsExtensions
 
     private class PreventStreamingWithFunctions(IChatClient innerClient) : DelegatingChatClient(innerClient)
     {
+        public override Task<ChatCompletion> CompleteAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        {
+            // Temporary workaround for an issue in CompleteAsync<T>. Although OpenAI models are happy to
+            // receive system messages at the end of the conversation, it causes a lot of problems for
+            // Llama 3. So replace the schema prompt role with User. We'll update CompleteAsync<T> to
+            // do this natively in the next update.
+            if (chatMessages.Count > 1
+                && chatMessages.LastOrDefault() is { } lastMessage
+                && lastMessage.Role == ChatRole.System
+                && lastMessage.Text?.Contains("$schema") is true)
+            {
+                lastMessage.Role = ChatRole.User;
+            }
+
+            return base.CompleteAsync(chatMessages, options, cancellationToken);
+        }
+
         public override IAsyncEnumerable<StreamingChatCompletionUpdate> CompleteStreamingAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             return options?.Tools is null or []
