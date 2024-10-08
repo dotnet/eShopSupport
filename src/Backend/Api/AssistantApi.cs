@@ -71,31 +71,22 @@ public static class AssistantApi
 
         // Ask if this answer is suitable for sending directly to the customer
         // If so, we'll show a button in the UI
-        chatHistory.Add(new (ChatRole.Assistant, answerBuilder.ToString()));
-        chatHistory.Add(new (ChatRole.System, """
-            Consider the answer you just gave and decide whether it is addressed to the customer by name as a reply to them.
-            Reply as a JSON object in this form: { "isAddressedByNameToCustomer": trueOrFalse }.
-            """));
-        executionSettings.ResponseFormat = ChatResponseFormat.Json;
-        var isAddressedToCustomer = await chatClient.CompleteAsync(chatHistory, executionSettings, cancellationToken: cancellationToken);
-        try
+        var classification = await chatClient.CompleteAsync<MessageClassification>(
+            $"Determine whether the following message is phrased as a reply to the customer {request.CustomerName} by name: {answerBuilder}",
+            cancellationToken: cancellationToken);
+        if (classification.TryGetResult(out var result) && result.IsAddressedToCustomerByName)
         {
-            var isAddressedToCustomerJson = JsonSerializer.Deserialize<IsAddressedToCustomerReply>(isAddressedToCustomer.ToString(), _jsonOptions)!;
-            if (isAddressedToCustomerJson.IsAddressedByNameToCustomer)
-            {
-                await httpContext.Response.WriteAsync(",\n");
-                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true")));
-            }
+            await httpContext.Response.WriteAsync(",\n");
+            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.IsAddressedToCustomer, "true")));
         }
-        catch { }
 
         // Signal to the UI that we're finished
         await httpContext.Response.WriteAsync("]");
     }
 
-    class IsAddressedToCustomerReply
+    class MessageClassification
     {
-        public bool IsAddressedByNameToCustomer { get; set; }
+        public bool IsAddressedToCustomerByName { get; set; }
     }
 
     private class SearchManualPlugin(HttpContext httpContext, ProductManualSemanticSearch manualSearch)
