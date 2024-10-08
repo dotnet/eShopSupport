@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -17,7 +18,7 @@ public static class AssistantApi
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
     }
 
-    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatClient chatClient, ProductManualSemanticSearch manualSearch, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
+    private static async Task GetStreamingChatResponseAsync(AssistantChatRequest request, HttpContext httpContext, AppDbContext dbContext, IChatClient chatClient, ILoggerFactory loggerFactory, CancellationToken cancellationToken)
     {
         var product = request.ProductId.HasValue
             ? await dbContext.Products.FindAsync(request.ProductId.Value)
@@ -49,7 +50,7 @@ public static class AssistantApi
         await httpContext.Response.WriteAsync("[null");
 
         // Call the LLM backend
-        var searchManual = AIFunctionFactory.Create(new SearchManualContext(httpContext, manualSearch).SearchManual);
+        var searchManual = AIFunctionFactory.Create(new SearchManualContext(httpContext).SearchManual);
         var executionSettings = new ChatOptions
         {
             Temperature = 0,
@@ -87,36 +88,48 @@ public static class AssistantApi
         public bool IsAddressedToCustomerByName { get; set; }
     }
 
-    private class SearchManualContext(HttpContext httpContext, ProductManualSemanticSearch manualSearch)
+    private class SearchManualContext(HttpContext httpContext)
     {
+        private readonly SemaphoreSlim semaphore = new(1);
+        private readonly ProductManualSemanticSearch manualSearch = httpContext.RequestServices.GetRequiredService<ProductManualSemanticSearch>();
+
         public async Task<object> SearchManual(
             [Description("A phrase to use when searching the manual")] string searchPhrase,
             [Description("ID for the product whose manual to search. Set to null only if you must search across all product manuals.")] int? productId)
         {
-            // Notify the UI we're doing a search
-            await httpContext.Response.WriteAsync(",\n");
-            await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
+            await semaphore.WaitAsync(); // Alternatively, you can set ConcurrentInvocation to false in UseFunctionInvocation
 
-            // Do the search, and supply the results to the UI so it can show one as a citation link
-            var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
-            foreach (var r in searchResults)
+            try
             {
+                // Notify the UI we're doing a search
                 await httpContext.Response.WriteAsync(",\n");
-                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
-                    AssistantChatReplyItemType.SearchResult,
-                    string.Empty,
-                    int.Parse(r.Metadata.Id),
-                    GetProductId(r),
-                    GetPageNumber(r))));
-            }
+                await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
 
-            // Return the search results to the assistant
-            return searchResults.Select(r => new
+                // Do the search, and supply the results to the UI so it can show one as a citation link
+                var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
+                foreach (var r in searchResults)
+                {
+                    await httpContext.Response.WriteAsync(",\n");
+                    await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
+                        AssistantChatReplyItemType.SearchResult,
+                        string.Empty,
+                        int.Parse(r.Metadata.Id),
+                        GetProductId(r),
+                        GetPageNumber(r))));
+                }
+
+                // Return the search results to the assistant
+                return searchResults.Select(r => new
+                {
+                    ProductId = GetProductId(r),
+                    SearchResultId = r.Metadata.Id,
+                    r.Metadata.Text,
+                });
+            }
+            finally
             {
-                ProductId = GetProductId(r),
-                SearchResultId = r.Metadata.Id,
-                r.Metadata.Text,
-            });
+                semaphore.Release();
+            }
         }
     }
 

@@ -10,7 +10,7 @@ public static class ChatCompletionServiceExtensions
         if (implementationType == "ollama")
         {
             builder.AddOllamaChatClient(serviceName, builder => builder
-                .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
+                .UseFunctionInvocation()
                 .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true));
         }
         else
@@ -18,7 +18,7 @@ public static class ChatCompletionServiceExtensions
             // TODO: We would prefer to use Aspire.AI.OpenAI here, but it doesn't yet support the OpenAI v2 client.
             // So for now we access the connection string and set up a client manually.
             builder.AddOpenAIChatClient(serviceName, builder => builder
-                .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
+                .UseFunctionInvocation()
                 .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true));
         }
 
