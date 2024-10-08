@@ -1,17 +1,14 @@
 ﻿using eShopSupport.DataGenerator.Model;
-using Microsoft.SemanticKernel;
 using System.Text;
 using System.ComponentModel;
-using Microsoft.SemanticKernel.Text;
-using Microsoft.SemanticKernel.Embeddings;
-using SmartComponents.LocalEmbeddings.SemanticKernel;
 using System.Numerics.Tensors;
+using Microsoft.Extensions.AI;
 
 namespace eShopSupport.DataGenerator.Generators;
 
 public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<Product> products, IReadOnlyList<Manual> manuals, IServiceProvider services) : GeneratorBase<TicketThread>(services)
 {
-    private readonly ITextEmbeddingGenerationService embedder = new LocalTextEmbeddingGenerationService();
+    private readonly IEmbeddingGenerator<string, Embedding<float>> embedder = new LocalTextEmbeddingGenerator();
 
     protected override object GetId(TicketThread item) => item.TicketId;
 
@@ -139,8 +136,9 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
 
         var manual = manuals.Single(m => m.ProductId == product.ProductId);
         var tools = new AssistantTools(embedder, manual);
+        var searchManual = AIFunctionFactory.Create(tools.SearchUserManualAsync);
 
-        return await GetAndParseJsonChatCompletion<Response>(prompt, tools: tools);
+        return await GetAndParseJsonChatCompletion<Response>(prompt, tools: [searchManual]);
     }
 
     public static string FormatMessagesForPrompt(IReadOnlyList<TicketThreadMessage> messages)
@@ -159,19 +157,19 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         public bool ShouldClose { get; set; }
     }
 
-    private class AssistantTools(ITextEmbeddingGenerationService embedder, Manual manual)
+    private class AssistantTools(IEmbeddingGenerator<string, Embedding<float>> embedder, Manual manual)
     {
-        [KernelFunction, Description("Searches for information in the product's user manual.")]
+        [Description("Searches for information in the product's user manual.")]
         public async Task<string> SearchUserManualAsync([Description("text to look for in user manual")] string query)
         {
             // Obviously it would be more performant to chunk and embed each manual only once, but this is simpler for now
-            var chunks = TextChunker.SplitPlainTextParagraphs([manual.MarkdownText], 100);
-            var embeddings = await embedder.GenerateEmbeddingsAsync(chunks);
+            var chunks = SplitIntoChunks(manual.MarkdownText, 200).ToList();
+            var embeddings = await embedder.GenerateAsync(chunks);
             var candidates = chunks.Zip(embeddings);
-            var queryEmbedding = await embedder.GenerateEmbeddingAsync(query);
+            var queryEmbedding = (await embedder.GenerateAsync(query)).Single();
 
             var closest = candidates
-                .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Span, queryEmbedding.Span) })
+                .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Vector.Span, queryEmbedding.Vector.Span) })
                 .OrderByDescending(c => c.Similarity)
                 .Take(3)
                 .Where(c => c.Similarity > 0.6f)
@@ -186,5 +184,80 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
                 return "The manual contains no relevant information about this";
             }
         }
+
+        // Note: this is not very efficient. Consider using a chunking library.
+        private IEnumerable<string> SplitIntoChunks(string markdownText, int maxLength, SeparatorMode mode = SeparatorMode.Paragraph)
+        {
+            string[] separators = mode switch
+            {
+                SeparatorMode.Paragraph => ["\n\n", "\r\n\r\n"],
+                SeparatorMode.Sentence => [". "],
+                SeparatorMode.Word => [" "],
+                _ => throw new NotImplementedException()
+            };
+            var currentChunk = string.Empty;
+            var blocks = markdownText.Split(separators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            for (var blockIndex = 0; blockIndex < blocks.Length; blockIndex++)
+            {
+                var block = blocks[blockIndex];
+                if (currentChunk.Length + block.Length <= maxLength)
+                {
+                    if (!string.IsNullOrEmpty(currentChunk))
+                    {
+                        currentChunk += separators.First();
+                    }
+
+                    currentChunk += block;
+                }
+                else
+                {
+                    if (currentChunk.Length > 0)
+                    {
+                        yield return currentChunk;
+                        currentChunk = string.Empty;
+                    }
+
+                    if (block.Length <= maxLength)
+                    {
+                        currentChunk = block;
+                    }
+                    else
+                    {
+                        // This block alone is too big to fit in one chunk, so use a narrower split
+                        SeparatorMode? nextMode = mode switch
+                        {
+                            SeparatorMode.Paragraph => SeparatorMode.Sentence,
+                            SeparatorMode.Sentence => SeparatorMode.Word,
+                            _ => null
+                        };
+
+                        if (nextMode.HasValue)
+                        {
+                            foreach (var chunk in SplitIntoChunks(block, maxLength, nextMode.Value))
+                            {
+                                yield return chunk;
+                            }
+                        }
+                        else
+                        {
+                            // Even a single word is too long
+                            for (var pos = 0; pos < block.Length;)
+                            {
+                                var chunkLength = Math.Min(maxLength, block.Length - pos);
+                                yield return block.Substring(pos, chunkLength);
+                                pos += chunkLength;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (currentChunk.Length > 0)
+            {
+                yield return currentChunk;
+            }
+        }
+
+        private enum SeparatorMode { Paragraph, Sentence, Word }
     }
 }

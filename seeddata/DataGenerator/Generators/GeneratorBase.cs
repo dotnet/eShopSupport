@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+﻿using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +24,7 @@ public abstract class GeneratorBase<T>
 
     public GeneratorBase(IServiceProvider services)
     {
-        ChatCompletionService = services.GetRequiredService<IChatCompletionService>();
+        ChatClient = services.GetRequiredService<IChatClient>();
     }
 
     public async Task<IReadOnlyList<T>> GenerateAsync()
@@ -55,40 +53,30 @@ public abstract class GeneratorBase<T>
 
     protected abstract IAsyncEnumerable<T> GenerateCoreAsync();
 
-    protected IChatCompletionService ChatCompletionService { get; }
+    protected IChatClient ChatClient { get; }
 
-    protected async Task<string> GetChatCompletion(string prompt)
+    protected async Task<string> GetCompletion(string prompt)
     {
         // Instructing it to end the content with END_OF_CONTENT is beneficial because it often tries to add a suffix like
         // "I have done the task, hope this helps!". We can avoid that by making it stop before that.
-        var executionSettings = new OpenAIPromptExecutionSettings { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] };
-        var chatHistory = new ChatHistory();
-        chatHistory.AddUserMessage(prompt);
-        var response = await ChatCompletionService.GetChatMessageContentAsync(chatHistory, executionSettings);
-        return response.ToString();
+        var response = await ChatClient.CompleteAsync(
+            prompt,
+            new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] });
+        return response.Message.Text ?? string.Empty;
     }
 
-    protected async Task<TResponse> GetAndParseJsonChatCompletion<TResponse>(string prompt, int? maxTokens = null, object? tools = null)
+    protected async Task<TResponse> GetAndParseJsonChatCompletion<TResponse>(string prompt, int? maxTokens = null, IList<AITool>? tools = null)
     {
-        var executionSettings = new OpenAIPromptExecutionSettings
+        var options = new ChatOptions
         {
-            MaxTokens = maxTokens,
+            // MaxOutputTokens = maxTokens, // TODO: Re-enable when https://github.com/dotnet/temp-ai-abstractions/issues/294 is fixed
             Temperature = 0.9f,
-            ResponseFormat = "json_object",
-            ToolCallBehavior = tools is null ? default : ToolCallBehavior.AutoInvokeKernelFunctions
+            ResponseFormat = ChatResponseFormat.Json,
+            Tools = tools,
         };
 
-        var kernel = (Kernel?)null;
-        if (tools is not null)
-        {
-            kernel = new();
-            kernel.Plugins.AddFromObject(tools);
-        }
-
-        var chatHistory = new ChatHistory();
-        chatHistory.AddUserMessage(prompt);
-        var response = await RunWithRetries(() => ChatCompletionService.GetChatMessageContentAsync(chatHistory, executionSettings, kernel));
-        var responseString = response.ToString();
+        var response = await RunWithRetries(() => ChatClient.CompleteAsync(prompt, options));
+        var responseString = response.Message.Text ?? string.Empty;
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
         // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).
@@ -120,16 +108,6 @@ public abstract class GeneratorBase<T>
     {
         var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json).AsSpan());
         return JsonSerializer.Deserialize<TResponse>(ref reader, options);
-    }
-
-    private static async Task<List<T>> CollectAsyncEnumerable(IAsyncEnumerable<T> source)
-    {
-        var result = new List<T>();
-        await foreach (var item in source)
-        {
-            result.Add(item);
-        }
-        return result;
     }
 
     protected virtual string FilenameExtension => ".json";

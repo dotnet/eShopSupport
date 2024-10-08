@@ -6,15 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>eShopSupport.DataGenerator</RootNamespace>
-    <NoWarn>$(NoWarn);SKEXP0001;SKEXP0010;SKEXP0050</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdown2Pdf" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
-    <PackageReference Include="Microsoft.SemanticKernel" />
-    <PackageReference Include="SmartComponents.LocalEmbeddings.SemanticKernel" />
+    <PackageReference Include="SmartComponents.LocalEmbeddings" />
+    <PackageReference Include="Azure.AI.OpenAI" />
   </ItemGroup>
 
   <ItemGroup>

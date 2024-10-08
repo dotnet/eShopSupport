@@ -16208,7 +16208,7 @@
     "CreatedAt": "0001-01-01T00:00:00",
     "CustomerId": 351,
     "ShortSummary": "Bluetooth pairing PIN problem",
-    "LongSummary": "Customer is unable to complete Bluetooth pairing because a PIN is required. Support should determine the default PIN.",
+    "LongSummary": "Customer is unable to complete Bluetooth pairing because a PIN is required. Support should determine the default bluetooth pairing PIN.",
     "CustomerSatisfaction": 4,
     "TicketStatus": "Open",
     "TicketType": "Question",
