@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ServiceCollectionChatClientExtensions
 {
-    public static IServiceCollection AddAspireOllamaChatClient(
+    public static IServiceCollection AddOllamaChatClient(
         this IHostApplicationBuilder hostBuilder,
         string serviceName,
         Func<ChatClientBuilder, ChatClientBuilder>? builder = null,
@@ -51,7 +51,7 @@ public static class ServiceCollectionChatClientExtensions
         });
     }
 
-    public static IServiceCollection AddAspireOpenAIChatClient(
+    public static IServiceCollection AddOpenAIChatClient(
         this IHostApplicationBuilder hostBuilder,
         string serviceName,
         Func<ChatClientBuilder, ChatClientBuilder>? builder = null,
