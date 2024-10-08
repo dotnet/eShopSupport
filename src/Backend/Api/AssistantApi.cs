@@ -2,7 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 using eShopSupport.Backend.Data;
 using eShopSupport.Backend.Services;
 using eShopSupport.ServiceDefaults.Clients.Backend;
@@ -83,7 +82,7 @@ public static class AssistantApi
         await httpContext.Response.WriteAsync("]");
     }
 
-    class MessageClassification
+    private class MessageClassification
     {
         public bool IsAddressedToCustomerByName { get; set; }
     }

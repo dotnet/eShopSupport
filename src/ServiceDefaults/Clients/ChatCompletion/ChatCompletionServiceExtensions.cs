@@ -11,15 +11,12 @@ public static class ChatCompletionServiceExtensions
             .UseCachingForTest()
             .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true);
 
-        var implementationType = builder.Configuration[$"{serviceName}:Type"];
-        if (implementationType == "ollama")
+        if (builder.Configuration[$"{serviceName}:Type"] == "ollama")
         {
             builder.AddOllamaChatClient(serviceName, pipeline);
         }
         else
         {
-            // TODO: We would prefer to use Aspire.AI.OpenAI here, but it doesn't yet support the OpenAI v2 client.
-            // So for now we access the connection string and set up a client manually.
             builder.AddOpenAIChatClient(serviceName, pipeline);
         }
     }
