@@ -4,11 +4,11 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ChatCompletionServiceExtensions
 {
-    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string serviceName, string? cacheDir = null)
+    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string serviceName)
     {
         var pipeline = (ChatClientBuilder pipeline) => pipeline
             .UseFunctionInvocation()
-            .UseDiskCaching(cacheDir)
+            .UseCachingForTest()
             .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true);
 
         var implementationType = builder.Configuration[$"{serviceName}:Type"];
