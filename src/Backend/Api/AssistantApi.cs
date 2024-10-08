@@ -12,8 +12,6 @@ namespace eShopSupport.Backend.Api;
 
 public static class AssistantApi
 {
-    private readonly static JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
-
     public static void MapAssistantApiEndpoints(this WebApplication app)
     {
         app.MapPost("/api/assistant/chat", GetStreamingChatResponseAsync);
@@ -26,7 +24,7 @@ public static class AssistantApi
             : null;
 
         // Build the prompt plus any existing conversation history
-        var chatHistory = new List<ChatMessage>([ new(ChatRole.System, $$"""
+        var messages = new List<ChatMessage>([ new(ChatRole.System, $$"""
             You are a helpful AI assistant called 'Assistant' whose job is to help customer service agents working for AdventureWorks, an online retailer.
             The customer service agent is currently handling the following ticket:
 
@@ -47,18 +45,18 @@ public static class AssistantApi
             Only give one citation per answer. Always give a citation because this is important to the business.
             """) ]);
 
-        chatHistory.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatRole.Assistant : ChatRole.User, m.Text)));
+        messages.AddRange(request.Messages.Select(m => new ChatMessage(m.IsAssistant ? ChatRole.Assistant : ChatRole.User, m.Text)));
         await httpContext.Response.WriteAsync("[null");
 
         // Call the LLM backend
-        var searchManual = AIFunctionFactory.Create(new SearchManualPlugin(httpContext, manualSearch).SearchManual);
+        var searchManual = AIFunctionFactory.Create(new SearchManualContext(httpContext, manualSearch).SearchManual);
         var executionSettings = new ChatOptions
         {
             Temperature = 0,
             Tools = [searchManual],
             AdditionalProperties = new() { ["seed"] = 0 },
         };
-        var streamingAnswer = chatClient.CompleteStreamingAsync(chatHistory, executionSettings, cancellationToken);
+        var streamingAnswer = chatClient.CompleteStreamingAsync(messages, executionSettings, cancellationToken);
 
         // Stream the response to the UI
         var answerBuilder = new StringBuilder();
@@ -89,7 +87,7 @@ public static class AssistantApi
         public bool IsAddressedToCustomerByName { get; set; }
     }
 
-    private class SearchManualPlugin(HttpContext httpContext, ProductManualSemanticSearch manualSearch)
+    private class SearchManualContext(HttpContext httpContext, ProductManualSemanticSearch manualSearch)
     {
         public async Task<object> SearchManual(
             [Description("A phrase to use when searching the manual")] string searchPhrase,

@@ -59,7 +59,7 @@ Only output the markdown text for the section. At the end of the section, add th
 
 This is the official product manual, and the company requires it to be written in the specified style due to strategy.
 ";
-            var response = await GetChatCompletion(prompt);
+            var response = await GetCompletion(prompt);
             result.AppendLine(response);
             result.AppendLine();
         }

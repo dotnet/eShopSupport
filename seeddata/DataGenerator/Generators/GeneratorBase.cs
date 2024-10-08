@@ -24,7 +24,7 @@ public abstract class GeneratorBase<T>
 
     public GeneratorBase(IServiceProvider services)
     {
-        ChatCompletionService = services.GetRequiredService<IChatClient>();
+        ChatClient = services.GetRequiredService<IChatClient>();
     }
 
     public async Task<IReadOnlyList<T>> GenerateAsync()
@@ -53,15 +53,15 @@ public abstract class GeneratorBase<T>
 
     protected abstract IAsyncEnumerable<T> GenerateCoreAsync();
 
-    protected IChatClient ChatCompletionService { get; }
+    protected IChatClient ChatClient { get; }
 
-    protected async Task<string> GetChatCompletion(string prompt)
+    protected async Task<string> GetCompletion(string prompt)
     {
         // Instructing it to end the content with END_OF_CONTENT is beneficial because it often tries to add a suffix like
         // "I have done the task, hope this helps!". We can avoid that by making it stop before that.
-        var chatOptions = new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] };
-        var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
-        var response = await ChatCompletionService.CompleteAsync(chatHistory, chatOptions);
+        var response = await ChatClient.CompleteAsync(
+            prompt,
+            new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] });
         return response.Message.Text ?? string.Empty;
     }
 
@@ -75,8 +75,7 @@ public abstract class GeneratorBase<T>
             Tools = tools,
         };
 
-        var chatHistory = new List<ChatMessage>() { new ChatMessage(ChatRole.User, prompt) };
-        var response = await RunWithRetries(() => ChatCompletionService.CompleteAsync(chatHistory, options));
+        var response = await RunWithRetries(() => ChatClient.CompleteAsync(prompt, options));
         var responseString = response.Message.Text ?? string.Empty;
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
@@ -109,16 +108,6 @@ public abstract class GeneratorBase<T>
     {
         var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(json).AsSpan());
         return JsonSerializer.Deserialize<TResponse>(ref reader, options);
-    }
-
-    private static async Task<List<T>> CollectAsyncEnumerable(IAsyncEnumerable<T> source)
-    {
-        var result = new List<T>();
-        await foreach (var item in source)
-        {
-            result.Add(item);
-        }
-        return result;
     }
 
     protected virtual string FilenameExtension => ".json";
