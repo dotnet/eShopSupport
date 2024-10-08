@@ -9,13 +9,7 @@ public static class ChatCompletionServiceExtensions
         var implementationType = builder.Configuration[$"{serviceName}:Type"];
         if (implementationType == "ollama")
         {
-            var modelName = builder.Configuration[$"{serviceName}:LlmModelName"];
-            if (string.IsNullOrEmpty(modelName))
-            {
-                throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{serviceName}:LlmModelName'");
-            }
-
-            builder.AddAspireOllamaChatClient(serviceName, modelName, builder => builder
+            builder.AddAspireOllamaChatClient(serviceName, builder => builder
                 .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
                 .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true));
         }

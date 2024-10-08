@@ -13,12 +13,24 @@ public static class ServiceCollectionChatClientExtensions
     public static IServiceCollection AddAspireOllamaChatClient(
         this IHostApplicationBuilder hostBuilder,
         string serviceName,
-        string modelName,
-        Func<ChatClientBuilder, ChatClientBuilder>? builder = null)
-        => hostBuilder.Services.AddOllamaChatClient(
+        Func<ChatClientBuilder, ChatClientBuilder>? builder = null,
+        string? modelName = null)
+    {
+        if (modelName is null)
+        {
+            var configKey = $"{serviceName}:LlmModelName";
+            modelName = hostBuilder.Configuration[configKey];
+            if (string.IsNullOrEmpty(modelName))
+            {
+                throw new InvalidOperationException($"No {nameof(modelName)} was specified, and none could be found from configuration at '{configKey}'");
+            }
+        }
+
+        return hostBuilder.Services.AddOllamaChatClient(
             modelName,
             new Uri($"http://{serviceName}"),
             builder);
+    }
 
     public static IServiceCollection AddOllamaChatClient(
         this IServiceCollection services,
