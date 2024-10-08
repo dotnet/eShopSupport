@@ -10,36 +10,35 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ChatCompletionServiceExtensions
 {
-    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string name, string? cacheDir = null)
+    public static void AddChatCompletionService(this IHostApplicationBuilder builder, string serviceName, string? cacheDir = null)
     {
-        var implementationType = builder.Configuration[$"{name}:Type"];
+        var implementationType = builder.Configuration[$"{serviceName}:Type"];
         if (implementationType == "ollama")
         {
-            var modelName = builder.Configuration[$"{name}:LlmModelName"];
+            var modelName = builder.Configuration[$"{serviceName}:LlmModelName"];
             if (string.IsNullOrEmpty(modelName))
             {
-                throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{name}:LlmModelName'");
+                throw new InvalidOperationException($"Expected to find the default LLM model name in an environment variable called '{serviceName}:LlmModelName'");
             }
 
-            builder.Services.AddChatClient(builder => builder
+            builder.Services.AddOllamaChatClient(serviceName, modelName, builder => builder
                 .UseFunctionInvocation(c => c.ConcurrentInvocation = false)
                 .UsePreventStreamingWithFunctions()
-                .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true)
-                .Use(new OllamaChatClient(new Uri($"http://{name}"), modelName, builder.Services.GetRequiredService<HttpClient>())));
+                .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true));
         }
         else
         {
             // TODO: We would prefer to use Aspire.AI.OpenAI here, but it doesn't yet support the OpenAI v2 client.
             // So for now we access the connection string and set up a client manually.
             var connectionStringBuilder = new DbConnectionStringBuilder();
-            connectionStringBuilder.ConnectionString = builder.Configuration.GetConnectionString(name);
+            connectionStringBuilder.ConnectionString = builder.Configuration.GetConnectionString(serviceName);
             if (!connectionStringBuilder.TryGetValue("Deployment", out var deploymentName))
             {
-                throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Deployment', but this is required.");
+                throw new InvalidOperationException($"The connection string named '{serviceName}' does not specify a value for 'Deployment', but this is required.");
             }
 
-            var endpoint = (string)connectionStringBuilder["endpoint"] ?? throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Endpoint', but this is required.");
-            var apiKey = (string)connectionStringBuilder["key"] ?? throw new InvalidOperationException($"The connection string named '{name}' does not specify a value for 'Key', but this is required.");
+            var endpoint = (string)connectionStringBuilder["endpoint"] ?? throw new InvalidOperationException($"The connection string named '{serviceName}' does not specify a value for 'Endpoint', but this is required.");
+            var apiKey = (string)connectionStringBuilder["key"] ?? throw new InvalidOperationException($"The connection string named '{serviceName}' does not specify a value for 'Key', but this is required.");
             var openAIClient = new AzureOpenAIClient(
                 new Uri(endpoint),
                 new ApiKeyCredential(apiKey));
