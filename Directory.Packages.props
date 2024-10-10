@@ -8,9 +8,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
+    <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.AppHost.SDK" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="$(AspireVersion)" />
-    <PackageVersion Include="Aspire.Azure.Storage.Blobs" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Qdrant" Version="$(AspireVersion)" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(AspireVersion)" />
     <PackageVersion Include="Aspire.StackExchange.Redis" Version="$(AspireVersion)" />
@@ -55,9 +59,5 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Duende.IdentityServer" Version="7.0.6" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2-dev-00341" />
-    <PackageVersion Include="Aspire.Hosting.Azure.Storage" Version="8.2.1" />
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="8.2.1" />
-    <PackageVersion Include="Aspire.Hosting.Qdrant" Version="8.2.1" />
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="8.2.1" />
   </ItemGroup>
 </Project>
