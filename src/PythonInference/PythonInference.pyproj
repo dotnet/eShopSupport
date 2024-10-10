@@ -28,5 +28,8 @@
   <ItemGroup>
     <Folder Include="routers\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dockerfile" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

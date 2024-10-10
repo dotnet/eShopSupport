@@ -43,8 +43,10 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
-var pythonInference = builder.AddPythonApp("python-inference", "../PythonInference", "-m", ["uvicorn", "main:app"])
-    .WithHttpEndpoint(env: "UVICORN_PORT", port: 62394);
+var pythonInference = builder.AddDockerfile("python-inference", "../PythonInference")
+    .WithHttpEndpoint(targetPort: 62394, env: "UVICORN_PORT")
+    .WithContainerRuntimeArgs("--gpus=all")
+    .WithLifetime(ContainerLifetime.Persistent);
 
 var redis = builder.AddRedis("redis");
 
@@ -53,7 +55,7 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(chatCompletion)
     .WithReference(blobStorage)
     .WithReference(vectorDb)
-    .WithReference(pythonInference)
+    .WithReference(pythonInference.GetEndpoint("http"))
     .WithReference(redis)
     .WithEnvironment("IdentityUrl", identityEndpoint)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", isE2ETest ? "test" : "dev"));
