@@ -2,7 +2,6 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-    <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
     <AspireVersion>9.0.0-rc.1.24509.13</AspireVersion>
     <MicrosoftExtensionsAiVersion>9.0.0-preview.9.24507.7</MicrosoftExtensionsAiVersion>
   </PropertyGroup>
