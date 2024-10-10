@@ -43,8 +43,8 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
-var pythonInference = builder.AddPythonUvicornApp("python-inference",
-    Path.Combine("..", "PythonInference"), port: 62394);
+var pythonInference = builder.AddPythonApp("python-inference", "../PythonInference", "-m", ["uvicorn", "main:app"])
+    .WithHttpEndpoint(env: "UVICORN_PORT", port: 62394);
 
 var redis = builder.AddRedis("redis");
 
