@@ -60,5 +60,6 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
     <PackageVersion Include="Duende.IdentityServer" Version="7.0.6" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2-dev-00341" />
+    <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
   </ItemGroup>
 </Project>
