@@ -43,8 +43,19 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
-var pythonInference = builder.AddPythonUvicornApp("python-inference",
-    Path.Combine("..", "PythonInference"), port: 62394);
+var stage = builder.ExecutionContext.IsRunMode ? "base" : /* default stage */ null;
+var pythonInference = builder.AddDockerfile("python-inference", "../PythonInference", /* default dockerfile */ null, stage)
+    .WithHttpEndpoint(targetPort: 62394, env: "UVICORN_PORT")
+    .WithContainerRuntimeArgs("--gpus=all")
+    .WithLifetime(ContainerLifetime.Persistent);
+
+if (builder.ExecutionContext.IsRunMode)
+{
+    // Mount app files into the container & enable auto-reload when running in development
+    pythonInference
+        .WithBindMount("../PythonInference", "/app")
+        .WithArgs("--reload");
+}
 
 var redis = builder.AddRedis("redis");
 
@@ -53,7 +64,7 @@ var backend = builder.AddProject<Backend>("backend")
     .WithReference(chatCompletion)
     .WithReference(blobStorage)
     .WithReference(vectorDb)
-    .WithReference(pythonInference)
+    .WithReference(pythonInference.GetEndpoint("http"))
     .WithReference(redis)
     .WithEnvironment("IdentityUrl", identityEndpoint)
     .WithEnvironment("ImportInitialDataDir", Path.Combine(builder.AppHostDirectory, "..", "..", "seeddata", isE2ETest ? "test" : "dev"));

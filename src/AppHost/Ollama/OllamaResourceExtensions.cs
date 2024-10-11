@@ -140,7 +140,7 @@ internal static class OllamaResourceExtensions
 
             var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1) };
             var request = new HttpRequestMessage(HttpMethod.Post, $"{httpEndpoint.Url}/api/pull") { Content = JsonContent.Create(new { name = modelName }) };
-            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             var responseContentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
             var streamReader = new StreamReader(responseContentStream);
             var line = (string?)null;
