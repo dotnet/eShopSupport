@@ -43,10 +43,19 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
-var pythonInference = builder.AddDockerfile("python-inference", "../PythonInference")
+var stage = builder.ExecutionContext.IsRunMode ? "base" : /* default stage */ null;
+var pythonInference = builder.AddDockerfile("python-inference", "../PythonInference", /* default dockerfile */ null, stage)
     .WithHttpEndpoint(targetPort: 62394, env: "UVICORN_PORT")
     .WithContainerRuntimeArgs("--gpus=all")
     .WithLifetime(ContainerLifetime.Persistent);
+
+if (builder.ExecutionContext.IsRunMode)
+{
+    // Mount app files into the container & enable auto-reload when running in development
+    pythonInference
+        .WithBindMount("../PythonInference", "/app")
+        .WithArgs("--reload");
+}
 
 var redis = builder.AddRedis("redis");
 
