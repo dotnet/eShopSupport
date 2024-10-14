@@ -45,7 +45,7 @@ var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
 var stage = builder.ExecutionContext.IsRunMode ? "base" : /* default stage */ null;
 var pythonInference = builder.AddDockerfile("python-inference", "../PythonInference", /* default dockerfile */ null, stage)
-    .WithHttpEndpoint(targetPort: 62394, env: "UVICORN_PORT")
+    .WithHttpEndpoint(port: 57000, targetPort: 8000)
     .WithContainerRuntimeArgs("--gpus=all")
     .WithLifetime(ContainerLifetime.Persistent);
 
