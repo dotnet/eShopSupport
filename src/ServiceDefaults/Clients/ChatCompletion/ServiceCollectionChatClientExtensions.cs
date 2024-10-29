@@ -1,10 +1,10 @@
-﻿using Azure.AI.OpenAI;
-using System.ClientModel;
+﻿using System.ClientModel;
+using System.Data.Common;
+using Azure.AI.OpenAI;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenAI;
-using System.Data.Common;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.Hosting;
 
