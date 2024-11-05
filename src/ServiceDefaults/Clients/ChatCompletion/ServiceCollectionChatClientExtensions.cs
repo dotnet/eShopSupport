@@ -1,4 +1,5 @@
 ﻿using Azure.AI.OpenAI;
+using OllamaSharp;
 using System.ClientModel;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +48,7 @@ public static class ServiceCollectionChatClientExtensions
             pipeline.UsePreventStreamingWithFunctions();
 
             var httpClient = pipeline.Services.GetService<HttpClient>() ?? new();
-            return pipeline.Use(new OllamaChatClient(uri, modelName, httpClient));
+            return pipeline.Use(new OllamaApiClient(httpClient, modelName));
         });
     }
 

@@ -164,16 +164,17 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
         {
             // Obviously it would be more performant to chunk and embed each manual only once, but this is simpler for now
             var chunks = SplitIntoChunks(manual.MarkdownText, 200).ToList();
-            var embeddings = await embedder.GenerateAsync(chunks);
-            var candidates = chunks.Zip(embeddings);
-            var queryEmbedding = (await embedder.GenerateAsync(query)).Single();
 
-            var closest = candidates
-                .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Vector.Span, queryEmbedding.Vector.Span) })
-                .OrderByDescending(c => c.Similarity)
-                .Take(3)
-                .Where(c => c.Similarity > 0.6f)
-                .ToList();
+            var candidates = await embedder.GenerateAndZipAsync(chunks);
+            var queryEmbedding = await embedder.GenerateEmbeddingAsync(query);
+
+            var closest = 
+                candidates
+                    .Select(c => new { Text = c.Value, Similarity = TensorPrimitives.CosineSimilarity(c.Embedding.Vector.Span, queryEmbedding.Vector.Span) })
+                    .OrderByDescending(c => c.Similarity)
+                    .Take(3)
+                    .Where(c => c.Similarity > 0.6f)
+                    .ToList();
 
             if (closest.Any())
             {
