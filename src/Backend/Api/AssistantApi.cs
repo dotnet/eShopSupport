@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -105,24 +106,28 @@ public static class AssistantApi
                 await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(AssistantChatReplyItemType.Search, searchPhrase)));
 
                 // Do the search, and supply the results to the UI so it can show one as a citation link
-                var searchResults = await manualSearch.SearchAsync(productId, searchPhrase);
+                var searchResults = 
+                    await (await manualSearch.SearchAsync(productId, searchPhrase))
+                        .Results
+                        .ToListAsync();
+
                 foreach (var r in searchResults)
                 {
                     await httpContext.Response.WriteAsync(",\n");
                     await httpContext.Response.WriteAsync(JsonSerializer.Serialize(new AssistantChatReplyItem(
                         AssistantChatReplyItemType.SearchResult,
                         string.Empty,
-                        int.Parse(r.Metadata.Id),
-                        GetProductId(r),
-                        GetPageNumber(r))));
+                        r.Record.ChunkId, // This is the ID of the record returned. Looking at the mapping, it was using the ChunkID
+                        r.Record.ProductId,
+                        r.Record.PageNumber)));
                 }
 
                 // Return the search results to the assistant
                 return searchResults.Select(r => new
                 {
-                    ProductId = GetProductId(r),
-                    SearchResultId = r.Metadata.Id,
-                    r.Metadata.Text,
+                    ProductId = r.Record.ProductId,
+                    SearchResultId = r.Record.ChunkId,
+                    r.Record.Text,
                 });
             }
             finally
@@ -130,17 +135,5 @@ public static class AssistantApi
                 semaphore.Release();
             }
         }
-    }
-
-    private static int? GetProductId(MemoryQueryResult result)
-    {
-        var match = Regex.Match(result.Metadata.ExternalSourceName, @"productid:(\d+)");
-        return match.Success ? int.Parse(match.Groups[1].Value) : null;
-    }
-
-    private static int? GetPageNumber(MemoryQueryResult result)
-    {
-        var match = Regex.Match(result.Metadata.AdditionalMetadata, @"pagenumber:(\d+)");
-        return match.Success ? int.Parse(match.Groups[1].Value) : null;
     }
 }

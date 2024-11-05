@@ -3,44 +3,36 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using Azure.Storage.Blobs;
 using eShopSupport.Backend.Data;
+using Microsoft.Extensions.VectorData;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Memory;
 
 namespace eShopSupport.Backend.Services;
 
-public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, IServiceProvider services)
+public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedder, IVectorStore store)
 {
     private const string ManualCollectionName = "manuals";
 
-    public async Task<IReadOnlyList<MemoryQueryResult>> SearchAsync(int? productId, string query)
+    public async Task<VectorSearchResults<ManualChunk>> SearchAsync(int? productId, string query)
     {
         var embedding = await embedder.GenerateEmbeddingAsync(query);
-        var filter = !productId.HasValue
-            ? null
-            : new
-            {
-                must = new[]
-                {
-                    new { key = "external_source_name", match = new { value = $"productid:{productId}" } }
-                }
-            };
 
-        var httpClient = services.GetQdrantHttpClient("vector-db");
-        var response = await httpClient.PostAsync($"collections/{ManualCollectionName}/points/search",
-            JsonContent.Create(new
-            {
-                vector = embedding,
-                with_payload = new[] { "id", "text", "external_source_name", "additional_metadata" },
-                limit = 3,
-                filter,
-            }));
+        var filter = new VectorSearchFilter([
+                new EqualToFilterClause("external_source_name", $"productid:{productId}")
+            ]);
 
-        var responseParsed = await response.Content.ReadFromJsonAsync<QdrantResult>();
 
-        return responseParsed!.Result.Select(r => new MemoryQueryResult(
-            new MemoryRecordMetadata(true, r.Payload.Id, r.Payload.Text, "", r.Payload.External_Source_Name, r.Payload.Additional_Metadata),
-            r.Score,
-            null)).ToList();
+        var searchOptions = new VectorSearchOptions
+        {
+            Filter = filter,
+            Top = 3
+        };
+
+        var collection = store.GetCollection<int,ManualChunk>(ManualCollectionName);
+
+        var results = await collection.VectorizedSearchAsync(embedding, searchOptions);
+
+        return results;
     }
 
     public static async Task EnsureSeedDataImportedAsync(IServiceProvider services, string? initialImportDataDir)
@@ -75,26 +67,33 @@ public class ProductManualSemanticSearch(ITextEmbeddingGenerationService embedde
 
     private static async Task ImportManualChunkSeedDataAsync(string importDataFromDir, IServiceScope scope)
     {
-        var semanticMemory = scope.ServiceProvider.GetRequiredService<IMemoryStore>();
-        var collections = await semanticMemory.GetCollectionsAsync().ToListAsync();
+        var semanticMemory = scope.ServiceProvider.GetRequiredService<IVectorStore>();
+        var collections = await semanticMemory.ListCollectionNamesAsync().ToListAsync();
 
         if (!collections.Contains(ManualCollectionName))
         {
-            await semanticMemory.CreateCollectionAsync(ManualCollectionName);
+            var collection = semanticMemory.GetCollection<int,ManualChunk>(ManualCollectionName);
 
             using var fileStream = File.OpenRead(Path.Combine(importDataFromDir, "manual-chunks.json"));
             var manualChunks = JsonSerializer.DeserializeAsyncEnumerable<ManualChunk>(fileStream);
             await foreach (var chunkChunk in ReadChunkedAsync(manualChunks, 1000))
             {
+
                 var mappedRecords = chunkChunk.Select(chunk =>
                 {
-                    var id = chunk!.ChunkId.ToString();
-                    var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", $"productid:{chunk.ProductId}", $"pagenumber:{chunk.PageNumber}");
-                    var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
-                    return new MemoryRecord(metadata, embedding, null);
+
                 });
 
-                await foreach (var _ in semanticMemory.UpsertBatchAsync(ManualCollectionName, mappedRecords)) { }
+
+                //var mappedRecords = chunkChunk.Select(chunk =>
+                //{
+                //    var id = chunk!.ChunkId.ToString();
+                //    var metadata = new MemoryRecordMetadata(false, id, chunk.Text, "", $"productid:{chunk.ProductId}", $"pagenumber:{chunk.PageNumber}");
+                //    var embedding = MemoryMarshal.Cast<byte, float>(new ReadOnlySpan<byte>(chunk.Embedding)).ToArray();
+                //    return new MemoryRecord(metadata, embedding, null);
+                //});
+
+                //await foreach (var _ in semanticMemory.UpsertBatchAsync(ManualCollectionName, mappedRecords)) { }
             }
         }
     }
