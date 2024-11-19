@@ -22,7 +22,7 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
     
     protected override EvaluationResult InitializeResult()
     {
-        return new EvaluationResult(new ScoreMetric(MetricName, 1, 5));
+        return new EvaluationResult(new NumericMetric(MetricName));
     }
 
     protected override async ValueTask<string> RenderEvaluationPromptAsync(
@@ -101,10 +101,10 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         ChatConfiguration configuration,
         CancellationToken token)
     {
-        bool hasMetric = result.TryGet<ScoreMetric>(MetricName, out var scoreMetric);
-        if (!hasMetric || scoreMetric is null)
+        bool hasMetric = result.TryGet<NumericMetric>(MetricName, out var numericMetric);
+        if (!hasMetric || numericMetric is null)
         {
-            throw new Exception("ScoreMetric was not properly initialized.");
+            throw new Exception("NumericMetric was not properly initialized.");
         }
 
         var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
@@ -114,24 +114,24 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
 
         if (score == null)
         {
-            scoreMetric.AddDiagnostic(EvaluationDiagnostic.Error("Score was inconclusive"));
+            numericMetric.AddDiagnostic(EvaluationDiagnostic.Error("Score was inconclusive"));
         } 
         else
         {
-            scoreMetric.Value = score.ScoreLabel;
+            numericMetric.Value = score.ScoreLabel;
 
             if (!string.IsNullOrWhiteSpace(score.DescriptionOfQuality))
             {
-                scoreMetric.AddDiagnostic(EvaluationDiagnostic.Informational(score.DescriptionOfQuality));
+                numericMetric.AddDiagnostic(EvaluationDiagnostic.Informational(score.DescriptionOfQuality));
             }
         }
 
-        scoreMetric.Interpretation = Interpret(scoreMetric);
+        numericMetric.Interpretation = Interpret(numericMetric);
 
         return new ValueTask();
     }
 
-    internal static EvaluationMetricInterpretation Interpret(ScoreMetric metric)
+    internal static EvaluationMetricInterpretation Interpret(NumericMetric metric)
     {
         double score = metric?.Value ?? -1.0;
         EvaluationRating rating = score switch {

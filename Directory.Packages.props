@@ -5,7 +5,7 @@
     <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
     <AspireVersion>8.2.2</AspireVersion>
     <MicrosoftExtensionsAiVersion>9.0.0-preview.9.24556.5</MicrosoftExtensionsAiVersion>
-    <MicrosoftExtensionsAiEvaluationVersion>0.9.2-preview</MicrosoftExtensionsAiEvaluationVersion>
+    <MicrosoftExtensionsAiEvaluationVersion>0.9.5-preview</MicrosoftExtensionsAiEvaluationVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
