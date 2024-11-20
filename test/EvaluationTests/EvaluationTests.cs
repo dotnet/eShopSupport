@@ -7,6 +7,7 @@ using System.Text.Json;
 using Azure.AI.OpenAI;
 using Azure.Identity;
 using eShopSupport.ServiceDefaults.Clients.Backend;
+using EvaluationTests;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
@@ -23,13 +24,15 @@ namespace eShopSupport.EvaluationTests
 
         public static StaffBackendClient? backend = null;
         public static IChatClient? chatCompletion = null;
+        private static readonly string ExecutionName = $"{DateTime.UtcNow:yyyyMMddTHHmmss}";
 
         public async Task InitializeAsync()
         {
             backend = await DevToolBackendClient.GetDevToolStaffBackendClientAsync(
                 identityServerHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7275/") },
                 backendHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
-            chatCompletion = GetChatCompletionService("chatcompletion");
+            chatCompletion = new AzureOpenAIClient(new Uri(Settings.Current.Endpoint), new DefaultAzureCredential())
+                .AsChatClient(Settings.Current.DeploymentName);
         }
 
         public Task DisposeAsync() => Task.CompletedTask;
@@ -47,24 +50,6 @@ namespace eShopSupport.EvaluationTests
             return JsonSerializer.Deserialize<EvalQuestion[]>(questionsJson)!;
         }
 
-        static IChatClient GetChatCompletionService(string connectionStringName)
-        {
-            var connectionStringBuilder = new DbConnectionStringBuilder();
-            var connectionString = "Endpoint=https://aievaluation-openai.openai.azure.com/;Deployment=gpt-4o";
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException($"Missing connection string {connectionStringName}");
-            }
-
-            connectionStringBuilder.ConnectionString = connectionString;
-
-            var deployment = connectionStringBuilder.TryGetValue("Deployment", out var deploymentValue) ? (string)deploymentValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Deployment'");
-            var endpoint = connectionStringBuilder.TryGetValue("Endpoint", out var endpointValue) ? (string)endpointValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Endpoint'");
-            //var key = connectionStringBuilder.TryGetValue("Key", out var keyValue) ? (string)keyValue : throw new InvalidOperationException($"Connection string {connectionStringName} is missing 'Key'");
-
-            return new AzureOpenAIClient(new Uri(endpoint), new DefaultAzureCredential()).AsChatClient(deployment);
-        }
-
         static ReportingConfiguration GetReportingConfiguration()
         {
             // Setup and configure the evaluators you would like to utilize for each AI chat
@@ -76,16 +61,16 @@ namespace eShopSupport.EvaluationTests
             IEvaluator groundednessEvaluator = new GroundednessEvaluator();
             IEvaluator answerScoringEvaluator = new AnswerScoringEvaluator();
 
-            var endpoint = new Uri(AzureOpenAIEndpoint);
+            var endpoint = new Uri(Settings.Current.Endpoint);
             var azureClient = new AzureOpenAIClient(endpoint, new DefaultAzureCredential());
 
-            IChatClient chatClient = azureClient.AsChatClient(AzureOpenAIDeploymentName);
-            Tokenizer tokenizer = TiktokenTokenizer.CreateForModel(AzureOpenAIModelName);
+            IChatClient chatClient = azureClient.AsChatClient(Settings.Current.DeploymentName);
+            Tokenizer tokenizer = TiktokenTokenizer.CreateForModel(Settings.Current.ModelName);
 
             var chatConfig = new ChatConfiguration(chatClient, tokenizer.ToTokenCounter(6000));
 
             return DiskBasedReportingConfiguration.Create(
-                    storageRootPath: StorageRootPath,
+                    storageRootPath: Settings.Current.StorageRootPath,
                     chatConfiguration: chatConfig,
                     evaluators: [
                         rtcEvaluator,
@@ -95,12 +80,6 @@ namespace eShopSupport.EvaluationTests
                         answerScoringEvaluator],
                     executionName: ExecutionName);
         }
-
-        const string StorageRootPath = @"C:\src\eShopCache";
-        const string AzureOpenAIEndpoint = "https://aievaluation-openai.openai.azure.com/";
-        const string AzureOpenAIModelName = "gpt-4o";
-        const string AzureOpenAIDeploymentName = "gpt-4o";
-        static readonly string ExecutionName = $"{DateTime.UtcNow:yyyyMMddTHHmmss}";
 
         [Fact]
         public async Task EvaluateQuestionsInALoop()

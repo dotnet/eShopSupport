@@ -15,8 +15,14 @@
 
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
       <_Parameter1>EvalQuestionsJsonPath</_Parameter1>
-      <_Parameter2>$(SolutionDir)seeddata\dev\evalquestions.json</_Parameter2>
+      <_Parameter2>$(SolutionDir)seeddata\test\evalquestions.json</_Parameter2>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   
   <ItemGroup>
