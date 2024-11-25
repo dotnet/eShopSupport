@@ -6,18 +6,13 @@ public static class ChatCompletionServiceExtensions
 {
     public static void AddChatCompletionService(this IHostApplicationBuilder builder, string serviceName)
     {
-        var pipeline = (ChatClientBuilder pipeline) => pipeline
+        ChatClientBuilder chatClientBuilder = (builder.Configuration[$"{serviceName}:Type"] == "ollama") ?
+            builder.AddOllamaChatClient(serviceName) :
+            builder.AddOpenAIChatClient(serviceName);
+
+        chatClientBuilder
             .UseFunctionInvocation()
             .UseCachingForTest()
             .UseOpenTelemetry(configure: c => c.EnableSensitiveData = true);
-
-        if (builder.Configuration[$"{serviceName}:Type"] == "ollama")
-        {
-            builder.AddOllamaChatClient(serviceName, pipeline);
-        }
-        else
-        {
-            builder.AddOpenAIChatClient(serviceName, pipeline);
-        }
     }
 }

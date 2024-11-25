@@ -166,7 +166,7 @@ public class TicketThreadGenerator(IReadOnlyList<Ticket> tickets, IReadOnlyList<
             var chunks = SplitIntoChunks(manual.MarkdownText, 200).ToList();
             var embeddings = await embedder.GenerateAsync(chunks);
             var candidates = chunks.Zip(embeddings);
-            var queryEmbedding = (await embedder.GenerateAsync(query)).Single();
+            var queryEmbedding = (await embedder.GenerateAsync([query])).Single();
 
             var closest = candidates
                 .Select(c => new { Text = c.First, Similarity = TensorPrimitives.CosineSimilarity(c.Second.Vector.Span, queryEmbedding.Vector.Span) })
