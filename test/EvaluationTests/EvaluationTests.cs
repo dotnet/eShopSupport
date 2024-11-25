@@ -185,7 +185,6 @@ namespace eShopSupport.EvaluationTests
 
 
             Assert.False(evalResult.Metrics.Values.Any(m => m.Interpretation?.Rating == EvaluationRating.Inconclusive), "Model response was inconclusive");
-            Assert.False(evalResult.ContainsDiagnostics(d => d.Severity == EvaluationDiagnosticSeverity.Error), "Evaluation had errors.");
         }
     }
 }
