@@ -29,8 +29,7 @@ public static class ChatCompletionServiceExtensions
         builder.Services.AddSingleton<OpenAIClient>(_ => new AzureOpenAIClient(
             new Uri(endpoint), new ApiKeyCredential(key)));
 
-        builder.Services.AddChatClient(builder => builder
-            .UseFunctionInvocation()
-            .Use(builder.Services.GetRequiredService<OpenAIClient>().AsChatClient(deployment))); // TODO: Use simpler extension method
+        builder.Services.AddChatClient(builder => builder.GetRequiredService<OpenAIClient>().AsChatClient(deployment))
+            .UseFunctionInvocation();
     }
 }

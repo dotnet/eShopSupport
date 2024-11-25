@@ -10,10 +10,9 @@ namespace Microsoft.Extensions.Hosting;
 
 public static class ServiceCollectionChatClientExtensions
 {
-    public static IServiceCollection AddOllamaChatClient(
+    public static ChatClientBuilder AddOllamaChatClient(
         this IHostApplicationBuilder hostBuilder,
         string serviceName,
-        Func<ChatClientBuilder, ChatClientBuilder>? builder = null,
         string? modelName = null)
     {
         if (modelName is null)
@@ -28,33 +27,30 @@ public static class ServiceCollectionChatClientExtensions
 
         return hostBuilder.Services.AddOllamaChatClient(
             modelName,
-            new Uri($"http://{serviceName}"),
-            builder);
+            new Uri($"http://{serviceName}"));
     }
 
-    public static IServiceCollection AddOllamaChatClient(
+    public static ChatClientBuilder AddOllamaChatClient(
         this IServiceCollection services,
         string modelName,
-        Uri? uri = null,
-        Func<ChatClientBuilder, ChatClientBuilder>? builder = null)
+        Uri? uri = null)
     {
         uri ??= new Uri("http://localhost:11434");
-        return services.AddChatClient(pipeline =>
-        {
-            builder?.Invoke(pipeline);
 
-            // Temporary workaround for Ollama issues
-            pipeline.UsePreventStreamingWithFunctions();
-
-            var httpClient = pipeline.Services.GetService<HttpClient>() ?? new();
-            return pipeline.Use(new OllamaChatClient(uri, modelName, httpClient));
+        ChatClientBuilder chatClientBuilder = services.AddChatClient(serviceProvider => {
+            var httpClient = serviceProvider.GetService<HttpClient>() ?? new();
+            return new OllamaChatClient(uri, modelName, httpClient);
         });
+
+        // Temporary workaround for Ollama issues
+        chatClientBuilder.UsePreventStreamingWithFunctions();
+
+        return chatClientBuilder;
     }
 
-    public static IServiceCollection AddOpenAIChatClient(
+    public static ChatClientBuilder AddOpenAIChatClient(
         this IHostApplicationBuilder hostBuilder,
         string serviceName,
-        Func<ChatClientBuilder, ChatClientBuilder>? builder = null,
         string? modelOrDeploymentName = null)
     {
         // TODO: We would prefer to use Aspire.AI.OpenAI here, but it doesn't yet support the OpenAI v2 client.
@@ -78,15 +74,14 @@ public static class ServiceCollectionChatClientExtensions
         }
 
         var endpointUri = string.IsNullOrEmpty(endpoint) ? null : new Uri(endpoint);
-        return hostBuilder.Services.AddOpenAIChatClient(apiKey, modelOrDeploymentName, endpointUri, builder);
+        return hostBuilder.Services.AddOpenAIChatClient(apiKey, modelOrDeploymentName, endpointUri);
     }
 
-    public static IServiceCollection AddOpenAIChatClient(
+    public static ChatClientBuilder AddOpenAIChatClient(
         this IServiceCollection services,
         string apiKey,
         string modelOrDeploymentName,
-        Uri? endpoint = null,
-        Func<ChatClientBuilder, ChatClientBuilder>? builder = null)
+        Uri? endpoint = null)
     {
         return services
             .AddSingleton(_ => endpoint is null
@@ -94,9 +89,8 @@ public static class ServiceCollectionChatClientExtensions
                 : new AzureOpenAIClient(endpoint, new ApiKeyCredential(apiKey)))
             .AddChatClient(pipeline =>
             {
-                builder?.Invoke(pipeline);
-                var openAiClient = pipeline.Services.GetRequiredService<OpenAIClient>();
-                return pipeline.Use(openAiClient.AsChatClient(modelOrDeploymentName));
+                var openAiClient = pipeline.GetRequiredService<OpenAIClient>();
+                return openAiClient.AsChatClient(modelOrDeploymentName);
             });
     }
 }

@@ -17,6 +17,6 @@ public class LocalTextEmbeddingGenerator : IEmbeddingGenerator<string, Embedding
         return Task.FromResult(new GeneratedEmbeddings<Embedding<float>>(results));
     }
 
-    public TService? GetService<TService>(object? key = null) where TService : class
-        => typeof(TService) == typeof(IEmbeddingGenerator<string, Embedding<float>>) ? this as TService : null;
+    public object? GetService(Type serviceType, object? key = null) 
+        => serviceType == typeof(IEmbeddingGenerator<string, Embedding<float>>) ? this : null;
 }
