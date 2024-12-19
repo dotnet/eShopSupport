@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration.Json;
+﻿#pragma warning disable ASPIREHOSTINGPYTHON001
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Hosting;
 using Projects;
 
@@ -44,8 +45,8 @@ if (builder.Environment.IsDevelopment())
 
 var blobStorage = storage.AddBlobs("eshopsupport-blobs");
 
-var pythonInference = builder.AddPythonUvicornApp("python-inference",
-    Path.Combine("..", "PythonInference"), port: 62394);
+var pythonInference = builder.AddUvicornApp("python-inference", Path.Combine("..", "PythonInference"), "main:app")
+    .WithHttpEndpoint(env: "UVICORN_PORT", port: 62394);
 
 var redis = builder.AddRedis("redis");
 
