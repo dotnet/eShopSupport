@@ -12,35 +12,13 @@ public static class ServiceCollectionChatClientExtensions
 {
     public static ChatClientBuilder AddOllamaChatClient(
         this IHostApplicationBuilder hostBuilder,
-        string serviceName,
-        string? modelName = null)
+        string serviceName)
     {
-        if (modelName is null)
-        {
-            var configKey = $"{serviceName}:LlmModelName";
-            modelName = hostBuilder.Configuration[configKey];
-            if (string.IsNullOrEmpty(modelName))
-            {
-                throw new InvalidOperationException($"No {nameof(modelName)} was specified, and none could be found from configuration at '{configKey}'");
-            }
-        }
+        hostBuilder.AddOllamaSharpChatClient(serviceName);
 
-        return hostBuilder.Services.AddOllamaChatClient(
-            modelName,
-            new Uri($"http://{serviceName}"));
-    }
-
-    public static ChatClientBuilder AddOllamaChatClient(
-        this IServiceCollection services,
-        string modelName,
-        Uri? uri = null)
-    {
-        uri ??= new Uri("http://localhost:11434");
-
-        ChatClientBuilder chatClientBuilder = services.AddChatClient(serviceProvider => {
-            var httpClient = serviceProvider.GetService<HttpClient>() ?? new();
-            return new OllamaChatClient(uri, modelName, httpClient);
-        });
+        ChatClientBuilder chatClientBuilder = hostBuilder.Services.AddChatClient(static sp =>
+            // use the IChatClient from OllamaSharp
+            sp.GetRequiredService<IChatClient>());
 
         // Temporary workaround for Ollama issues
         chatClientBuilder.UsePreventStreamingWithFunctions();
