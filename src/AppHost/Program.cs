@@ -24,7 +24,8 @@ var identityEndpoint = identityServer
     .GetEndpoint("https");
 
 // Use this if you want to use Ollama
-var chatCompletion = builder.AddOllama("chatcompletion").WithDataVolume();
+var ollama = builder.AddOllama("ollama").WithDataVolume().WithGPUSupport();
+var chatCompletion = ollama.AddModel("chatCompletion", "llama3.1");
 
 // ... or use this if you want to use OpenAI (having also configured the API key in appsettings)
 //var chatCompletion = builder.AddConnectionString("chatcompletion");
