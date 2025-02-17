@@ -59,7 +59,7 @@ public abstract class GeneratorBase<T>
     {
         // Instructing it to end the content with END_OF_CONTENT is beneficial because it often tries to add a suffix like
         // "I have done the task, hope this helps!". We can avoid that by making it stop before that.
-        var response = await ChatClient.CompleteAsync(
+        var response = await ChatClient.GetResponseAsync(
             prompt,
             new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] });
         return response.Message.Text ?? string.Empty;
@@ -75,7 +75,7 @@ public abstract class GeneratorBase<T>
             Tools = tools,
         };
 
-        var response = await RunWithRetries(() => ChatClient.CompleteAsync(prompt, options));
+        var response = await RunWithRetries(() => ChatClient.GetResponseAsync(prompt, options));
         var responseString = response.Message.Text ?? string.Empty;
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,

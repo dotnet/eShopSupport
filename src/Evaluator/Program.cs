@@ -114,7 +114,7 @@ async Task<(double? Score, string Justification)[]> ScoreAnswersAsync(IReadOnlyC
         Do not use any other words for scoreLabel. You may only pick one of those labels.
         """;
 
-    var response = await chatCompletion.CompleteAsync(prompt, new ChatOptions
+    var response = await chatCompletion.GetResponseAsync(prompt, new ChatOptions
     {
         ResponseFormat = ChatResponseFormat.Json,
         Temperature = 0,
