@@ -56,7 +56,7 @@ public static class AssistantApi
             Tools = [searchManual],
             AdditionalProperties = new() { ["seed"] = 0 },
         };
-        var streamingAnswer = chatClient.CompleteStreamingAsync(messages, executionSettings, cancellationToken);
+        var streamingAnswer = chatClient.GetStreamingResponseAsync(messages, executionSettings, cancellationToken);
 
         // Stream the response to the UI
         var answerBuilder = new StringBuilder();
@@ -69,7 +69,7 @@ public static class AssistantApi
 
         // Ask if this answer is suitable for sending directly to the customer
         // If so, we'll show a button in the UI
-        var classification = await chatClient.CompleteAsync<MessageClassification>(
+        var classification = await chatClient.GetResponseAsync<MessageClassification>(
             $"Determine whether the following message is phrased as a reply to the customer {request.CustomerName} by name: {answerBuilder}",
             cancellationToken: cancellationToken);
         if (classification.TryGetResult(out var result) && result.IsAddressedToCustomerByName)

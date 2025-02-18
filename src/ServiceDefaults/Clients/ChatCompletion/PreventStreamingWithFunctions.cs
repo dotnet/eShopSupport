@@ -16,7 +16,7 @@ public static class PreventStreamingWithFunctionsExtensions
 
     private class PreventStreamingWithFunctions(IChatClient innerClient) : DelegatingChatClient(innerClient)
     {
-        public override Task<ChatCompletion> CompleteAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        public override Task<ChatResponse> GetResponseAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             // Temporary workaround for an issue in CompleteAsync<T>. Although OpenAI models are happy to
             // receive system messages at the end of the conversation, it causes a lot of problems for
@@ -30,27 +30,27 @@ public static class PreventStreamingWithFunctionsExtensions
                 lastMessage.Role = ChatRole.User;
             }
 
-            return base.CompleteAsync(chatMessages, options, cancellationToken);
+            return base.GetResponseAsync(chatMessages, options, cancellationToken);
         }
 
-        public override IAsyncEnumerable<StreamingChatCompletionUpdate> CompleteStreamingAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(IList<ChatMessage> chatMessages, ChatOptions? options = null, CancellationToken cancellationToken = default)
         {
             return options?.Tools is null or []
-                ? base.CompleteStreamingAsync(chatMessages, options, cancellationToken)
+                ? base.GetStreamingResponseAsync(chatMessages, options, cancellationToken)
                 : TreatNonstreamingAsStreaming(chatMessages, options, cancellationToken);
         }
 
-        private async IAsyncEnumerable<StreamingChatCompletionUpdate> TreatNonstreamingAsStreaming(IList<ChatMessage> chatMessages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
+        private async IAsyncEnumerable<ChatResponseUpdate> TreatNonstreamingAsStreaming(IList<ChatMessage> chatMessages, ChatOptions options, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var result = await CompleteAsync(chatMessages, options, cancellationToken);
+            var result = await GetResponseAsync(chatMessages, options, cancellationToken);
             for (var choiceIndex = 0; choiceIndex < result.Choices.Count; choiceIndex++)
             {
                 var choice = result.Choices[choiceIndex];
-                yield return new StreamingChatCompletionUpdate
+                yield return new ChatResponseUpdate
                 {
                     AuthorName = choice.AuthorName,
                     ChoiceIndex = choiceIndex,
-                    CompletionId = result.CompletionId,
+                    ResponseId = result.ResponseId,
                     Contents = choice.Contents,
                     CreatedAt = result.CreatedAt,
                     FinishReason = result.FinishReason,

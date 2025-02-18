@@ -1,7 +1,4 @@
-﻿
-
-using System.Data.Common;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Azure.AI.OpenAI;
@@ -12,7 +9,7 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.AI.Evaluation;
 using Microsoft.Extensions.AI.Evaluation.Quality;
 using Microsoft.Extensions.AI.Evaluation.Reporting;
-using Microsoft.Extensions.AI.Evaluation.Reporting.Storage.Disk;
+using Microsoft.Extensions.AI.Evaluation.Reporting.Storage;
 using Microsoft.ML.Tokenizers;
 
 namespace eShopSupport.EvaluationTests
@@ -55,7 +52,7 @@ namespace eShopSupport.EvaluationTests
             // Setup and configure the evaluators you would like to utilize for each AI chat
             IEvaluator rtcEvaluator =
                 new RelevanceTruthAndCompletenessEvaluator(
-                    new RelevanceTruthAndCompletenessEvaluator.Options(includeReasoning: true));
+                    new RelevanceTruthAndCompletenessEvaluatorOptions(includeReasoning: true));
             IEvaluator coherenceEvaluator = new CoherenceEvaluator();
             IEvaluator fluencyEvaluator = new FluencyEvaluator();
             IEvaluator groundednessEvaluator = new GroundednessEvaluator();

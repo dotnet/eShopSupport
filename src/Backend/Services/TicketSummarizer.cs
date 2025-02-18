@@ -103,7 +103,7 @@ public class TicketSummarizer(IServiceScopeFactory scopeFactory)
                 }
                 """;
 
-            var response = await chatClient.CompleteAsync<Response>(prompt);
+            var response = await chatClient.GetResponseAsync<Response>(prompt);
             if (!response.TryGetResult(out var parsed))
             {
                 return;
