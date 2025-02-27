@@ -5,6 +5,7 @@
     <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
     <AspireVersion>8.2.2</AspireVersion>
     <MicrosoftExtensionsAiVersion>9.3.0-preview.1.25114.11</MicrosoftExtensionsAiVersion>
+    <MicrosoftExtensionsAiEvaluationVersion>9.3.0-preview.1.25126.9</MicrosoftExtensionsAiEvaluationVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
@@ -23,9 +24,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.10" />
     <PackageVersion Include="Microsoft.Extensions.AI" Version="$(MicrosoftExtensionsAiVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation" Version="$(MicrosoftExtensionsAiVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Quality" Version="$(MicrosoftExtensionsAiVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Reporting" Version="$(MicrosoftExtensionsAiVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation" Version="$(MicrosoftExtensionsAiEvaluationVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Quality" Version="$(MicrosoftExtensionsAiEvaluationVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.AI.Evaluation.Reporting" Version="$(MicrosoftExtensionsAiEvaluationVersion)" />
     <PackageVersion Include="Microsoft.Extensions.AI.Ollama" Version="$(MicrosoftExtensionsAiVersion)" />
     <PackageVersion Include="Microsoft.Extensions.AI.OpenAI" Version="$(MicrosoftExtensionsAiVersion)" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
