@@ -8,7 +8,6 @@ namespace Microsoft.Extensions.AI.Evaluation.Quality;
 
 public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
 {
-
     public sealed class Context(string expectedAnswer) : EvaluationContext
     {
         public string ExpectedAnswer { get; } = expectedAnswer;
@@ -27,7 +26,7 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
 
     protected override async ValueTask<string> RenderEvaluationPromptAsync(
         ChatMessage? userRequest,
-        ChatMessage modelResponse,
+        ChatResponse modelResponse,
         IEnumerable<ChatMessage>? includedHistory,
         IEnumerable<EvaluationContext>? additionalContext,
         CancellationToken token)
@@ -95,11 +94,11 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         return prompt;
     }
 
-    protected override ValueTask ParseEvaluationResponseAsync(
-        string modelResponseForEvaluationPrompt, 
+    protected override async ValueTask PerformEvaluationAsync(
+        ChatConfiguration chatConfiguration,
+        IList<ChatMessage> evaluationMessages,
         EvaluationResult result,
-        ChatConfiguration configuration,
-        CancellationToken token)
+        CancellationToken cancellationToken)
     {
         bool hasMetric = result.TryGet<NumericMetric>(MetricName, out var numericMetric);
         if (!hasMetric || numericMetric is null)
@@ -108,8 +107,12 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         }
 
         var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
+        ChatResponse<ScoringResponse> response = await chatConfiguration.ChatClient.GetResponseAsync<ScoringResponse>(
+            evaluationMessages,
+            cancellationToken: cancellationToken);
         
-        var parsedResponse = JsonSerializer.Deserialize<ScoringResponse>(TrimMarkdownDelimiters(modelResponseForEvaluationPrompt), jsonOptions)!;
+        var parsedResponse = JsonSerializer.Deserialize<ScoringResponse>(TrimMarkdownDelimiters(response.Text), jsonOptions)!;
         var score = parsedResponse.Scores.FirstOrDefault();
 
         if (score == null)
@@ -127,8 +130,6 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         }
 
         numericMetric.Interpretation = Interpret(numericMetric);
-
-        return new ValueTask();
     }
 
     internal static EvaluationMetricInterpretation Interpret(NumericMetric metric)
@@ -161,8 +162,6 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
 
         return trimmed;
     }
-
-
 }
 
 record ScoringResponse(AnswerScore[] Scores);

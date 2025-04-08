@@ -24,7 +24,7 @@ internal static class OllamaResourceExtensions
         var resource = new OllamaResource(name, models, defaultModel ?? models.First(), enableGpu);
         var ollama = builder.AddResource(resource)
             .WithHttpEndpoint(port: port, targetPort: 11434)
-            .WithImage("ollama/ollama", tag: "0.3.12");
+            .WithImage("ollama/ollama", tag: "0.6.5");
 
         if (enableGpu)
         {
@@ -45,7 +45,7 @@ internal static class OllamaResourceExtensions
 
         return ollama;
     }
-    
+
     public static IResourceBuilder<OllamaResource> WithDataVolume(this IResourceBuilder<OllamaResource> builder)
     {
         return builder.WithVolume(CreateVolumeName(builder, builder.Resource.Name), "/root/.ollama");
@@ -127,7 +127,7 @@ internal static class OllamaResourceExtensions
                     {
                         State = new("Models downloaded", KnownResourceStateStyles.Success)
                     });
-                }, 
+                },
                 cancellationToken);
             }
 

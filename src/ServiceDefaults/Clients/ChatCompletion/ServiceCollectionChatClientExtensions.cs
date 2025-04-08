@@ -90,7 +90,7 @@ public static class ServiceCollectionChatClientExtensions
             .AddChatClient(pipeline =>
             {
                 var openAiClient = pipeline.GetRequiredService<OpenAIClient>();
-                return openAiClient.AsChatClient(modelOrDeploymentName);
+                return openAiClient.GetChatClient(modelOrDeploymentName).AsIChatClient();
             });
     }
 }

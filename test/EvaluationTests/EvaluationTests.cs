@@ -29,7 +29,7 @@ namespace eShopSupport.EvaluationTests
                 identityServerHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7275/") },
                 backendHttpClient: new HttpClient { BaseAddress = new Uri("https://localhost:7223/") });
             chatCompletion = new AzureOpenAIClient(new Uri(Settings.Current.Endpoint), new DefaultAzureCredential())
-                .AsChatClient(Settings.Current.DeploymentName);
+                .GetChatClient(Settings.Current.DeploymentName).AsIChatClient();
         }
 
         public Task DisposeAsync() => Task.CompletedTask;
@@ -50,9 +50,7 @@ namespace eShopSupport.EvaluationTests
         static ReportingConfiguration GetReportingConfiguration()
         {
             // Setup and configure the evaluators you would like to utilize for each AI chat
-            IEvaluator rtcEvaluator =
-                new RelevanceTruthAndCompletenessEvaluator(
-                    new RelevanceTruthAndCompletenessEvaluatorOptions(includeReasoning: true));
+            IEvaluator rtcEvaluator = new RelevanceTruthAndCompletenessEvaluator();
             IEvaluator coherenceEvaluator = new CoherenceEvaluator();
             IEvaluator fluencyEvaluator = new FluencyEvaluator();
             IEvaluator groundednessEvaluator = new GroundednessEvaluator();
@@ -61,7 +59,7 @@ namespace eShopSupport.EvaluationTests
             var endpoint = new Uri(Settings.Current.Endpoint);
             var azureClient = new AzureOpenAIClient(endpoint, new DefaultAzureCredential());
 
-            IChatClient chatClient = azureClient.AsChatClient(Settings.Current.DeploymentName);
+            IChatClient chatClient = azureClient.GetChatClient(Settings.Current.DeploymentName).AsIChatClient();
             Tokenizer tokenizer = TiktokenTokenizer.CreateForModel(Settings.Current.ModelName);
 
             var chatConfig = new ChatConfiguration(chatClient, tokenizer.ToTokenCounter(6000));
@@ -176,7 +174,7 @@ namespace eShopSupport.EvaluationTests
 
             EvaluationResult evalResult = await scenario.EvaluateAsync(
                 [new ChatMessage(ChatRole.User, question.Question)],
-                new ChatMessage(ChatRole.Assistant, finalAnswer),
+                new ChatResponse(new ChatMessage(ChatRole.Assistant, finalAnswer)),
                 additionalContext: [new AnswerScoringEvaluator.Context(question.Answer)],
                 cancellationToken);
 
