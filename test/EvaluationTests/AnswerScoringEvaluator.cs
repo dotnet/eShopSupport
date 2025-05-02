@@ -2,43 +2,93 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // --------------------------------------------------------------------------------------------
 
-using System.Text.Json;
-
 namespace Microsoft.Extensions.AI.Evaluation.Quality;
 
-public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
+public sealed class AnswerScoringEvaluator : IEvaluator
 {
-    public sealed class Context(string expectedAnswer) : EvaluationContext
+    public sealed class Context(string expectedAnswer) : EvaluationContext(ContextName, content: expectedAnswer)
     {
+        private const string ContextName = "Answer Score";
+
         public string ExpectedAnswer { get; } = expectedAnswer;
     }
 
-    const string MetricName = "Answer Score";
+    private const string MetricName = "Answer Score";
 
-    protected override bool IgnoresHistory => true;
+    public IReadOnlyCollection<string> EvaluationMetricNames => [MetricName];
 
-    public override IReadOnlyCollection<string> EvaluationMetricNames => [MetricName];
-    
-    protected override EvaluationResult InitializeResult()
+    public async ValueTask<EvaluationResult> EvaluateAsync(
+        IEnumerable<ChatMessage> messages,
+        ChatResponse modelResponse,
+        ChatConfiguration? chatConfiguration = null,
+        IEnumerable<EvaluationContext>? additionalContext = null,
+        CancellationToken cancellationToken = default)
     {
-        return new EvaluationResult(new NumericMetric(MetricName));
+        ArgumentNullException.ThrowIfNull(modelResponse);
+        ArgumentNullException.ThrowIfNull(chatConfiguration);
+
+        var numericMetric = new NumericMetric(MetricName);
+        var result = new EvaluationResult(numericMetric);
+
+        if (!messages.TryGetUserRequest(out ChatMessage? userRequest, out IReadOnlyList<ChatMessage> conversationHistory))
+        {
+            result.AddDiagnosticsToAllMetrics(
+                EvaluationDiagnostic.Error(
+                    $"The ${messages} supplied for evaluation did not contain a user request as the last message."));
+            return result;
+        }
+
+        if (string.IsNullOrWhiteSpace(modelResponse.Text))
+        {
+            result.AddDiagnosticsToAllMetrics(
+                EvaluationDiagnostic.Error($"The {nameof(modelResponse)} supplied for evaluation was null or empty."));
+            return result;
+        }
+
+        var evaluationInstructions = GetEvaluationInstructions(
+            userRequest,
+            modelResponse,
+            conversationHistory,
+            additionalContext);
+
+        var response = await chatConfiguration.ChatClient.GetResponseAsync<ScoringResponse>(
+            evaluationInstructions,
+            cancellationToken: cancellationToken);
+
+        if (!response.TryGetResult(out var scoringResponse))
+        {
+            result.AddDiagnosticsToAllMetrics(
+                EvaluationDiagnostic.Error("Scoring response was not provided in a valid format."));
+            return result;
+        }
+
+        if (scoringResponse.Scores is not [var score, ..])
+        {
+            result.AddDiagnosticsToAllMetrics(
+                EvaluationDiagnostic.Error("Scoring response contained no scores."));
+            return result;
+        }
+
+        numericMetric.Value = score.ScoreLabel;
+
+        if (!string.IsNullOrWhiteSpace(score.DescriptionOfQuality))
+        {
+            numericMetric.AddDiagnostics(EvaluationDiagnostic.Informational(score.DescriptionOfQuality));
+        }
+
+        numericMetric.Interpretation = Interpret(numericMetric);
+        return result;
     }
 
-    protected override async ValueTask<string> RenderEvaluationPromptAsync(
+    private static List<ChatMessage> GetEvaluationInstructions(
         ChatMessage? userRequest,
         ChatResponse modelResponse,
-        IEnumerable<ChatMessage>? includedHistory,
-        IEnumerable<EvaluationContext>? additionalContext,
-        CancellationToken token)
+        IEnumerable<ChatMessage> includedHistory,
+        IEnumerable<EvaluationContext>? additionalContext)
     {
-        string renderedModelResponse = await this.RenderAsync(modelResponse, token);
-
-        string renderedUserRequest =
-            userRequest is not null
-                ? await this.RenderAsync(userRequest, token)
-                : string.Empty;
-
-        string answer = "";
+        string renderedModelResponse = modelResponse.RenderText();
+        string renderedUserRequest = userRequest?.RenderText() ?? string.Empty;
+        string answer;
 
         if (additionalContext is not null &&
             additionalContext.OfType<Context>().FirstOrDefault() is Context context)
@@ -49,8 +99,6 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         {
             throw new InvalidOperationException($"The ExpectedAnswer must be provided in the additional context.");
         }
-
-        List<string> scoreWords = ["Awful", "Poor", "Good", "Perfect"];
 
         var prompt = $$"""
         There is an AI assistant that answers questions about products sold by an online retailer. The questions
@@ -91,45 +139,7 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
         """
         ;
 
-        return prompt;
-    }
-
-    protected override async ValueTask PerformEvaluationAsync(
-        ChatConfiguration chatConfiguration,
-        IList<ChatMessage> evaluationMessages,
-        EvaluationResult result,
-        CancellationToken cancellationToken)
-    {
-        bool hasMetric = result.TryGet<NumericMetric>(MetricName, out var numericMetric);
-        if (!hasMetric || numericMetric is null)
-        {
-            throw new Exception("NumericMetric was not properly initialized.");
-        }
-
-        var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-
-        ChatResponse<ScoringResponse> response = await chatConfiguration.ChatClient.GetResponseAsync<ScoringResponse>(
-            evaluationMessages,
-            cancellationToken: cancellationToken);
-        
-        var parsedResponse = JsonSerializer.Deserialize<ScoringResponse>(TrimMarkdownDelimiters(response.Text), jsonOptions)!;
-        var score = parsedResponse.Scores.FirstOrDefault();
-
-        if (score == null)
-        {
-            numericMetric.AddDiagnostic(EvaluationDiagnostic.Error("Score was inconclusive"));
-        } 
-        else
-        {
-            numericMetric.Value = score.ScoreLabel;
-
-            if (!string.IsNullOrWhiteSpace(score.DescriptionOfQuality))
-            {
-                numericMetric.AddDiagnostic(EvaluationDiagnostic.Informational(score.DescriptionOfQuality));
-            }
-        }
-
-        numericMetric.Interpretation = Interpret(numericMetric);
+        return [new ChatMessage(ChatRole.User, prompt)];
     }
 
     internal static EvaluationMetricInterpretation Interpret(NumericMetric metric)
@@ -144,23 +154,6 @@ public sealed class AnswerScoringEvaluator : ChatConversationEvaluator
             _ => EvaluationRating.Inconclusive,
         };
         return new EvaluationMetricInterpretation(rating, failed: rating == EvaluationRating.Inconclusive);
-    }
-
-    internal static ReadOnlySpan<char> TrimMarkdownDelimiters(string json)
-    {
-#if NETSTANDARD2_0
-        ReadOnlySpan<char> trimmed = json.ToCharArray();
-#else
-        ReadOnlySpan<char> trimmed = json;
-#endif
-        trimmed = trimmed.Trim().Trim(['`']); // trim whitespace and markdown characters from beginning and end
-        // trim 'json' marker from markdown if it exists
-        if (trimmed.Length > 4 && trimmed[0..4].SequenceEqual(['j', 's', 'o', 'n']))
-        {
-            trimmed = trimmed.Slice(4);
-        }
-
-        return trimmed;
     }
 }
 

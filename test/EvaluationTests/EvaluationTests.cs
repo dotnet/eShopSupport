@@ -50,7 +50,9 @@ namespace eShopSupport.EvaluationTests
         static ReportingConfiguration GetReportingConfiguration()
         {
             // Setup and configure the evaluators you would like to utilize for each AI chat
+#pragma warning disable AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             IEvaluator rtcEvaluator = new RelevanceTruthAndCompletenessEvaluator();
+#pragma warning restore AIEVAL001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             IEvaluator coherenceEvaluator = new CoherenceEvaluator();
             IEvaluator fluencyEvaluator = new FluencyEvaluator();
             IEvaluator groundednessEvaluator = new GroundednessEvaluator();
@@ -60,9 +62,7 @@ namespace eShopSupport.EvaluationTests
             var azureClient = new AzureOpenAIClient(endpoint, new DefaultAzureCredential());
 
             IChatClient chatClient = azureClient.GetChatClient(Settings.Current.DeploymentName).AsIChatClient();
-            Tokenizer tokenizer = TiktokenTokenizer.CreateForModel(Settings.Current.ModelName);
-
-            var chatConfig = new ChatConfiguration(chatClient, tokenizer.ToTokenCounter(6000));
+            var chatConfig = new ChatConfiguration(chatClient);
 
             return DiskBasedReportingConfiguration.Create(
                     storageRootPath: Settings.Current.StorageRootPath,

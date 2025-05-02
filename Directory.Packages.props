@@ -4,8 +4,8 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <MicrosoftExtensionsVersion>8.6.0</MicrosoftExtensionsVersion>
     <AspireVersion>8.2.2</AspireVersion>
-    <MicrosoftExtensionsAiVersion>9.4.0-preview.1.25207.5</MicrosoftExtensionsAiVersion>
-    <MicrosoftExtensionsAiEvaluationVersion>9.4.0-preview.1.25207.5</MicrosoftExtensionsAiEvaluationVersion>
+    <MicrosoftExtensionsAiVersion>9.4.3-preview.1.25230.7</MicrosoftExtensionsAiVersion>
+    <MicrosoftExtensionsAiEvaluationVersion>9.4.3-preview.1.25230.7</MicrosoftExtensionsAiEvaluationVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Version together with Aspire -->
