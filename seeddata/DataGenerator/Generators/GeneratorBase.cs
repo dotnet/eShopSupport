@@ -62,7 +62,7 @@ public abstract class GeneratorBase<T>
         var response = await ChatClient.GetResponseAsync(
             prompt,
             new ChatOptions { Temperature = 0.9f, StopSequences = ["END_OF_CONTENT"] });
-        return response.Message.Text ?? string.Empty;
+        return response.Text ?? string.Empty;
     }
 
     protected async Task<TResponse> GetAndParseJsonChatCompletion<TResponse>(string prompt, int? maxTokens = null, IList<AITool>? tools = null)
@@ -76,7 +76,7 @@ public abstract class GeneratorBase<T>
         };
 
         var response = await RunWithRetries(() => ChatClient.GetResponseAsync(prompt, options));
-        var responseString = response.Message.Text ?? string.Empty;
+        var responseString = response.Text ?? string.Empty;
 
         // Due to what seems like a server-side bug, when asking for a json_object response and with tools enabled,
         // it often replies with two or more JSON objects concatenated together (duplicates or slight variations).
